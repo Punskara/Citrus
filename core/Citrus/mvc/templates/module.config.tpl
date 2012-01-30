@@ -1,2 +1,0 @@
-<?php
-$this->isSecure = true;
