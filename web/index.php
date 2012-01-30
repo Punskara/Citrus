@@ -25,11 +25,6 @@ if ( $cos->app->moduleExists( $module ) ) {
         $cos->user = new core\Citrus\User();
     }
     $actionSecure = $cos->app->module->getSecurity( $action );
-    
-    # Used for auth 
-    /*if ( $cos->app->module->isSecure && !$cos->user->isLogged() && $actionSecure ) {
-        core\Citrus\http\Http::redirect( '/backend/Users/login.html' );
-    }*/
 
     $cos->getController()->request->addParams( $cos->router->params );
     $cos->app->executeCtrlAction();
