@@ -1,0 +1,25 @@
+[Thu Jan 12 15:53:46 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected ';' in /Users/remi/Sites/citrus/code/core/Citrus/http/Http.php on line 38
+[Mon Jan 16 11:18:49 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting ')' in /Users/remi/Sites/citrus/code/config/config.inc.php on line 8
+[Mon Jan 16 11:18:49 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting ')' in /Users/remi/Sites/citrus/code/config/config.inc.php on line 8
+[Mon Jan 16 11:19:03 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting ')' in /Users/remi/Sites/citrus/code/config/config.inc.php on line 8
+[Mon Jan 16 11:19:03 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected T_CONSTANT_ENCAPSED_STRING, expecting ')' in /Users/remi/Sites/citrus/code/config/config.inc.php on line 8
+[Mon Jan 16 11:20:28 2012] [error] [client 127.0.0.1] PHP Warning:  strpos(): Empty delimiter in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 109
+[Mon Jan 16 11:20:28 2012] [error] [client 127.0.0.1] PHP Warning:  strpos(): Empty delimiter in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 109
+[Mon Jan 16 11:21:22 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: active in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 395
+[Mon Jan 16 11:21:22 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: active in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 395, referer: http://dev.citrus.local/
+[Mon Jan 16 11:21:22 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: active in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 395, referer: http://dev.citrus.local/
+[Mon Jan 16 11:21:22 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: active in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 395
+[Mon Jan 16 11:21:22 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: active in /Users/remi/Sites/citrus/code/core/Citrus/Citrus.php on line 395
+[Mon Jan 16 11:27:37 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined variable: cos in /Users/remi/Sites/citrus/code/core/Citrus/sys/Debug.php on line 131
+[Mon Jan 16 11:27:37 2012] [error] [client 127.0.0.1] PHP Notice:  Trying to get property of non-object in /Users/remi/Sites/citrus/code/core/Citrus/sys/Debug.php on line 131
+[Wed Jan 18 13:56:33 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: file in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 13:56:33 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: line in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 13:57:47 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: file in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 13:57:47 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: line in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 13:58:03 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: file in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 13:58:03 2012] [error] [client 127.0.0.1] PHP Notice:  Undefined index: line in /Users/remi/Sites/citrus/code/core/Citrus/sys/Error.php on line 64
+[Wed Jan 18 14:17:50 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected '}' in /Users/remi/Sites/citrus/code/apps/install/modules/main/Controller.php on line 48
+[Wed Jan 18 14:21:58 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected ')' in /Users/remi/Sites/citrus/code/core/Citrus/mvc/App.php on line 135
+[Wed Jan 18 14:21:59 2012] [error] [client 127.0.0.1] PHP Parse error:  syntax error, unexpected ')' in /Users/remi/Sites/citrus/code/core/Citrus/mvc/App.php on line 135
+[Fri Jan 27 18:13:46 2012] [error] [client 127.0.0.1] PHP Fatal error:  Call to undefined function core\\Citrus\\phpIs53() in /Users/remi/Sites/citrus/code/core/Citrus/Date.php on line 47
+[Mon Jan 30 11:12:25 2012] [error] [client 127.0.0.1] PHP Fatal error:  Call to undefined function core\\Citrus\\phpIs53() in /Users/remi/Sites/citrus/code/core/Citrus/Date.php on line 47
