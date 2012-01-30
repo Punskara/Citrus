@@ -9,12 +9,8 @@ define( 'CITRUS_RW_EXT', '.html' );
 
 include_once CITRUS_PATH . '/include/functions.php';
 include_once CITRUS_CLASS_PATH . '/Citrus/Citrus.php';
-include_once CITRUS_LIB_PATH . 'class.phpmailer-lite.php';
-include_once CITRUS_LIB_PATH . 'phpthumb-latest/ThumbLib.inc.php';
 
-define( 'CITRUS_IS_IE6', strpos(  $_SERVER['HTTP_USER_AGENT'], "MSIE 6.0" ) !== false );
 session_start();
-#session_regenerate_id( true );
 
 require CITRUS_CLASS_PATH . 'doctrine-orm/Doctrine/ORM/Tools/Setup.php';
 
