@@ -44,11 +44,7 @@ class Date extends \DateTime {
         if ( $date == 'now' ) {
             $date = date( self::SQL_FORMAT );
         }
-        if ( phpIs53() ) {
-		    parent::__construct( $date, new DateTimeZone( 'Europe/Paris' ) );
-        } else {
-            parent::__construct( $date );
-        }
+		parent::__construct( $date, new DateTimeZone( 'Europe/Paris' ) );
 	}
 	
 	/**
