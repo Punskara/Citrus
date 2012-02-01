@@ -20,7 +20,6 @@
 /**
  * @package functions
  * @author Rémi Cazalet <remi@caramia.fr>
- * @version $Id$
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 

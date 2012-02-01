@@ -22,7 +22,6 @@
  * @subpackage Citrus\routing\Route
  * @author Dan Sosedoff <dan.sosedoff@gmail.com>
  * @author Rémi Cazalet <remi@caramia.fr>
- * @version $Id$
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 

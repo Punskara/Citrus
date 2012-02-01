@@ -21,7 +21,6 @@
  * @package Citrus\data
  * @subpackage Citrus\data\DoctrineModel
  * @author Nicolas MOURET <nicolas@caramia.fr>
- * @version $Id$
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 

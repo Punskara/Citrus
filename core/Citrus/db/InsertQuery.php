@@ -21,7 +21,6 @@
  * @package Citrus\db
  * @subpackage Citrus\db\HydratableQuery
  * @author Rémi Cazalet <remi@caramia.fr>
- * @version $Id$
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 

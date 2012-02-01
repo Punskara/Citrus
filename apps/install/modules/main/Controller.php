@@ -21,7 +21,6 @@
  * @package apps\install\modules\main
  * @subpackage Controller
  * @author Nicolas Mouret <nicolas@caramia.fr>
- * @version $Id$
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 
