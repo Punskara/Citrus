@@ -32,11 +32,8 @@ class ContentObject extends data\Model {
     public $metadesc;
     public $metakey;
     public $title;
-    public $media_id;
     public $text;
     public $online;
-    
-    public $media;
     
     public function url() {
         $title = String::slug2( $this->title );

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Wed, 01 Feb 2012 11:19:52 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>db/InsertQuery.php (PHPDoctor)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>db/InsertQuery.php</h1>
+<div class="comment" id="overview_description"><p></p></div>
+
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\db
+<a name="line22"></a> * @subpackage Citrus\db\HydratableQuery
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @version $Id$
+<a name="line25"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line26"></a> */</span>
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus\db<span style="color: #fff;">;</span>
+<a name="line30"></a>&nbsp;
+<a name="line31"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line32"></a> * This class generates an SQL insertion query.
+<a name="line33"></a> */</span>
+<a name="line34"></a><span style="color: #99cf4d;">class</span> InsertQuery <span style="color: #99cf4d;">extends</span> Query <span style="color: #fff;">&#123;</span>
+<a name="line35"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line36"></a>	 * values =&gt; Table hash
+<a name="line37"></a>	 * @var array
+<a name="line38"></a>	 */</span>
+<a name="line39"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$values</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line40"></a>&nbsp;
+<a name="line41"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line42"></a>	 * Sets value for given column
+<a name="line43"></a>	 *
+<a name="line44"></a>	 * @param string $name
+<a name="line45"></a>	 * @param string $value
+<a name="line46"></a>	 * @return void
+<a name="line47"></a>	 */</span>
+<a name="line48"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> setValue<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$name</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line49"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">addColumn</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$name</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line50"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">values</span><span style="color: #fff;">&#91;</span> <span style="color: #3e87e3;">$name</span> <span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">;</span>
+<a name="line51"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line52"></a>&nbsp;
+<a name="line53"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line54"></a>     * Renders query in SQL.
+<a name="line55"></a>     * @return  string  SQL for the query.
+<a name="line56"></a>     */</span>
+<a name="line57"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> renderSql<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line58"></a>		<span style="color: #3e87e3;">$values</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line59"></a>		<span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">values</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$col</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$val</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line60"></a>			<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/is_bool"><span style="color: #dad085;">is_bool</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$val</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$val</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$val</span> ? <span style="color: #3e87e3;">1</span> <span style="color: #e2874e;">:</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">;</span>
+<a name="line61"></a>			<span style="color: #3e87e3;">$values</span><span style="color: #fff;">&#91;</span> <span style="color: #3e87e3;">$col</span> <span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$val</span> <span style="color: #fff;">&#41;</span> ? <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">database</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">quote</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$val</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">:</span> <span style="color: #4fa742;">&quot;NULL&quot;</span><span style="color: #fff;">;</span>
+<a name="line62"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line63"></a>		<span style="color: #3e87e3;">$columns</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">&quot;`&quot;</span> <span style="color: #e2874e;">.</span> <a href="http://www.php.net/implode"><span style="color: #dad085;">implode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;`,`&quot;</span><span style="color: #fff;">,</span> <a href="http://www.php.net/array_keys"><span style="color: #dad085;">array_keys</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$values</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;`&quot;</span><span style="color: #fff;">;</span>
+<a name="line64"></a>		<span style="color: #3e87e3;">$values</span>  <span style="color: #e2874e;">=</span> <a href="http://www.php.net/implode"><span style="color: #dad085;">implode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;,&quot;</span><span style="color: #fff;">,</span> <a href="http://www.php.net/array_values"><span style="color: #dad085;">array_values</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$values</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line65"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">sql</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">&quot;INSERT INTO <span style="color: #869a95;">$this-&gt;table</span> (<span style="color: #869a95;">$columns</span>) VALUES (<span style="color: #869a95;">$values</span>)&quot;</span><span style="color: #fff;">;</span>
+<a name="line66"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line67"></a>&nbsp;
+<a name="line68"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line69"></a>	 * Prepare / Execute the query
+<a name="line70"></a>	 * @return mixed
+<a name="line71"></a>	 */</span>
+<a name="line72"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> execute<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$params</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$driverOptions</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line73"></a>		<span style="color: #3e87e3;">$stmt</span> <span style="color: #e2874e;">=</span> <span style="color: #99cf4d;">parent</span><span style="color: #e2874e;">::</span><span style="color: #fff;">execute</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$params</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$driverOptions</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line74"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">database</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">lastInsertId</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line75"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line76"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

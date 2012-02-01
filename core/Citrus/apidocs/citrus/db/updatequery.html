@@ -1,0 +1,170 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Wed, 01 Feb 2012 11:19:49 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>UpdateQuery (PHPDoctor)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/db/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/db/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\db\UpdateQuery</div>
+<a href="../../source/db/updatequery.php.html#line36" class="location">db/UpdateQuery.php at line 36</a>
+
+<h1>Class UpdateQuery</h1>
+
+<pre class="tree"><a href="../../citrus/db/query.html">Query</a><br>    └─<strong>UpdateQuery</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>UpdateQuery</strong><br>extends <a href="../../citrus/db/query.html">Query</a>
+
+</p>
+
+<div class="comment" id="overview_description"><p>This class generates an SQL update query.</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> array new values</td>
+<td class="description"><p class="name"><a href="#values">$values</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array criterias</td>
+<td class="description"><p class="name"><a href="#where">$where</a></p><p class="description">Query criterias</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Fields inherited from Citrus\db\Query</th></tr>
+<tr><td><a href="../../citrus/db/query.html#Aliases">Aliases</a>, <a href="../../citrus/db/query.html#Sql">Sql</a>, <a href="../../citrus/db/query.html#columns">columns</a>, <a href="../../citrus/db/query.html#database">database</a>, <a href="../../citrus/db/query.html#table">table</a></td></tr></table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> <a href="../../citrus/db/selectquery.html">SelectQuery</a></td>
+<td class="description"><p class="name"><a href="#addWhere()">addWhere</a>(string where)</p><p class="description">Adds a AND criteria</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setValue()">setValue</a>(string column, string new, mixed name, mixed value)</p><p class="description">Adds a value to update</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#renderSql()">renderSql</a>()</p><p class="description">Renders query in SQL.</p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#execute()">execute</a>(mixed params)</p><p class="description">Prepare / Execute the query</p></td>
+</tr>
+</table>
+
+<table class="inherit">
+<tr><th colspan="2">Methods inherited from Citrus\db\Query</th></tr>
+<tr><td><a href="../../citrus/db/query.html#AddAlias()">AddAlias</a>, <a href="../../citrus/db/query.html#AddColumn()">AddColumn</a>, <a href="../../citrus/db/query.html#AddColumns()">AddColumns</a>, <a href="../../citrus/db/query.html#Execute()">Execute</a>, <a href="../../citrus/db/query.html#RenderSql()">RenderSql</a>, <a href="../../citrus/db/query.html#__construct()">__construct</a></td></tr></table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/db/updatequery.php.html#line46" class="location">db/UpdateQuery.php at line 46</a>
+
+<h3 id="values">values</h3>
+<code class="signature">public  array new values <strong>$values</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/db/updatequery.php.html#line41" class="location">db/UpdateQuery.php at line 41</a>
+
+<h3 id="where">where</h3>
+<code class="signature">public  array criterias <strong>$where</strong> = array()</code>
+<div class="details">
+<p>Query criterias</p></div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/db/updatequery.php.html#line54" class="location">db/UpdateQuery.php at line 54</a>
+
+<h3 id="addWhere()">addWhere</h3>
+<code class="signature">public  <a href="../../citrus/db/selectquery.html">SelectQuery</a> <strong>addWhere</strong>(string where)</code>
+<div class="details">
+<p>Adds a AND criteria</p><dl>
+<dt>Parameters:</dt>
+<dd>where - Criteria to add</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/db/updatequery.php.html#line65" class="location">db/UpdateQuery.php at line 65</a>
+
+<h3 id="setValue()">setValue</h3>
+<code class="signature">public  void <strong>setValue</strong>(string column, string new, mixed name, mixed value)</code>
+<div class="details">
+<p>Adds a value to update</p><dl>
+<dt>Parameters:</dt>
+<dd>column - name</dd>
+<dd>new - value</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/db/updatequery.php.html#line75" class="location">db/UpdateQuery.php at line 75</a>
+
+<h3 id="renderSql()">renderSql</h3>
+<code class="signature">public  string <strong>renderSql</strong>()</code>
+<div class="details">
+<p>Renders query in SQL.</p><dl>
+<dt>Returns:</dt>
+<dd>SQL for the query.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/db/updatequery.php.html#line91" class="location">db/UpdateQuery.php at line 91</a>
+
+<h3 id="execute()">execute</h3>
+<code class="signature">public  mixed <strong>execute</strong>(mixed params)</code>
+<div class="details">
+<p>Prepare / Execute the query</p></div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

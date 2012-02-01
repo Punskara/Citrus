@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Wed, 01 Feb 2012 11:19:49 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Document (PHPDoctor)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/html/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/html/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\html\Document</div>
+<a href="../../source/html/document.php.html#line33" class="location">html/Document.php at line 33</a>
+
+<h1>Class Document</h1>
+
+<pre class="tree"><strong>Document</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Document</strong></p>
+
+<div class="comment" id="overview_description"><p>This class handles an html document : it allows to generate an HTMl document (doctype, children, etc…)</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#closeTags">$closeTags</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#dtd">$dtd</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#elements">$elements</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constructor">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#__construct()">__construct</a>(string html, string restriction)</p><p class="description">Constructor.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#addElement()">addElement</a>(string tagName, array params)</p><p class="description">Adds an element to the document</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/html/document.php.html#line47" class="location">html/Document.php at line 47</a>
+
+<h3 id="closeTags">closeTags</h3>
+<code class="signature">public  boolean <strong>$closeTags</strong> = true</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/document.php.html#line37" class="location">html/Document.php at line 37</a>
+
+<h3 id="dtd">dtd</h3>
+<code class="signature">public  string <strong>$dtd</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/document.php.html#line42" class="location">html/Document.php at line 42</a>
+
+<h3 id="elements">elements</h3>
+<code class="signature">public  array <strong>$elements</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Constructor Detail</h2>
+<a href="../../source/html/document.php.html#line55" class="location">html/Document.php at line 55</a>
+
+<h3 id="__construct()">__construct</h3>
+<code class="signature">public  void <strong>__construct</strong>(string html, string restriction)</code>
+<div class="details">
+<p>Constructor.</p><dl>
+<dt>Parameters:</dt>
+<dd>html - html version (see $htmlAllowed)</dd>
+<dd>restriction - (strict, transitionnal, etc…)</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/html/document.php.html#line103" class="location">html/Document.php at line 103</a>
+
+<h3 id="addElement()">addElement</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>addElement</strong>(string tagName, array params)</code>
+<div class="details">
+<p>Adds an element to the document</p><dl>
+<dt>Parameters:</dt>
+<dd>tagName - name of the html tag</dd>
+<dd>params - parameters for the tag : attributes, inline</dd>
+<dt>See Also:</dt>
+<dd>\core\Citrus\html\Element</dd>
+</dl>
+</div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

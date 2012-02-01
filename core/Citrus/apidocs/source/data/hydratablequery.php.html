@@ -1,0 +1,172 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Wed, 01 Feb 2012 11:19:51 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>data/HydratableQuery.php (PHPDoctor)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>data/HydratableQuery.php</h1>
+<div class="comment" id="overview_description"><p></p></div>
+
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\data
+<a name="line22"></a> * @subpackage Citrus\data\HydratableQuery
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @version $Id$
+<a name="line25"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line26"></a> */</span>
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus\data<span style="color: #fff;">;</span>
+<a name="line30"></a><span style="color: #e2874e;">use</span> \core\Citrus <span style="color: #e2874e;">as</span> Citrus<span style="color: #fff;">;</span>
+<a name="line31"></a><span style="color: #e2874e;">use</span> \core\Citrus\data<span style="color: #fff;">;</span>
+<a name="line32"></a>&nbsp;
+<a name="line33"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line34"></a> * This class generates an SQL query and hydrates objects with results
+<a name="line35"></a> */</span>
+<a name="line36"></a>&nbsp;
+<a name="line37"></a><span style="color: #99cf4d;">class</span> HydratableQuery <span style="color: #99cf4d;">extends</span> \core\Citrus\db\SelectQuery <span style="color: #fff;">&#123;</span>
+<a name="line38"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line39"></a>     * type of object obtained
+<a name="line40"></a>     * @var string
+<a name="line41"></a>     */</span>
+<a name="line42"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$targetClass</span><span style="color: #fff;">;</span>
+<a name="line43"></a>&nbsp;
+<a name="line44"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line45"></a>     * schema associations
+<a name="line46"></a>     * @var array
+<a name="line47"></a>     */</span>
+<a name="line48"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$assocs</span><span style="color: #fff;">;</span>
+<a name="line49"></a>&nbsp;
+<a name="line50"></a>&nbsp;
+<a name="line51"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line52"></a>     * Constructor.
+<a name="line53"></a>     *
+<a name="line54"></a>     * @param string  $targetClass  type of object we fetch.
+<a name="line55"></a>     *
+<a name="line56"></a>     * @throws \Exception  if $targetClass is not a referenced class.
+<a name="line57"></a>     */</span>
+<a name="line58"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __construct<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$targetClass</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line59"></a>        <span style="color: #99cf4d;">parent</span><span style="color: #e2874e;">::</span>__construct<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line60"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/class_exists"><span style="color: #dad085;">class_exists</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$targetClass</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line61"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">targetClass</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$targetClass</span><span style="color: #fff;">;</span>
+<a name="line62"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">table</span> <span style="color: #e2874e;">=</span> data\Schema<span style="color: #e2874e;">::</span><span style="color: #fff;">getTableName</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$targetClass</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line63"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">assocs</span> <span style="color: #e2874e;">=</span> data\Schema<span style="color: #e2874e;">::</span><span style="color: #fff;">getModelAssociations</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$targetClass</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line64"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">columns</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'*'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line65"></a>        <span style="color: #fff;">&#125;</span> <span style="color: #e2874e;">else</span> <span style="color: #fff;">&#123;</span>
+<a name="line66"></a>            <span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;Cannot hydrate query: targetClass '<span style="color: #869a95;">$targetClass</span>' does not exist.&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line67"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line68"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line69"></a>&nbsp;
+<a name="line70"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line71"></a>     * Hydrates objects
+<a name="line72"></a>     * 
+<a name="line73"></a>     * @return object|array  an object or an array of objects of $targetClass
+<a name="line74"></a>     */</span>
+<a name="line75"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> hydrate<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line76"></a>        <span style="color: #3e87e3;">$out</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">hydrateList</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line77"></a>        <span style="color: #e2874e;">switch</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/count"><span style="color: #dad085;">count</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$out</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line78"></a>            <span style="color: #e2874e;">case</span> <span style="color: #3e87e3;">0</span><span style="color: #e2874e;">:</span> <span style="color: #e2874e;">return</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">;</span>
+<a name="line79"></a>            <span style="color: #e2874e;">case</span> <span style="color: #3e87e3;">1</span><span style="color: #e2874e;">:</span> <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$out</span><span style="color: #fff;">&#91;</span><span style="color: #3e87e3;">0</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">;</span>
+<a name="line80"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line81"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$out</span><span style="color: #fff;">;</span>
+<a name="line82"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line83"></a>&nbsp;
+<a name="line84"></a>&nbsp;
+<a name="line85"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line86"></a>     * Hydrates a list of objects
+<a name="line87"></a>     *
+<a name="line88"></a>     * @return a list of hydrated objects
+<a name="line89"></a>     *
+<a name="line90"></a>     * @throws \Exception  if $this-&gt;targetClass is null or empty
+<a name="line91"></a>     */</span>
+<a name="line92"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> hydrateList<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line93"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">targetClass</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;Cannot hydrate query: no target class specified.&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line94"></a>        <span style="color: #3e87e3;">$i</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">;</span>
+<a name="line95"></a>&nbsp;
+<a name="line96"></a>        <span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">assocs</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$colName</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$attr</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line97"></a>            <span style="color: #3e87e3;">$table</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">AddAlias</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$attr</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'foreignTable'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'i'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$i</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line98"></a>            <span style="color: #3e87e3;">$join</span> <span style="color: #e2874e;">=</span>  <span style="color: #4fa742;">'i'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$i</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'.'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$attr</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'foreignReference'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot; = &quot;</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">table</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'.'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$colName</span><span style="color: #fff;">;</span>
+<a name="line99"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">AddLeftJoin</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$table</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$join</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line100"></a>            <span style="color: #3e87e3;">$i</span><span style="color: #e2874e;">++</span><span style="color: #fff;">;</span>
+<a name="line101"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line102"></a>        <span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">Execute</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fetchAll</span><span style="color: #fff;">&#40;</span> \PDO<span style="color: #e2874e;">::</span><span style="color: #fff;">FETCH_NUM</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line103"></a>        <span style="color: #3e87e3;">$ids</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line104"></a>        <span style="color: #3e87e3;">$out</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line105"></a>        <span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$row</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line106"></a>            <span style="color: #3e87e3;">$item</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">HydrateRow</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$row</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line107"></a>            <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/in_array"><span style="color: #dad085;">in_array</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$item</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$ids</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line108"></a>                <span style="color: #3e87e3;">$out</span><span style="color: #fff;">&#91;</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$item</span><span style="color: #fff;">;</span>
+<a name="line109"></a>                <span style="color: #3e87e3;">$ids</span><span style="color: #fff;">&#91;</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$item</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span><span style="color: #fff;">;</span>
+<a name="line110"></a>            <span style="color: #fff;">&#125;</span>
+<a name="line111"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line112"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$out</span><span style="color: #fff;">;</span>
+<a name="line113"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line114"></a>&nbsp;
+<a name="line115"></a>&nbsp;
+<a name="line116"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line117"></a>     * Hydrates an object
+<a name="line118"></a>     *
+<a name="line119"></a>     * @param array $row the row of the resultset
+<a name="line120"></a>     * @return a hydrated object
+<a name="line121"></a>     *
+<a name="line122"></a>     * @throws \Exception  if $this-&gt;targetClass is null or empty
+<a name="line123"></a>     */</span>
+<a name="line124"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> hydrateRow<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$row</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>   
+<a name="line125"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">targetClass</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;Cannot hydrate query: no target class specified.&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line126"></a>        <span style="color: #3e87e3;">$inst</span> <span style="color: #e2874e;">=</span> <span style="color: #e2874e;">new</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">targetClass</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line127"></a>        <span style="color: #3e87e3;">$inst</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">hydrate</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$row</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line128"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$inst</span><span style="color: #fff;">;</span>
+<a name="line129"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line130"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

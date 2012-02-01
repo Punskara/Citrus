@@ -1,0 +1,95 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Wed, 01 Feb 2012 11:19:55 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>sys/Timer.php (PHPDoctor)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>sys/Timer.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\sys
+<a name="line22"></a> * @subpackage Citrus\sys\Timer
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @version $Id$
+<a name="line25"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line26"></a> */</span>
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a>&nbsp;
+<a name="line30"></a><span style="color: #e2874e;">namespace</span> core\Citrus\sys<span style="color: #fff;">;</span>
+<a name="line31"></a>&nbsp;
+<a name="line32"></a><span style="color: #99cf4d;">class</span> Timer <span style="color: #fff;">&#123;</span>
+<a name="line33"></a>    <span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$startTime</span><span style="color: #fff;">;</span>
+<a name="line34"></a>    <span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$endTime</span><span style="color: #fff;">;</span>
+<a name="line35"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$execTime</span><span style="color: #fff;">;</span>
+<a name="line36"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$label</span><span style="color: #fff;">;</span>
+<a name="line37"></a>&nbsp;
+<a name="line38"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __construct<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$label</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line39"></a>        <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">label</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$label</span><span style="color: #fff;">;</span>
+<a name="line40"></a>        <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">startTime</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/microtime"><span style="color: #dad085;">microtime</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3387cc;">true</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line41"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line42"></a>&nbsp;
+<a name="line43"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> start<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line44"></a>        <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">startTime</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/microtime"><span style="color: #dad085;">microtime</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3387cc;">true</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line45"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line46"></a>&nbsp;
+<a name="line47"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> stop<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line48"></a>        <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">endTime</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/microtime"><span style="color: #dad085;">microtime</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3387cc;">true</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line49"></a>        <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">execTime</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">endTime</span> <span style="color: #e2874e;">-</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">startTime</span><span style="color: #fff;">;</span>
+<a name="line50"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line51"></a>&nbsp;
+<a name="line52"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> getExecTime<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line53"></a>        <span style="color: #e2874e;">return</span> <a href="http://www.php.net/round"><span style="color: #dad085;">round</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">execTime</span> <span style="color: #e2874e;">*</span> <span style="color: #3e87e3;">1000</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">3</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line54"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line55"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>
