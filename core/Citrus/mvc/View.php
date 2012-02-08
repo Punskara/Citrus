@@ -137,8 +137,8 @@ class View {
         $cos = Citrus::getInstance();
         
         $cssFiles = '';
+        $sheets = array();
         if ( $this->styleSheets ) {
-            $sheets = array();
             foreach ( $this->styleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );                
@@ -155,22 +155,22 @@ class View {
                 ) );
                 $sheets[] = $st;
             }
-            if ( count( $this->addedStyleSheets ) ) {
-                foreach ( $this->addedStyleSheets as $s ) {
-                    $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
-                    if ( $media == 'print' ) $s = substr( $s, 1 );
-                    $st = new html\Element( 'link', array(
-                        'attributes' => array(
-                            'rel' => 'stylesheet',
-                            'media' => $media,
-                            'type' => 'text/css',
-                            'href' => $s,
-                        ), 
-                        'inline' => true,
-                        'closeTag' => false
-                    ) ); 
-                    $sheets[] = $st;                
-                }
+        }
+        if ( count( $this->addedStyleSheets ) ) {
+            foreach ( $this->addedStyleSheets as $s ) {
+                $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
+                if ( $media == 'print' ) $s = substr( $s, 1 );
+                $st = new html\Element( 'link', array(
+                    'attributes' => array(
+                        'rel' => 'stylesheet',
+                        'media' => $media,
+                        'type' => 'text/css',
+                        'href' => $s,
+                    ), 
+                    'inline' => true,
+                    'closeTag' => false
+                ) ); 
+                $sheets[] = $st;                
             }
         }
         return $sheets;
@@ -195,7 +195,7 @@ class View {
     
     
     /**
-     * Generates \core\Citrus\html\Element objects in order to display html <script> tags 
+     * Generates \core\Citrus\html\Element objects in order to display html &lt;script&gt; tags 
      *
      * @return array $elements An array containing the Element objects.
      */
@@ -215,24 +215,24 @@ class View {
                 ) );
                 $elements[] = $elt;
             }
-            if ( count( $this->addedJavascripts ) ) {
-                foreach ( $this->addedJavascripts as $s ) {
-                    $elt = new html\Element( 'script', array(
-                        'attributes' => array(
-                            'type' => 'text/javascript',
-                            'src' => $s,
-                        ), 
-                        'inline' => false,
-                    ) );
-                    $elements[] = $elt;
-                }
+        }
+        if ( count( $this->addedJavascripts ) ) {
+            foreach ( $this->addedJavascripts as $s ) {
+                $elt = new html\Element( 'script', array(
+                    'attributes' => array(
+                        'type' => 'text/javascript',
+                        'src' => $s,
+                    ), 
+                    'inline' => false,
+                ) );
+                $elements[] = $elt;
             }
         }
         return $elements;
     }
     
     /**
-     * Generates the <script> html tags to call the stylesheets in the html document
+     * Generates the &lt;script&gt; html tags to call the stylesheets in the html document
      *
      * @return string $jsFiles The html tags.
      * @deprecated To be replaced by getJavascriptAsElements
