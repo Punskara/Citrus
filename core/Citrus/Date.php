@@ -43,17 +43,17 @@ class Date extends \DateTime {
         if ( $date == 'now' ) {
             $date = date( self::SQL_FORMAT );
         }
-        parent::__construct( $date, new DateTimeZone( 'Europe/Paris' ) );
+        parent::__construct( $date, new \DateTimeZone( 'Europe/Paris' ) );
     }
     
     /**
      * Parse the specified string
      *
      * @param string $date
-     * @return Citrus_Date
+     * @return \core\Citrus\Date
      */
     static function parse( $date = null, $defaultFormat = null ) {
-        $obj = new Citrus_Date( null, $defaultFormat );
+        $obj = new Date( null, $defaultFormat );
         if ( !empty($date) ) {
             if ( strpos( $date, '/' ) !== false ) {
                 $comp = explode( '/', $date );
@@ -158,10 +158,10 @@ class Date extends \DateTime {
     }
     
     public function isBetween( $date1, $date2 ) {
-        if ( !( $date1 instanceof Citrus_Date ) ) {
+        if ( !( $date1 instanceof Date ) ) {
             $date1 = self::parse( $date1 )->format( self::SQL_FORMAT );
         }
-        if ( !( $date2 instanceof Citrus_Date ) ) {
+        if ( !( $date2 instanceof Date ) ) {
             $date2 = self::parse( $date2 )->format( self::SQL_FORMAT );
         }
         if ( $date1 >= $date2 ) return false;
@@ -171,10 +171,10 @@ class Date extends \DateTime {
     }
     
     public function isBefore( $date, $include = false ) {
-        if ( !( $date instanceof Citrus_Date ) ) {
+        if ( !( $date instanceof Date ) ) {
             $date = self::parse( $date )->format( self::SQL_FORMAT );
         }
-        if ( $date instanceof Citrus_Date ) {
+        if ( $date instanceof Date ) {
             if ( $include ) return $this->format( self::SQL_FORMAT ) <= $date->format( self::SQL_FORMAT );
             else            return $this->format( self::SQL_FORMAT ) < $date->format( self::SQL_FORMAT );
         }
@@ -182,10 +182,10 @@ class Date extends \DateTime {
     }
     
     public function isAfter( $date, $include = false ) {
-        if ( !( $date instanceof Citrus_Date ) ) {
+        if ( !( $date instanceof Date ) ) {
             $date = self::parse( $date )->format( self::SQL_FORMAT );
         }
-        if ( $date instanceof Citrus_Date ) {
+        if ( $date instanceof Date ) {
             if ( $include ) return $this->format( self::SQL_FORMAT ) >= $date->format( self::SQL_FORMAT );
             else            return $this->format( self::SQL_FORMAT ) > $date->format( self::SQL_FORMAT );
         }
