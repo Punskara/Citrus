@@ -6,7 +6,7 @@ $this->view->setStyleSheets( array(
 ) );
 
 $this->view->setJavascriptFiles( array(
-	'/js/jQuery/jquery-1.4.2.min.js',
+	'/js/jQuery/jquery-1.7.1.min.js',
 	'/js/jQuery/jquery.json-2.3.min.js',
     '/js/install.js',
 ) );
