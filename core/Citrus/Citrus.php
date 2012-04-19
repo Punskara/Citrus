@@ -230,7 +230,7 @@ class Citrus {
         
         # exception handling
         set_exception_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleException' ) );
-        set_error_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleError' ) );
+        set_error_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleError' ), E_ALL & ~E_NOTICE & ~E_WARNING );
     }
 
 
