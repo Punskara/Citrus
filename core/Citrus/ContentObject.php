@@ -18,11 +18,11 @@
 */
 
 /**
- * @package ContentObject
+ * @package Citrus
+ * @subpackage Citrus\ContentObject
  * @author Rémi Cazalet <remi@caramia.fr>
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
-
 
 
 namespace core\Citrus;
