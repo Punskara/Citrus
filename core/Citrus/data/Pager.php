@@ -27,6 +27,7 @@
 
 namespace core\Citrus\data;
 use \core\Citrus\Citrus;
+use \core\Citrus\db;
 
 /**
  * This class works with an HydratableQuery object. It generates a pager
@@ -69,6 +70,7 @@ class Pager {
      */
     public $rows;
     
+    public $nbRows;
     
     /**
      * @var integer
@@ -94,14 +96,19 @@ class Pager {
     /**
      * @var mixed
      */
-    private $obj = null;
+    protected $obj = null;
     
     /**
      * @var string
      */
-    private $cond = null;
+    protected $cond = null;
+
+    /**
+     * @var string
+     */
+    protected $location = null;
     
-    
+    public $coll;
     /**
      * Contructor.
      *
@@ -110,7 +117,7 @@ class Pager {
      *
      * @throws \Exception if the $targetClass is not a referenced class.
      */
-    public function __construct( $targetClass, $rowsPerPage = null ) {
+    public function __construct( $targetClass, $rowsPerPage = null, $location = null ) {
         $cos = Citrus::getInstance();
         if ( class_exists( $targetClass ) ) {
             $this->targetClass = $targetClass;
@@ -118,13 +125,15 @@ class Pager {
             if ( is_int( $rowsPerPage ) ) {
                 $this->rowsPerPage = $rowsPerPage;
             }
-            $currentPage = $cos->app->module->ctrl->request->param( 'page', FILTER_VALIDATE_INT );
+            if ( $location ) $this->location = $location;
+            $currentPage = $cos->app->module->ctrl->request->param( 'page', 'int' );
             if ( $currentPage ) {
                 $this->currentPage = $currentPage;
                 $this->limitStart = ( $this->currentPage - 1 ) * $this->rowsPerPage;
             } else {
                 $this->limitStart = 0;
             }
+            $this->nbRows = $this->countRows();
             
         } else throw new \Exception( "Target class $targetClass doesn't exists." );
     }
@@ -146,10 +155,14 @@ class Pager {
      * @param string  $where  SQL conditions
      * @return array $rec the objects fetched by the query;
      */
-    public function getResultSetWhere( $where ) {
-    	$this->cond = $where;
-        $rec = Model::selectAllWhere( $this->targetClass, $where, $this );
+    public function getResultSetWhere( $where, $or_where = false, $order = false, $orderType = false ) {
+        $this->cond = $where;
+        $rec = Model::selectAllWhere( $this->targetClass, $where, $this, $or_where, $order, $orderType );       
         return $rec;
+    }
+    
+    public function setCondition( $where ) {
+        $this->cond = $where;
     }
     
     
@@ -158,14 +171,16 @@ class Pager {
      *
      * @return  string  $html  HTML for links
      */
-    public function displayPager() {
-        $nbRows = $this->countRows();
-        $this->nbPages = ceil( $nbRows / $this->rowsPerPage );
+    public function displayPager( $clean_query = false ) {
+        $this->nbPages = ceil( $this->nbRows / $this->rowsPerPage );
         $html = '';
-        
         $url = parse_url( $_SERVER['REQUEST_URI'] );
+        
         if ( isset( $url['query'] ) ) {
-            $extParam = preg_replace( '/(\&?page=[0-9]+)/', '', $url['query'] ) . '&';
+            $extParam = preg_replace( '/(\&?page=[0-9]+)/', '', $url['query'] );// . '&';
+        } else if ( $clean_query ) {
+            $extParam = preg_replace( '/(page\/[0-9]+)/', '', $url['path'] );
+            // $extParam = '';
         } else $extParam='';
         
         if ( $this->nbPages > 1 ) {
@@ -233,13 +248,19 @@ class Pager {
      */
     public function renderPagesLinks( $start, $end, $extParam ) {
         $html = '';
+        $cos = Citrus::getInstance();
+        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
+        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
+        else $loc = $this->location;
         for ( $i = $start; $i <= $end; $i++ ) {
             if ( $i == $this->currentPage ) {
                 $html .= '<span class="currentPage">' . $i . '</span>';
             } else {
                 $html .= link_to( 
-                    'index.php?' . $_SERVER['QUERY_STRING'], 
-                    $i, array( 'extraParams' => $extParam . 'page=' . $i )
+                    $loc, 
+                    $i, array( 'extraParams' => 'page=' . $i . ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') )
                  );
             }
             $html .= ' ';
@@ -255,17 +276,23 @@ class Pager {
      */
     public function renderStartButtons( $extParam ) {
         $html = '';
+        $cos = Citrus::getInstance();
+        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
+        
         if ( $this->currentPage != 1 ) {
             $html .= link_to( 
-                'index.php?' . $_SERVER['QUERY_STRING'], 
-                image_tag( 'resultset_first.png', array( 'alt' => '|<', 'title' => 'Début', ) ), 
-                array( 'extraParams' => $extParam . 'page=1' ) 
+                $loc, 
+                '‹‹', 
+                array( 'extraParams' => $extParam . 'page=1'. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
             );
             $prev = $this->currentPage - 1;
             $html .= link_to( 
-                'index.php?' . $_SERVER['QUERY_STRING'], 
-                image_tag( 'resultset_previous.png', array( 'alt' => '<', 'title' => 'Précédente', ) ), 
-                array( 'extraParams' => $extParam . 'page=' . $prev ) 
+                $loc, 
+                '‹', 
+                array( 'extraParams' => $extParam . 'page=' . $prev. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
             );
         }
         return $html;
@@ -279,19 +306,24 @@ class Pager {
      */
     public function renderEndButtons( $extParam ) {
         $html = '';
+        $cos = Citrus::getInstance();
+        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
         
         if ( $this->currentPage != $this->nbPages ) {
             $next = $this->currentPage + 1;
             $html .= link_to( 
-                'index.php?' . $_SERVER['QUERY_STRING'], 
-                image_tag( 'resultset_next.png', array( 'alt' => '>', 'title' => 'Suivante', ) ), 
-                array( 'extraParams' => $extParam . 'page=' . $next ) 
+                $loc, 
+                '›', 
+                array( 'extraParams' => $extParam . 'page=' . $next. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
             );
     
             $html .= link_to( 
-                'index.php?' . $_SERVER['QUERY_STRING'], 
-                image_tag( 'resultset_last.png', array( 'alt' => '>|', 'title' => 'Fin', ) ), 
-                array( 'extraParams' => $extParam . 'page=' . $this->nbPages ) 
+                $loc, 
+                '››', 
+                array( 'extraParams' => $extParam . 'page=' . $this->nbPages. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
             );
         }
         return $html;
@@ -307,7 +339,112 @@ class Pager {
         $q = new db\SelectQuery();
         $q->columns = array( 'COUNT(*)' );
         $q->table = $this->obj->schema->tableName;
-        if ( $this->cond !== null ) $q->addWhere( $this->cond );
+        if ( $this->cond !== null && !is_array( $this->cond ) ) $q->addWhere( $this->cond );
+        else if (is_array( $this->cond )) $q->AddORWhere( $this->cond );
         return $q->Execute()->fetchColumn( 0 );
+    }
+    
+    public function prepareCollection() {
+        $this->coll = new \core\Citrus\data\ModelCollection( $this->targetClass );
+    }
+
+    public function getCollection( $where = Array(), $order = false, $orderType = false ) {
+        if ( $this->coll == null ) $this->prepareCollection();
+
+        if ( count( $where ) ) $this->coll->query->addWhere( implode("\nAND ", $where ) );
+        if ( $order !== false ) {
+            if ( isset( $schema->properties[$order] ) && isset( $schema->properties[$order]['modelType'] ) ) {
+                $sch2 = self::getSchema( $schema->properties[$order]['modelType'] );
+                $order = explode(' ', $sch2->orderColumn );
+                $order = array_shift( $order );
+                
+                if ( $orderType !== false ) $order .= ' ' . $orderType;
+                $this->coll->query->AddOrder( $sch2->tableName . '.' . $order );
+            } else {
+                if ( $orderType !== false ) {
+                    $order .= ' ' . $orderType;
+                }
+                $this->coll->query->AddOrder( $this->coll->query->table . '.' . $order );
+            }
+        } else if ( isset( $schema->orderColumn ) ) {
+            $order = $schema->orderColumn;
+            if ( isset( $schema->orderSort ) ) {
+                $order .= ' ' . $schema->orderSort;
+            }
+            $this->coll->query->AddOrder( $this->coll->query->table . '.' . $order );
+        }
+        
+        $this->nbRows = $this->coll->query->count();
+        $this->coll->query->setLimit( $this->limitStart, $this->rowsPerPage );
+        $this->coll->fetch();
+        // echo $this->coll->query;exit;
+        return $this->coll->items;
+    }
+    
+    public function getLocalizableCollection( $search, $columns = Array(), $order = false, $orderType = false ) {
+        if ( $this->coll == null ) 
+            $this->coll = new LocalizableModelCollection( $this->targetClass );
+        
+        
+        $loc_table = $this->coll->schema->localizable_table;
+        $table = $this->coll->schema->tableName;
+        $loc_where = $where = Array();
+        
+        if ( $search != '' ) {
+            if ( count( $columns ) > 0 ) foreach ( $columns as $c ) {
+                if ( strpos( $c, 'loc:' ) !== false ) {
+                    $col_name = str_replace( "loc:", "", $c );
+                    $loc_where[] = "`$loc_table`.`$col_name` LIKE '%$search%'";
+                }
+                else $where[] = "`$table`.`$c` LIKE '%$search%'";
+            }
+            
+            $all_where = Array();
+            if ( count( $loc_where ) ) {
+                $all_where = array_merge( $all_where, $loc_where );
+                // $this->coll->query->addWhere( implode("\nOR ", $loc_where ) );
+            }
+            
+            if ( count( $where ) ) {
+                $all_where = array_merge( $all_where, $where );
+                // $this->coll->query->addWhere( implode("\nOR ", $where ) );
+            }
+            if ( count( $all_where ) > 0 ) {
+                $this->coll->query->addWhere( implode("\nOR ", $all_where ) );
+            }
+        }
+        $this->coll->query->addLeftJoin( 
+            $this->coll->schema->localizable_table, 
+            "`$loc_table`.`localizable_id` = `$table`.`id`" 
+        );
+        
+        if ( $order !== false ) {
+            if ( isset( $schema->properties[$order] ) && isset( $schema->properties[$order]['modelType'] ) ) {
+                $sch2 = self::getSchema( $schema->properties[$order]['modelType'] );
+                $order = explode( ' ', $sch2->orderColumn );
+                $order = array_shift( $order );
+                
+                if ( $orderType !== false ) $order .= ' ' . $orderType;
+                $this->coll->query->AddOrder( $sch2->tableName . '.' . $order );
+            } else {
+                if ( $orderType !== false ) {
+                    $order .= ' ' . $orderType;
+                }
+                $this->coll->query->AddOrder( $this->coll->query->table . '.' . $order );
+            }
+        } else if ( isset( $schema->orderColumn ) ) {
+            $order = $schema->orderColumn;
+            if ( isset( $schema->orderSort ) ) {
+                $order .= ' ' . $schema->orderSort;
+            }
+            $this->coll->query->AddOrder( $this->coll->query->table . '.' . $order );
+        }
+        
+        $this->nbRows = $this->coll->query->count();
+        $this->coll->query->addDistinct();
+        $this->coll->query->setLimit( $this->limitStart, $this->rowsPerPage );
+        $this->coll->fetch();
+        // echo $this->coll->query;exit;
+        return $this->coll->items;
     }
 }
