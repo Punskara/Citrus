@@ -27,6 +27,7 @@
 
 namespace core\Citrus\data;
 use \core\Citrus\db;
+use \core\Citrus;
 use \core\Citrus\html\form;
 use \core\Citrus\data;
 
@@ -77,18 +78,39 @@ class Model {
      */
     public $form;
     
-    protected $_props;
+    protected $_props = Array();
 
     public function __construct() {
         $this->datecreated = new \core\Citrus\Date( $this->datecreated );
         $this->datemodified = new \core\Citrus\Date( $this->datemodified );
-        $this->schema = new data\Schema( get_class( $this ) );
+        
+        
+        $cos = \core\Citrus\Citrus::getInstance();
+        $this_class = get_class( $this );
+        if ( $cos->cache->hasSchemaOfClass( $this_class ) ) {
+            $this->schema = $cos->cache->getSchemaOfClass( $this_class );
+        } else {
+            $this->schema = new data\Schema( get_class( $this ) );
+            $cos->cache->addSchema( get_class( $this ), $this->schema );
+        }
     }
     
-    public function save() {
+    public function __get( $name ) {
+        if ( property_exists( $this, $name ) ) {
+            return $this->$name;
+        }
+    }
+    
+    public function __set( $name, $value ) {
+        if ( property_exists( $this, $name ) ) {
+            $this->$name = $value;
+        }
+    }
+    
+    public function save( $forced = false ) {
         $tableName = $this->schema->tableName;
         if ( $this->schema ) {
-            if ( !$this->id ) {
+            if ( !$this->id || $forced ) {
                 $this->datecreated = date( 'Y-m-d H:i:s' );
                 $this->datemodified = date( 'Y-m-d H:i:s' );
                 $qry = new db\InsertQuery();
@@ -97,6 +119,8 @@ class Model {
                     if ( strpos( $propName, 'date' ) !== false ) {
                         if ( $this->$propName instanceof \core\Citrus\Date ) {
                             $this->$propName = $this->$propName->format( 'Y-m-d H:i:s' );
+                        } else {
+                            $this->$propName = \core\Citrus\Date::parse( $this->$propName )->format( 'Y-m-d H:i:s' );
                         }
                     }
                     if ( $this->$propName != '' ) {
@@ -112,20 +136,34 @@ class Model {
                 $this->datemodified = date( 'Y-m-d H:i:s' );
                 $qry = new db\UpdateQuery();
                 $qry->table = $this->schema->tableName;
+                $qry->SetValue( 'datemodified', $this->datemodified );
                 foreach ( $this->schema->properties as $propName => $propArgs ) {
-                    if ( $propName != 'datecreated' ) {
+                    if ( $propName != 'datecreated' && $propName != 'datemodified' ) {
                         if ( $this->$propName != '' ) {
+                            if ( strpos( $propName, 'date' ) !== false ) {
+                                if ( $this->$propName instanceof \core\Citrus\Date ) {
+                                    $this->$propName = $this->$propName->format( 'Y-m-d H:i:s' );
+                                } else {
+                                    $this->$propName = \core\Citrus\Date::parse( $this->$propName )->format( 'Y-m-d H:i:s' );
+                                }
+                            }
                             $qry->SetValue( $propName, $this->$propName );
-                        } elseif ( $propArgs['null'] == true ) {
+                        } elseif ( isset($propArgs['null']) && $propArgs['null'] == true ) {
                             $qry->SetValue( $propName, null );
+                        } elseif ( $propArgs['type'] == 'boolean' && $this->$propName == 0 ) {
+                            $this->$propName = false;
+                            $qry->SetValue( $propName, $this->$propName );
                         }
                     }
                 }
+                // exit;
                 $qry->AddWhere( 'id = ' . $this->id );
                 $rec = $qry->Execute();
             }
             return $rec;
-        } else return false;
+        } else {
+            return false;
+        } 
     }
     
     /**
@@ -151,20 +189,32 @@ class Model {
         $props = $this->schema->properties;
         $this->args = array();
         foreach ( $props as $propName => $details ) {
-            if ( isset( $details['inputType'] ) && $details['inputType'] != 'InputFile' ) {
-                $value = \core\Citrus\Filter::filterVar( $propName, $details['type'] );
-                if ( $value !== false ) {
-                    $this->$propName = $value;
-                    $this->args[$propName] = $value;
-                } else {
-                    if ( isset( $details['foreignReference'] ) && isset( $details['foreignTable'] ) ) {
-                        $value = null;
+            if ( isset( $_POST[$propName] ) ) {
+                if ( isset( $details['inputType'] ) && $details['inputType'] != 'InputFile' ) {
+                    $value = \core\Citrus\Filter::filterVar( $propName, $details['type'], 'POST', $_POST );
+                    if ( $value !== false ) {
+                        $this->$propName = $value;
                     } else {
-                        $value = "";
+                        if ( isset( $details['foreignReference'] ) && isset( $details['foreignTable'] ) ) {
+                            $value = null;
+                        } else {
+                            $value = "";
+                        }
+                        $this->$propName = $value;
                     }
-                    $this->$propName = $value;
-                    $this->args[$propName] = $value;
                 }
+            }
+        }
+    }
+    
+    public function hydrateManyByFilters() {
+        $props = $this->schema->manyProperties;
+        $this->args = array();
+        foreach ( $props as $propName => $details ) {
+            if ( isset( $_POST[$propName] ) ) {
+                $value = \core\Citrus\Filter::filterVar( $propName, 'string', 'POST', $_POST );
+                if ( $value !== false ) $this->$propName = $value;
+                else $this->$propName = '';
             }
         }
     }
@@ -178,20 +228,6 @@ class Model {
         return $del;
     }
     
-    /*public static function deleteSeveral( $ids ) {
-        $cos = Citrus::getInstance();
-        $tableName = $this->tableName ? $this->tableName : $this->schema->schema['tableName'];
-        $del = false;
-        
-        if ( is_array( $ids ) ) {
-            $del = $cos->db->execute(
-                "DELETE FROM `$tableName` WHERE `id` IN ($id)"
-            );
-        }
-        return $del;
-    }*/
-    
-    
     /**
      * Generates an HTML form from the schema of the object
      */
@@ -203,9 +239,10 @@ class Model {
         );
         foreach ( $props as $propName => $propAttr ) {
             if ( isset( $propAttr['inputType'] ) ) {
-                if ( class_exists( '\\core\\Citrus\\Form\\' . $propAttr['inputType'] ) ) {
-                    $element = '\\core\\Citrus\\Form\\' . $propAttr['inputType'];
+                if ( class_exists( '\\core\\Citrus\\html\\form\\' . $propAttr['inputType'] ) ) {
+                    $element = '\\core\\Citrus\\html\\form\\' . $propAttr['inputType'];
                     $classes = ( isset( $propAttr['null'] ) && $propAttr['null'] == false ) ? array( 'required' ) : array();
+                    if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
                     $this->form->elements[$propName] = new $element( 
                         $propName, 
                         isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
@@ -213,7 +250,7 @@ class Model {
                         $classes,
                         $this->$propName
                     );
-                    if ( $element == '\\core\\Citrus\\Form\\SelectOne' ) {
+                    if ( $element == '\\core\\Citrus\\html\\form\\SelectOne' ) {
                         if ( isset( $propAttr['modelType'] ) ) {
                             $this->form->elements[$propName]->makeOptions( 
                                 $propAttr['modelType'],
@@ -226,6 +263,25 @@ class Model {
                 }
             }
         }
+        $manyProps = $this->schema->manyProperties;
+        foreach ( $manyProps as $propName => $propAttr ) {
+            if ( isset( $propAttr['inputType'] ) ) {
+                $inputType = $propAttr['inputType'];
+                $element = '\\core\\Citrus\\html\\form\\' . $inputType;
+            } else {
+                $element = '\\core\\Citrus\\html\\form\\SelectMany';
+            }
+            if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
+            $this->form->elements[$propName] = new $element( 
+                $propName, 
+                isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
+                $propName,
+                $classes,
+                $this->$propName
+            );
+            $this->form->elements[$propName]->makeOptions( $propAttr['modelType'] );
+        }
+        
         #return $this->form->html;
     }
     
@@ -241,10 +297,13 @@ class Model {
     }
     
     protected function _getProps() {
-        $this->_props = array();
-        foreach ( $this->schema->properties as $prop => $attr ) {
-            $this->_props[] = $prop;
+        // $this->_props = array();
+        if ( count( $this->_props ) == 0 ) {
+            foreach ( $this->schema->properties as $prop => $attr ) {
+                $this->_props[] = $prop;
+            }
         }
+        return $this->_props;
     }
     
     /**
@@ -257,6 +316,8 @@ class Model {
      */
     public static function selectAll( $targetClass, $pager = false ) {
         if ( class_exists( $targetClass ) ) {   
+            $cos = \core\Citrus\Citrus::getInstance();
+            if ( $cos->debug ) $cos->debug->startNewTimer( '[Model::selectAll(' . $targetClass . ')]' );
             $schema = self::getSchema( $targetClass );
             $q = new HydratableQuery( $targetClass );
             $q->columns = array( '*' );
@@ -273,6 +334,68 @@ class Model {
                 $q->limitCount = $pager->rowsPerPage;
             }
             $list = $q->hydrateList();
+            if ( $cos->debug ) $cos->debug->stopLastTimer();
+            return $list;
+        } 
+        return false;
+    }
+    
+    
+    /**
+     * Data accessor : loads all objects of type $targetClass in database
+     * 
+     * @param $targetClass  string  Type of object
+     * @param $pager  \core\Citrus\data\Pager|boolean  Pager object
+     *
+     * @static
+     */
+    public static function selectAllWhere( $targetClass, $where = array(), $pager = false, $or_where = false, $order = false, $orderType = false, $limit = false ) {
+        if ( class_exists( $targetClass ) ) {   
+            $cos = \core\Citrus\Citrus::getInstance();
+            if ( $cos->debug ) $cos->debug->startNewTimer( '[Model::selectAllWhere(' . $targetClass . ')]' );
+            $schema = self::getSchema( $targetClass );
+            $q = new HydratableQuery( $targetClass );
+            $q->columns = array( '*' );
+            $q->table = $schema->tableName;
+            
+            if ( count( $where ) > 0 ) {
+                if ( $or_where ) {
+                    foreach ( $where as $k=>$cond ) $where[ $k ] = $q->table . '.' . $cond ; 
+                    $q->AddORWhere( $where );
+                }
+                else foreach ( $where as $cond ) $q->addWhere( $q->table . '.' . $cond ); 
+            }
+            if ( $order !== false ) {
+                if ( isset( $schema->properties[$order] ) && isset( $schema->properties[$order]['modelType'] ) ) {
+                    $sch2 = self::getSchema( $schema->properties[$order]['modelType'] );
+                    $order = explode(' ', $sch2->orderColumn );
+                    $order = array_shift( $order );
+                    
+                    if ( $orderType !== false ) $order .= ' ' . $orderType;
+                    $q->AddOrder( $sch2->tableName . '.' . $order );
+                } else {
+                    if ( $orderType !== false ) {
+                        $order .= ' ' . $orderType;
+                    }
+                    $q->AddOrder( $q->table . '.' . $order );
+                }
+            } else if ( isset( $schema->orderColumn ) ) {
+                $order = $schema->orderColumn;
+                if ( isset( $schema->orderSort ) ) {
+                    $order .= ' ' . $schema->orderSort;
+                }
+                $q->AddOrder( $q->table . '.' . $order );
+            } 
+            if ( $pager ) {
+                $q->limitStart = $pager->limitStart;
+                $q->limitCount = $pager->rowsPerPage;
+            } 
+            if ( is_int( $limit ) ) {
+                $q->limitStart = 0;
+                $q->limitCount = $limit;
+            }
+            $list = $q->hydrateList();
+            if ( $cos->debug ) $cos->debug->stopLastTimer();
             return $list;
         } 
         return false;
@@ -280,6 +403,8 @@ class Model {
     
     public static function selectAllLimit( $targetClass, $limit, $pager = false ) {
         if ( class_exists( $targetClass ) ) {   
+            $cos = \core\Citrus\Citrus::getInstance();
+            if ( $cos->debug ) $cos->debug->startNewTimer( '[Model::selectAllLimit(' . $targetClass . ')]' );
             $schema = self::getSchema( $targetClass );
             $q = new HydratableQuery( $schema->className );
             $q->columns = array( '*' );
@@ -290,13 +415,14 @@ class Model {
                 if ( isset( $schema->orderSort ) ) {
                     $order .= ' ' . $schema->orderSort;
                 }
-                $q->addOrder( $order );
+                $q->AddOrder( $q->table . '.' . $order );
             }  
             if ( is_int( $limit ) ) {
                 $q->limitStart = 0;
                 $q->limitCount = $limit;
             }
             $list = $q->hydrateList();
+            if ( $cos->debug ) $cos->debug->stopLastTimer();
             return $list;
         } 
         return false;
@@ -311,10 +437,16 @@ class Model {
      *
      * @static
      */
-    static public function getSchema( $targetClass ) {
+    static public function getSchema( $targetClass ) {  
         $sc = false;
+        $cos = Citrus\Citrus::getInstance();
         if ( class_exists( $targetClass ) ) {
-            $sc = new data\Schema( $targetClass );
+            if ( $cos->cache->hasSchemaOfClass( $targetClass ) ) {
+                $sc = $cos->cache->getSchemaOfClass( $targetClass );
+            } else {
+                $sc = new data\Schema( $targetClass );
+                $cos->cache->addSchema( $targetClass, $sc );
+            }
         }
         return $sc;
     }
@@ -329,12 +461,16 @@ class Model {
      * @static
      */
     static public function count( $targetClass, $where = false ) {
-        $q = new SelectQuery();
+        $q = new db\SelectQuery();
         $schema = self::getSchema( $targetClass );
-        $q->table = $schema->tableName;
-        $q->columns = array( "COUNT(`id`)" );
-        if ( $where ) $q->addWhere( $where );
-        return $q->execute()->fetchColumn( 0 );
+        if ($schema) {
+            $q->table = $schema->tableName;
+            $q->columns = array( "COUNT(`id`)" );
+            if ( $where ) {
+                $q->addWhere( implode("\nAND", $where ) );
+            }
+            return $q->execute()->fetchColumn( 0 );
+        } else return 0;
     } 
     
     
@@ -379,7 +515,7 @@ class Model {
     * @static
     */
     static public function selectOne( $targetClass, $id ) {
-        if ( !is_int( $id ) || !class_exists( $targetClass ) ) {
+        if ( !is_int( (int) $id ) || !class_exists( $targetClass ) ) {
             return false;
         } else {
             $schema = self::getSchema( $targetClass );
@@ -400,6 +536,45 @@ class Model {
         }
     }
     
+    /**
+     * Data accessor : loads all objects of type $targetClass in database
+     * 
+     * @param $targetClass  string  Type of object
+     * @param $where
+     *
+     * @static
+     */
+    public static function selectWhere( $targetClass, $where = array(), $or_where = false ) {
+        if ( class_exists( $targetClass ) ) {   
+            $cos = \core\Citrus\Citrus::getInstance();
+            if ( $cos->debug ) $cos->debug->startNewTimer( '[Model::selectWhere(' . $targetClass . ')]' );
+            $schema = self::getSchema( $targetClass );
+            $q = new HydratableQuery( $targetClass );
+            $q->columns = array( '*' );
+            $q->table = $schema->tableName;
+
+             if ( count( $where ) > 0 ) {
+                    if ( $or_where ) {
+                        foreach ( $where as $k=>$cond ) $where[ $k ] = $q->table . '.' . $cond ; 
+                        $q->AddORWhere( $where );
+                    }
+                    else foreach ( $where as $cond ) $q->addWhere( $q->table . '.' . $cond ); 
+                }
+            if ( isset( $schema->orderColumn ) ) {
+                $order = $schema->orderColumn;
+                if ( isset( $schema->orderSort ) ) {
+                    $order .= ' ' . $schema->orderSort;
+                }
+                $q->AddOrder( $q->table . '.' . $order );
+            } 
+           
+            $inst = $q->hydrate();
+            if ( $cos->debug ) $cos->debug->stopLastTimer();
+            return $inst;
+        } 
+        return false;
+    }
+
     
     /**
     * Hydrates the object
@@ -410,7 +585,7 @@ class Model {
     *
     * @return false|object whether if the object is found or not
     */
-    public function hydrate( $args ) {
+    public function hydrate( $args = array() ) {
         $this->_getProps();
         $nbProps = count( $this->_props );
         $class = $this->schema->className;
@@ -419,18 +594,19 @@ class Model {
         // sur le nb de propriétés de l'obj ppal
         // on assigne la propriété par la valeur correspondant à son indice dans les résultats
         for ( $i = 0; $i < $nbProps; $i++ ) {
-            if ( isset( $this->_props[$i] ) ) {
+            if ( isset( $this->_props[$i] ) ) {                
                 $prop = $this->_props;
-                if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/', $args[$i] ) ) {
-                    $args[$i] = new \core\Citrus\Date( $args[$i] );
+                if (isset($args[$i])) {
+                    if ( preg_match( '/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}/', $args[$i] ) ) {
+                        $args[$i] = new \core\Citrus\Date( $args[$i] );
+                    }
+                    $this->$prop[$i] = $args[$i];
                 }
-                $this->$prop[$i] = $args[$i];
             }
         }
         $j = 0;
         
         $nbCols = count( $args );
-        
         foreach ( $assoc as $colName => $attr ) {
             $j = 0;
             $assocPropName = substr( $colName, 0, -3 );
@@ -445,7 +621,21 @@ class Model {
                 $j++;
             }
             $nbProps += count( $this->$assocPropName->_props );
+        }   
+    }
+    
+    public function hydrateAssoc() {
+        $assoc = $this->schema->getAssociations();
+        foreach ( $assoc as $colName => $attr ) {
+            $assocPropName = substr( $colName, 0, -3 );
+            // vexp($this->$assocPropName);
+            // if (is_null($this->$assocPropName)) {
+                $assocClassName = $attr['modelType'];
+                if ( is_null($this->$colName) ) $this->$assocPropName = new $assocClassName();
+                else $this->$assocPropName = call_user_func_array( array('\core\Citrus\data\Model', 'selectOne'), array( $attr['modelType'], (integer) $this->$colName ) ) ;
+            // }
         }
+        return $this;
     }
     
     
@@ -461,7 +651,7 @@ class Model {
      */
     static public function deleteOne( $targetClass, $id ) {
         if ( class_exists( $targetClass ) ) {
-            $cos = \core\Citrus::getInstance();
+            $cos = \core\Citrus\Citrus::getInstance();
             $schema = self::getSchema( $targetClass );
             if ( $schema->tableName && is_int( $id ) ) {
                 return $cos->db->execute( "DELETE FROM `$schema->tableName` WHERE `id` = $id" );
@@ -488,15 +678,44 @@ class Model {
     }
 
 
-	public function serialize() {
-		return serialize( $this );
-	}
-	
-	public function toArray() {
-		return get_object_vars( $this );
-	}
-	
-	public function toJSON() {
-		return \core\Citrus\JSON::encode( $this->toArray() );
-	}
+    public function serialize() {
+        return serialize( $this );
+    }
+    
+    public function toArray( $merged = array() ) {
+        $lst = array_merge( get_object_vars( $this ), $merged );
+        $res = array();
+        $schema_keys = array_values( array_keys( $this->schema->properties ) );
+        // foreach( $lst as $key => $value ) {
+        while( list( $key, $value ) = each( $lst ) ) { 
+            if (in_array( $key , $schema_keys ) || is_subclass_of( $value, '\core\Citrus\data\Model' )) {
+                if ( is_object ( $value ) && is_subclass_of( $value, '\core\Citrus\data\Model' )) $res[ $key ] = $value->toArray();
+                else $res[ $key ] = $value;
+            }
+        }
+        return $res;
+    }
+    
+    public function toJSON() {
+        return \core\Citrus\JSON::encode( $this->toArray() );
+    }
+    
+    /**
+     * Data accessor : loads all objects of type $targetClass in database
+     * 
+     * @param $targetClass  string  Type of object
+     * @param $pager  \core\Citrus\data\Pager|boolean  Pager object
+     *
+     * @static
+     */
+    public static function select( $targetClass ) {
+        if ( class_exists( $targetClass ) ) {   
+            $schema = self::getSchema( $targetClass );
+            $q = new HydratableQuery( $targetClass );
+            $q->columns = array( '*' );
+            $q->table = $schema->tableName;
+            return $q;
+        } 
+        return false;
+    }
 }
