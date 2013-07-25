@@ -107,25 +107,36 @@ class View {
     public function displayStyleSheets() {
         $cos = Citrus::getInstance();
         
-        $cssFiles = '';
+        $sheets = array();
         if ( $this->styleSheets ) {
             $sheets = array();
             foreach ( $this->styleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );                
-                $href = CITRUS_PROJECT_URL . "css/$s";
-                $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . $href . '" />';
+                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                else $href = CITRUS_PROJECT_URL . "css/$s";
+                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
+                $sheets[] = '<link rel="stylesheet' . $rel_less . '" media="screen" type="text/css" href="' . $href . '" />';
             }
             if ( count( $this->addedStyleSheets ) ) {
                 foreach ( $this->addedStyleSheets as $s ) {
                     $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                     if ( $media == 'print' ) $s = substr( $s, 1 );
-                    $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . $s . '" />';
+                    if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                    else $href = CITRUS_PROJECT_URL . "css/$s";
+                    $css_type = strpos( $s, '.less' ) !== false ? 'text/less' : 'text/css';
+                    $sheets[] = '<link rel="stylesheet" media="screen" type="' . $css_type . '" href="' . $href . '" />';
                 }
             }
-            $cssFiles = implode( "\n\t", $sheets ) . "\n";
         }
-        return $cssFiles;
+        if ($cos->app && $cos->app->module) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->module->name ;
+            if (is_file(CITRUS_WWW_PATH . $src . '.css')) $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . CITRUS_PROJECT_URL . $src . '.css" />';
+            if (is_file(CITRUS_WWW_PATH . $src . '.less')) 
+                $sheets[] = '<link rel="stylesheet" media="screen" type="text/less" href="' . CITRUS_PROJECT_URL . $src . '.less" />';
+        }
+        
+        return implode( "\n\t", $sheets ) . "\n";
     }
     
     /**
@@ -142,7 +153,8 @@ class View {
             foreach ( $this->styleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );                
-                $href = CITRUS_PROJECT_URL . "css/$s";
+                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                else $href = CITRUS_PROJECT_URL . "css/$s";
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet',
@@ -160,12 +172,14 @@ class View {
             foreach ( $this->addedStyleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );
+                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                else $href = CITRUS_PROJECT_URL . "css/$s";
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet',
                         'media' => $media,
                         'type' => 'text/css',
-                        'href' => $s,
+                        'href' => $href,
                     ), 
                     'inline' => true,
                     'closeTag' => false
@@ -173,6 +187,24 @@ class View {
                 $sheets[] = $st;                
             }
         }
+        
+        if ($cos->app && $cos->app->module) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.css' ;
+            if (is_file(CITRUS_WWW_PATH . $src)) {
+                $st = new html\Element( 'link', array(
+                    'attributes' => array(
+                        'rel' => 'stylesheet',
+                        'media' => $media,
+                        'type' => 'text/css',
+                        'href' => CITRUS_PROJECT_URL . $src,
+                    ), 
+                    'inline' => true,
+                    'closeTag' => false
+                ) );
+                $sheets[] = $st;                
+            }
+        }
+        
         return $sheets;
     }
     /** 
@@ -195,7 +227,7 @@ class View {
     
     
     /**
-     * Generates \core\Citrus\html\Element objects in order to display html &lt;script&gt; tags 
+     * Generates \core\Citrus\html\Element objects in order to display html <script> tags 
      *
      * @return array $elements An array containing the Element objects.
      */
@@ -205,56 +237,82 @@ class View {
         if ( $this->javascriptFiles ) {
             $files = array();
             foreach ( $this->javascriptFiles as $s ) {
-                $src = CITRUS_PROJECT_URL . "js/$s";
+                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                else $src = CITRUS_PROJECT_URL . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
-                        'src' => $s,
+                        'src' => $src,
                     ), 
                     'inline' => false 
                 ) );
                 $elements[] = $elt;
             }
         }
+        
         if ( count( $this->addedJavascripts ) ) {
             foreach ( $this->addedJavascripts as $s ) {
+                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                else $src = CITRUS_PROJECT_URL . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
-                        'src' => $s,
+                        'src' => $src,
                     ), 
                     'inline' => false,
                 ) );
                 $elements[] = $elt;
             }
         }
+        
+        if ($cos->app && $cos->app->module) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.js' ;
+            if (is_file(CITRUS_WWW_PATH . $src)) {
+                $elt = new html\Element( 'script', array(
+                    'attributes' => array(
+                        'type' => 'text/javascript',
+                        'src' => CITRUS_PROJECT_URL . $src,
+                    ), 
+                    'inline' => false,
+                ) );
+                $elements[] = $elt;
+            }
+        }
+        
+        
         return $elements;
     }
     
     /**
-     * Generates the &lt;script&gt; html tags to call the stylesheets in the html document
+     * Generates the <script> html tags to call the stylesheets in the html document
      *
      * @return string $jsFiles The html tags.
      * @deprecated To be replaced by getJavascriptAsElements
      */
     public function displayJavascriptFiles() {
         $cos = Citrus::getInstance();
-        
-        $cos = Citrus::getInstance();
-        $jsFiles = '';
+        $files = array();
         if ( $this->javascriptFiles ) {
             $files = array();
             foreach ( $this->javascriptFiles as $s ) {
-                $src = CITRUS_PROJECT_URL . "js/$s";
+                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                else $src = CITRUS_PROJECT_URL . "js/$s";
                 $files[] = '<script type="text/javascript" src="' . $src . '"></script>';
             }
             if ( count( $this->addedJavascripts ) ) {
                 foreach ( $this->addedJavascripts as $s ) {
-                    $files[] = '<script type="text/javascript" src="' . $s . '"></script>';
+                    if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                    else $src = CITRUS_PROJECT_URL . "js/$s";
+                    $files[] = '<script type="text/javascript" src="' . $src . '"></script>';
                 }
             }
-            $jsFiles = implode( "\n\t", $files ) . "\n";
         }
+        if ($cos->app && $cos->app->module) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.js' ;
+            if (is_file(CITRUS_WWW_PATH . $src)) 
+                $files[] = '<script type="text/javascript" src="' . CITRUS_PROJECT_URL . $src . '"></script>';
+        }
+        $jsFiles = implode( "\n\t", $files ) . "\n";
         return $jsFiles;
     }
     
