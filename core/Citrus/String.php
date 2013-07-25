@@ -29,43 +29,44 @@
 namespace core\Citrus;
 
 class String {
-	public static function slug2( $string ) {
-	    $str = strtolower( trim( $string ) );
-		$char = explode(',', "à,â,ä,â,è,é,ë,ê,î,ï,ô,ö,ù,ü,û,ç" );
-		$rep = explode( ',', "a,a,a,a,e,e,e,e,i,i,o,o,u,u,u,c" );
+    public static function slug2( $string ) {
+        $str = strtolower( trim( $string ) );
+        $char = explode(',', "à,â,ä,â,è,é,ë,ê,î,ï,ô,ö,ù,ü,û,ç" );
+        $rep = explode( ',', "a,a,a,a,e,e,e,e,i,i,o,o,u,u,u,c" );
         
         $str = self::accent( $str );
         $str = preg_replace( '/[^a-z0-9-]/', '-', $str );
         $str = preg_replace( '/-+/', "-", $str );
+        $str = trim( $str, '-' );
         return $str;
-	}
-	
-	public static function slug( $string ) {
-		$string = strtolower( $string );
-		$repl = array( 
-			"à" => "a", "ä" => "a", "â" => "a",
-			"é" => "e", "è" => "e", "ë" => "e", "ê" => "e",
-			"î" => "i", "ï" => "i",
-			"ô" => "o", "ö" => "o",
-			"ù" => "u", "û" => "u", "ü" => "u",
-			"ç" => 'c',
-			"'" => "-", "’" => "-",
-			"\"" => "", "\(" => "-", "\)" =>"-",
-			"&" => "-", ":" => "-", ":" => "-",
-			"\?" => "", "!" => "", "," => "",
-			"\." => "", "\/" => "-", " " => "-",
-			"--" => "-", "'" => "",
-			"%C9" => 'e', 
-			"#39;" => '', "#34;" => '',
-		);
-		foreach ( $repl as $find => $rep ) {
-			$string = preg_replace( "/" . $find . "/", $rep, $string );
-		}
-		
-		return $string;
-	}
-	
-	static public function accent( $search ) {
+    }
+    
+    public static function slug( $string ) {
+        $string = strtolower( $string );
+        $repl = array( 
+            "à" => "a", "ä" => "a", "â" => "a",
+            "é" => "e", "è" => "e", "ë" => "e", "ê" => "e",
+            "î" => "i", "ï" => "i",
+            "ô" => "o", "ö" => "o",
+            "ù" => "u", "û" => "u", "ü" => "u",
+            "ç" => 'c',
+            "'" => "-", "’" => "-",
+            "\"" => "", "\(" => "-", "\)" =>"-",
+            "&" => "-", ":" => "-", ":" => "-",
+            "\?" => "", "!" => "", "," => "",
+            "\." => "", "\/" => "-", " " => "-",
+            "--" => "-", "'" => "",
+            "%C9" => 'e', 
+            "#39;" => '', "#34;" => '',
+        );
+        foreach ( $repl as $find => $rep ) {
+            $string = preg_replace( "/" . $find . "/", $rep, $string );
+        }
+        
+        return $string;
+    }
+    
+    static public function accent( $search ) {
         $search = preg_replace( '/[àâä]/iu', 'a', $search );
         $search = preg_replace( '/[éèëê]/iu', 'e', $search );
         $search = preg_replace( '/[îï]/iu', 'i', $search );
