@@ -66,6 +66,12 @@ class Citrus {
     
     /**
      * @access public
+     * @var \core\crr\User
+     */
+    public $extranetUser;
+    
+    /**
+     * @access public
      * @var \core\Citrus\Host
      */
     public $host;
@@ -148,6 +154,25 @@ class Citrus {
      */
     private static $instance = null;
     
+    /**
+     * @access public
+     * @var \core\Citrus\sys\Cache
+     */
+    public $cache;
+
+    /**
+     * @access public
+     * @var \core\led\client\Client
+     */
+    public $client;
+
+
+    /**
+     * @access public
+     * @var lib/caddie
+     */
+    public $cart;
+    
     
     /**
      * Accessor
@@ -200,6 +225,8 @@ class Citrus {
     private function Boot() {
         $this->registerAutoload();
         $this->loadConfiguration();
+        $this->cache = new \core\Citrus\sys\Cache();
+        
         if ( $this->config ) {
             date_default_timezone_set( $this->config['cos_Timezone'] );
             
@@ -230,7 +257,7 @@ class Citrus {
         
         # exception handling
         set_exception_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleException' ) );
-        set_error_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleError' ), E_ALL & ~E_NOTICE & ~E_WARNING );
+        set_error_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleError') , E_ALL & ~E_NOTICE & ~E_WARNING );
     }
 
 
@@ -316,6 +343,7 @@ class Citrus {
                         $app = new mvc\App( $name );
                         $app->generateConfigFile();
                         $app->generateViewFile();
+                        $app->generateRoutingFile();
                         return true;
                     }
                 } 
@@ -516,6 +544,33 @@ class Citrus {
         $tpl = ob_get_contents();
         ob_end_clean();
         echo $tpl;
+        exit;
+    }
+    
+    public static function pageForbidden( $message = null ) {
+        $cos = Citrus::getInstance();
+        $response = new http\Response();
+        $response->code = '403';
+        $response->message = $message;
+        $response->sendHeaders();
+        ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
+    }
+    public static function internalServerError( $message = null ) {
+        $cos = Citrus::getInstance();
+        $response = new http\Response();
+        $response->code = '500';
+        $response->message = $message;
+        $response->sendHeaders();
+        /*ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;*/
         exit;
     }
     
