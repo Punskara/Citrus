@@ -15,7 +15,7 @@ return $config = array(
             'baseUrl'           => dirname( $_SERVER['SCRIPT_NAME'] ),
             'services'          => array(
                 'hasRewriteEngine' => array( 'active' => true ),
-                'logger' => array( 'active' => false ),
+                'logger' => array( 'active' => true ),
                 'debug'  => array( 'active' => false ),
                 'db'     => array( 'active' => false,
                     'connection' => array( 

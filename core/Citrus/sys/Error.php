@@ -44,7 +44,7 @@ class Error {
         $this->stack = $stack;
     }
     
-    public static function renderHtml( $err, $message = null ) {
+    public static function renderHtml( $err, $message = null, $trace = false ) {
         $s = '';
         if ( $message ) {
             $s .= '<p class="message">' . $message . '</p>';
@@ -52,18 +52,20 @@ class Error {
         $s .= '<p class="message">' . $err->msg . '</p>'
            . '<p>'
            . '<code>' . $err->file . '</code>, line ' . $err->line . '.'
-           . '</p>'
-           . '<p>Trace :</p>'
-           . '<ol>';
-        foreach ( $err->getTrace() as $tr ) {
-            $s .= '<li><code>';
-            if ( isset( $tr['class'] ) ) $s .= $tr['class'];
-            if ( isset( $tr['type'] ) ) $s .= $tr['type'];
-            $s .= $tr['function'] . '</code> '
-                . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
-                . '</li>';
+           . '</p>';
+        if ( $trace ) {
+            $s .= '<p>Trace :</p>';
+            $s .= '<ol>';
+            foreach ( $err->getTrace() as $tr ) {
+                $s .= '<li><code>';
+                if ( isset( $tr['class'] ) ) $s .= $tr['class'];
+                if ( isset( $tr['type'] ) ) $s .= $tr['type'];
+                $s .= $tr['function'] . '</code> '
+                    . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
+                    . '</li>';
+            }
+            $s .= '</ol>';
         }
-        $s .= '</ol>';
         return $s;
     }
     

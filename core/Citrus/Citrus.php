@@ -173,6 +173,7 @@ class Citrus {
      */
     public $cart;
     
+    public $done = false;
     
     /**
      * Accessor
@@ -201,7 +202,8 @@ class Citrus {
         if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
             $this->hasRewriteEngine = $this->host->services['hasRewriteEngine'];
             if ( $this->debug ) {
-                ini_set( 'display_errors', 1 );
+                ini_set( 'display_errors', 0 );
+                error_reporting( -1 );
             }
             
             define( 'CITRUS_PROJECT_URL', $this->host->baseUrl );
@@ -256,8 +258,13 @@ class Citrus {
         }
         
         # exception handling
-        set_exception_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleException' ) );
-        set_error_handler( array( '\\core\\Citrus\\sys\\Debug', 'handleError') , E_ALL & ~E_NOTICE & ~E_WARNING );
+        set_exception_handler( array( '\core\Citrus\sys\Debug', 'handleException' ) );
+
+        # shutdown handling
+        register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
+
+        # error handling
+        set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
     }
 
 
@@ -614,17 +621,31 @@ class Citrus {
         }
     }
     
-    public function shutdown() {
+
+    /**
+     * executed when Citrus stops (properly or not) 
+     */
+    public static function shutDown() {
+        $cos = Citrus::getInstance();
+        if ( $cos->debug )
+            $cos->debug->showErrorIfExists();
         ob_flush();
-        if ( $this->logger ) {
-            $this->logger->logEvent( 'Shutting down…' );
-            $this->logger->writeLog();
+
+        // if cos has not ended properly
+        if ( !$cos->done ) {
+            $msg = "Citrus hasn't stopped properly";
+        } else {
+            $msg = 'Shutting down…';
         }
-        unset($this);
-        exit;
-    }
+
+        if ( $cos->logger ) {
+            $cos->logger->logEvent( $msg );
+            $cos->logger->writeLog();
+        }
+        unset( $cos );
+    }   
     
     public function getController() {
-        return $this->app->module->ctrl;
+        return $this->app->ctrl;
     }
 }

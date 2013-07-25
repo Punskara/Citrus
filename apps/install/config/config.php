@@ -1,9 +1,9 @@
 <?php
 
-
-$this->module               = new core\Citrus\mvc\Module( 'main', $this->path, 'index' );
-$this->isSecure 			= true;
-$this->titleTag 			= "";
+$this->isProtected 			= false;
+$this->titleTag 			= "Citrus";
 $this->layout               = 'main';
-$this->templates 		    = array();
-$this->metaTags             = "";
+
+$this->protectedModules = Array(
+
+);

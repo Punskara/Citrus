@@ -47,12 +47,12 @@ class Module {
     /**
      * @var boolean
      */
-    public $isSecure = false;
+    public $isProtected = false;
     
     /**
      * @var array
      */
-    public $actionsSecure;
+    public $actionsProtected;
     
     /**
      * @var \core\Citrus\mvc\Controller
@@ -69,7 +69,7 @@ class Module {
     public function __construct( $name, $appPath ) {
         $this->name = $name;
         $this->path = $appPath . '/modules/' . $name;
-        $this->readConfig();
+        // $this->readConfig();
     }
     
     /**
@@ -159,10 +159,10 @@ class Module {
      * @return boolean Whether the action is protected or not.
      */
     public function getSecurity( $action = null ) {
-        $actionSecure = $this->isSecure;
-        if ( $action && isset( $this->actionsSecure[$action] ) ) {
-            $actionSecure = $this->actionsSecure[$action];
+        $actionProtected = $this->isProtected;
+        if ( $action && isset( $this->actionsProtected[$action] ) ) {
+            $actionProtected = $this->actionsProtected[$action];
         }
-        return $actionSecure;
+        return $actionProtected;
     }
 }

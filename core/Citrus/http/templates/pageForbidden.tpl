@@ -6,10 +6,10 @@
     <title>Ouch !</title>
     <style type="text/css">
         body {
-        	background: 	    #fff;
-        	font-family: 		Verdana, Arial, Helvetica,sans-serif;
-        	font-size: 			9pt;
-        	margin:				0;
+            background:         #fff;
+            font-family:        Verdana, Arial, Helvetica,sans-serif;
+            font-size:          9pt;
+            margin:             0;
         }
         .page {
             margin:             0 auto;
@@ -32,8 +32,8 @@
 </head>
 <body class="error">
     <div class="page">
-        <p class="message">Error 404.</p>
-        <p>The page you requested doesn't exist.</p>
+        <p class="message">Error 403.</p>
+        <p>The page you requested is protected.</p>
     </div>
 </body>
 </html>

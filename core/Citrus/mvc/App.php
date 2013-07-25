@@ -72,7 +72,11 @@ class App {
      */
     public $path;
     
-    
+    /**
+     * @var Array
+     */
+    public $protectedModules = Array();
+
     /**
      * Constructor.
      * 
@@ -140,6 +144,8 @@ class App {
      */
     public function createModule( $moduleName, $action ) {
         $this->module = new Module( $moduleName, $this->path );
+        $this->module->isProtected = in_array( $moduleName, $this->protectedModules );
+        $this->module->readConfig();
         $this->ctrl = $this->module->createController(
             array( 
                 'action' => $action,
@@ -153,11 +159,13 @@ class App {
      * Executes the controller method that the action determines.
      */
     public function executeCtrlAction( $force_external_post = false ) {
-        $this->ctrl->executeAction( $force_external_post );
-        if ( $this->ctrl->layout === true ) {
-            $this->view->displayLayout();
-        } else {
-            echo $this->ctrl->displayTemplate( $this->module->path );
+        $act = $this->ctrl->executeAction( $force_external_post );
+        if ( $act ) {
+            if ( $this->ctrl->layout === true ) {
+                $this->view->displayLayout();
+            } else {
+                echo $this->ctrl->displayTemplate( $this->module->path );
+            }
         }
     }
     

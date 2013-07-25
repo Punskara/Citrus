@@ -105,11 +105,14 @@ class Controller {
      */
     public function executeAction( $force_external_post = false ) {
         if ( $this->request->method == 'POST' && !$this->request->refererIsInternal() && !$force_external_post ) {
-            exit;
+            $this->do_PageNotFound();
         }
         $cos = Citrus::getInstance();
         $response = new http\Response();
-        if ( $this->actionExists() ) {
+
+        $sec = $this->actionIsProtected();
+
+        if ( $this->actionExists() && !$sec ) {
             $action = "do_$this->action";
             $response = new http\Response();
             try {
@@ -129,16 +132,55 @@ class Controller {
                 if ( $cos->debug ) {
                     $cos->debug->stopLastTimer();
                 }
+                return true;
             } catch ( Exception $e ) {
                 $this->do_Exception( $e );
-                exit;
+                return false;
             } catch ( \PDOException $e ) {
                 $this->do_Exception( $e );
+                return false;
             }
         } else {
-            $message = $cos->debug ? 'Action do_' . $this->action . ' does not exist.' : 'The page you requested does not exist.';
-            $this->do_PageNotFound( $message );
+            $sec ? $this->onActionProtected() : $this->onActionNotFound();
+            return false;
         }
+    }
+
+    public function actionIsProtected() {
+        $cos = Citrus::getInstance();
+
+        if ( isset( $_SESSION['CitrusUser'] ) && get_class( $_SESSION['CitrusUser'] ) ) {
+            $cos->user = $_SESSION['CitrusUser'];
+        } if (isset($_SESSION['CitrusUserId'])) {
+            $cos->user = \core\Citrus\data\Model::selectOne(
+                '\core\Citrus\User', (integer) $_SESSION['CitrusUserId']);
+            if ( !$cos->user ) $cos->user = new \core\Citrus\User();
+        } else {
+            $cos->user = new \core\Citrus\User();
+        }
+
+        $actionSec  = $cos->app->module->getSecurity( $cos->router->action );
+        $moduleSec  = $cos->app->module->isProtected;
+        $appSec     = $cos->app->isProtected;
+        $logged     = $cos->user->isLogged();
+        if ( ( $actionSec && !$logged ) || ( $moduleSec && !$logged ) || ( $appSec && !$logged ) ) {
+            $redir = $cos->projectName . '_REDIRECT_URI';
+            if ( !isset( $_SESSION[$redir] ) ) {
+                $_SESSION[$redir] = substr( $_SERVER['REQUEST_URI'], strlen( CITRUS_PROJECT_URL ) );
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public function onActionProtected() {
+        $this->do_PageForbidden();
+        // \core\Citrus\http\Http::redirect( '/backend/Main/login.html' );
+    }
+
+    public function onActionNotFound() {
+        $this->do_PageNotFound();
+        // \core\Citrus\http\Http::redirect( '/backend/Main/login.html' );
     }
     
     /**
@@ -159,6 +201,10 @@ class Controller {
      */
     public function do_PageNotFound( $message = null ) {
         Citrus::pageNotFound( $message );
+    }
+
+    public function do_PageForbidden( $message = null ) {
+        Citrus::pageForbidden( $message );
     }
     
     /**

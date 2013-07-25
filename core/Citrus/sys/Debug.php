@@ -125,17 +125,18 @@ class Debug {
     }
     
     public static function handleError( $number, $msg, $file, $line, $context ) {
-        $debug = ini_get( 'display_errors' ) == '1';
+        $cos = Citrus::getInstance();
         $response = new http\Response();
         $response->code = '500';
-        $response->message = $debug ? strip_tags( $msg ) : 'An error occured.';
+        $response->message = $cos->debug ? strip_tags( $msg ) : 'An error occured.';
         $response->sendHeaders();
         $stack = debug_backtrace();
         $logger = new Logger( 'error' );
         $logger->logEvent( $msg . ' ' . $file . ' on line ' . $line );
         $logger->writeLog();
         $err = new Error( $number, $msg, $file, $line, $context, $stack );
-        if ( $debug ) {
+
+        if ( $cos->debug ) {
             $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error.tpl' );
             $msg = Error::renderHtml( $err );
             $errorTpl = preg_replace( '#\{citrus_error\}#', $msg, $errorTpl );
@@ -145,4 +146,15 @@ class Debug {
         die( $errorTpl );
     }
     
+
+    /**
+     * Shows last error if exists
+     */
+    public function showErrorIfExists() {
+        $err = error_get_last();
+        if ( $err != null ) {
+            list( $type, $message, $file, $line ) = array_values( $err );
+            self::handleError( $type, $message, $file, $line, null );
+        }
+    }
 }

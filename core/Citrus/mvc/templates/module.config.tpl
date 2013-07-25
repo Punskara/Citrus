@@ -1,2 +1,2 @@
 <?php
-$this->isSecure = true;
+$this->isProtected = true;

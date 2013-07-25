@@ -31,7 +31,7 @@ use \core\Citrus\mvc;
 use \core\Citrus\http;
 use \core\Citrus\db\InsertQuery;
 
-class Controller extends mvc\Controller {
+class Controller extends mvc\Controller implements mvc\IController {
 	
 	public $pageTitle = 'Installation';
 	
