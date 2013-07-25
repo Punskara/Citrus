@@ -126,7 +126,7 @@ class Pager {
                 $this->rowsPerPage = $rowsPerPage;
             }
             if ( $location ) $this->location = $location;
-            $currentPage = $cos->app->module->ctrl->request->param( 'page', 'int' );
+            $currentPage = $cos->app->ctrl->request->param( 'page', 'int' );
             if ( $currentPage ) {
                 $this->currentPage = $currentPage;
                 $this->limitStart = ( $this->currentPage - 1 ) * $this->rowsPerPage;
@@ -249,10 +249,10 @@ class Pager {
     public function renderPagesLinks( $start, $end, $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
-        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
-        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
-        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
+        $search = $cos->app->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->ctrl->request->param( 'orderType', 'string' );
+        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/{$cos->app->ctrl->action}.html";
         else $loc = $this->location;
         for ( $i = $start; $i <= $end; $i++ ) {
             if ( $i == $this->currentPage ) {
@@ -277,10 +277,10 @@ class Pager {
     public function renderStartButtons( $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
-        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
-        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
+        $search = $cos->app->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->ctrl->request->param( 'orderType', 'string' );
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/{$cos->app->ctrl->action}.html";
         
         if ( $this->currentPage != 1 ) {
             $html .= link_to( 
@@ -307,10 +307,10 @@ class Pager {
     public function renderEndButtons( $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->module->ctrl->request->param( 'search', 'string' );
-        $order = $cos->app->module->ctrl->request->param( 'order', 'string' );
-        $orderType = $cos->app->module->ctrl->request->param( 'orderType', 'string' );
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/{$cos->app->module->ctrl->action}.html";
+        $search = $cos->app->ctrl->request->param( 'search', 'string' );
+        $order = $cos->app->ctrl->request->param( 'order', 'string' );
+        $orderType = $cos->app->ctrl->request->param( 'orderType', 'string' );
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/{$cos->app->ctrl->action}.html";
         
         if ( $this->currentPage != $this->nbPages ) {
             $next = $this->currentPage + 1;

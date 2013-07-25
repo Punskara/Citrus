@@ -31,9 +31,9 @@ use \core\Citrus\mvc;
 use \core\Citrus\http;
 use \core\Citrus\db\InsertQuery;
 
-class Controller extends mvc\Controller implements mvc\IController {
+class Controller extends mvc\Controller {
 	
-	public $pageTitle = 'Installation';
+    public $pageTitle = 'Installation';
 	
     public function do_index() {
 	    $generated = (bool) $this->request->param( 'generated', FILTER_SANITIZE_STRING );

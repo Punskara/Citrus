@@ -41,6 +41,11 @@ class Controller {
      * @var string
      */
     public $action;
+
+    /**
+     * @var string
+     */
+    public $name;
     
     /**
      * @var \core\Citrus\http\Request
@@ -83,6 +88,17 @@ class Controller {
     public $moduleName;
     
     /**
+     * @var Boolean
+     */
+    public $isProtected;
+
+
+    /**
+     * @var Array
+     */
+    public $security_exceptions = Array();
+
+    /**
      * Contructor
      * 
      * @param string  $action  Name of the action we want to execute.
@@ -106,81 +122,62 @@ class Controller {
     public function executeAction( $force_external_post = false ) {
         if ( $this->request->method == 'POST' && !$this->request->refererIsInternal() && !$force_external_post ) {
             $this->do_PageNotFound();
+            return true;
         }
         $cos = Citrus::getInstance();
         $response = new http\Response();
 
-        $sec = $this->actionIsProtected();
-
-        if ( $this->actionExists() && !$sec ) {
-            $action = "do_$this->action";
-            $response = new http\Response();
-            try {
-                if ( $cos->logger ) {
-                    $cos->logger->logEvent( 'Launching action ' . $action . ' on module ' . $cos->app->module->name );
-                }
-                if ( $cos->debug ) {
-                    $cos->debug->startNewTimer( "action " . $action );
-                }
-                
-                $this->$action();
-                
-                $response = new http\Response();
-                $response->code = '200';
-                $response->sendHeaders();
-                
-                if ( $cos->debug ) {
-                    $cos->debug->stopLastTimer();
-                }
-                return true;
-            } catch ( Exception $e ) {
-                $this->do_Exception( $e );
-                return false;
-            } catch ( \PDOException $e ) {
-                $this->do_Exception( $e );
-                return false;
+        $action = "do_$this->action";
+        $response = new http\Response();
+        try {
+            if ( $cos->logger ) {
+                $cos->logger->logEvent( 'Launching action ' . $action . ' on module ' . $this->name );
             }
-        } else {
-            $sec ? $this->onActionProtected() : $this->onActionNotFound();
+            if ( $cos->debug ) {
+                $cos->debug->startNewTimer( "action " . $action );
+            }
+            
+            $this->$action();
+            
+            $response = new http\Response();
+            $response->code = '200';
+            $response->sendHeaders();
+            
+            if ( $cos->debug ) {
+                $cos->debug->stopLastTimer();
+            }
+            return true;
+        } catch ( Exception $e ) {
+            $this->do_Exception( $e );
+            return false;
+        } catch ( \PDOException $e ) {
+            $this->do_Exception( $e );
             return false;
         }
     }
 
-    public function actionIsProtected() {
-        $cos = Citrus::getInstance();
-
-        if ( isset( $_SESSION['CitrusUser'] ) && get_class( $_SESSION['CitrusUser'] ) ) {
-            $cos->user = $_SESSION['CitrusUser'];
-        } if (isset($_SESSION['CitrusUserId'])) {
-            $cos->user = \core\Citrus\data\Model::selectOne(
-                '\core\Citrus\User', (integer) $_SESSION['CitrusUserId']);
-            if ( !$cos->user ) $cos->user = new \core\Citrus\User();
-        } else {
-            $cos->user = new \core\Citrus\User();
-        }
-
-        $actionSec  = $cos->app->module->getSecurity( $cos->router->action );
-        $moduleSec  = $cos->app->module->isProtected;
-        $appSec     = $cos->app->isProtected;
-        $logged     = $cos->user->isLogged();
-        if ( ( $actionSec && !$logged ) || ( $moduleSec && !$logged ) || ( $appSec && !$logged ) ) {
-            $redir = $cos->projectName . '_REDIRECT_URI';
-            if ( !isset( $_SESSION[$redir] ) ) {
-                $_SESSION[$redir] = substr( $_SERVER['REQUEST_URI'], strlen( CITRUS_PROJECT_URL ) );
-            }
-            return true;
-        }
-        return false;
+    /** 
+      * @return true  if ( ctrlIsProtected && !inException || !ctrlIsProtected  && inException )
+      * @return false if ( ctrlIsProtected && inException || !ctrlIsProtected  && !inException )
+    */
+    public function isActionProtected() {
+        $inException = in_array( $this->action, $this->security_exceptions );
+        return $this->isProtected ? $inException ? false : true : $inException ? true : false;
     }
 
+
+    /**
+     * Triggered when action is protected
+     */
     public function onActionProtected() {
         $this->do_PageForbidden();
-        // \core\Citrus\http\Http::redirect( '/backend/Main/login.html' );
     }
 
+    /**
+     * Triggered when action is not found
+     */
     public function onActionNotFound() {
         $this->do_PageNotFound();
-        // \core\Citrus\http\Http::redirect( '/backend/Main/login.html' );
     }
     
     /**
@@ -218,14 +215,12 @@ class Controller {
     
     
     /**
-     * Display the action template.
-     *
-     * @param string  $path  The path to the template.
+     * Displays the action template.
      *
      * @return  string  The content of the template.
      */
-    public function displayTemplate( $path ) {
-        return $this->template->display( $path );
+    public function displayTemplate() {
+        return $this->template->display( $this->path );
     }
     
     /**
@@ -284,7 +279,7 @@ class Controller {
                         exit;
                     }
                 } else {
-                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
                     http\Http::redirect( $loc );
                 }
             } else throw new sys\Exception( "Unknown class '$type'" );
@@ -310,7 +305,7 @@ class Controller {
             if ( class_exists( $resourceType ) ) {
                 data\Model::deleteOne( $resourceType, $id );
             }
-            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
             http\Http::redirect( $loc );
         }
     }
@@ -336,12 +331,16 @@ class Controller {
                 }
             }
         }
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
         http\Http::redirect( $loc );
     }
     public function do_captcha() {
         $this->layout = false;
         $cap = new Captcha();
         $cap->display();
+    }
+
+    public function getPath() {
+        return dirname( __FILE__ );
     }
 }

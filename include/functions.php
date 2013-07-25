@@ -45,7 +45,7 @@ function include_slice( $partial, $vars = null ) {
     if ( is_array( $vars ) ) {
         extract( $vars, EXTR_OVERWRITE );
     }
-    $file = $cos->app->module->path . "/templates/_$partial.tpl.php";
+    $file = $cos->app->ctrl->path . "/templates/_$partial.tpl.php";
     if ( file_exists( $file ) ) {
         include $file;
     }

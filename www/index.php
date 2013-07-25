@@ -10,7 +10,7 @@ $action = $cos->router->action;
 
 $cos->app = new \core\Citrus\mvc\App( $app );
 if ( $cos->app->moduleExists( $module ) ) {
-    $cos->app->createModule( $module, $action );
+    $cos->app->createController( $module, $action );
     $cos->getController()->request->addParams( $cos->router->params );
     $cos->app->executeCtrlAction();
     $cos->done = true;

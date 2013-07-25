@@ -129,11 +129,16 @@ class View {
                 }
             }
         }
-        if ($cos->app && $cos->app->module) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->module->name ;
-            if (is_file(CITRUS_WWW_PATH . $src . '.css')) $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . CITRUS_PROJECT_URL . $src . '.css" />';
+        if ( $cos->app && $cos->app->ctrl ) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name ;
+            if ( is_file( CITRUS_WWW_PATH . $src . '.css') ) 
+                $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . 
+                            CITRUS_PROJECT_URL . $src . 
+                            '.css" />';
             if (is_file(CITRUS_WWW_PATH . $src . '.less')) 
-                $sheets[] = '<link rel="stylesheet" media="screen" type="text/less" href="' . CITRUS_PROJECT_URL . $src . '.less" />';
+                $sheets[] = '<link rel="stylesheet" media="screen" type="text/less" href="' . 
+                            CITRUS_PROJECT_URL . $src . 
+                            '.less" />';
         }
         
         return implode( "\n\t", $sheets ) . "\n";
@@ -188,8 +193,8 @@ class View {
             }
         }
         
-        if ($cos->app && $cos->app->module) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.css' ;
+        if ( $cos->app && $cos->app->ctrl ) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.css' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
@@ -265,8 +270,8 @@ class View {
             }
         }
         
-        if ($cos->app && $cos->app->module) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.js' ;
+        if ( $cos->app && $cos->app->ctrl ) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.js' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
@@ -307,8 +312,8 @@ class View {
                 }
             }
         }
-        if ($cos->app && $cos->app->module) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->module->name . '.js' ;
+        if ( $cos->app && $cos->app->ctrl ) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.js' ;
             if (is_file(CITRUS_WWW_PATH . $src)) 
                 $files[] = '<script type="text/javascript" src="' . CITRUS_PROJECT_URL . $src . '"></script>';
         }
@@ -337,6 +342,7 @@ class View {
      * @return string
      */
     public function displayTemplate() {
-        return $this->app->module->ctrl->displayTemplate( $this->app->module->path );
+        $cos = Citrus::getInstance();
+        return $cos->app->ctrl->displayTemplate( $cos->app->ctrl->path );
     }
 }

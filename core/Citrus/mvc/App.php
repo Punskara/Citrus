@@ -75,8 +75,10 @@ class App {
     /**
      * @var Array
      */
-    public $protectedModules = Array();
+    public $security_exceptions = Array();
 
+
+    public $isProtected = true;
     /**
      * Constructor.
      * 
@@ -135,23 +137,46 @@ class App {
         }
         return $found;
     }
-    
-    /** 
-     * Creates a module and a controller objects to launch the action
-     * 
-     * @param string  $moduleName  Name of the module we want to create
-     * @param string  $action  Name of the action we want to execute.
+ 
+    /**
+     * Creates the controller which will execute the action requested.
+     *
+     * @param array $args Arguments to pass to the contructor of the controller
+     * @param array $props Properties to set on the construction of the controller
+     *
+     * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
      */
-    public function createModule( $moduleName, $action ) {
-        $this->module = new Module( $moduleName, $this->path );
-        $this->module->isProtected = in_array( $moduleName, $this->protectedModules );
-        $this->module->readConfig();
-        $this->ctrl = $this->module->createController(
-            array( 
-                'action' => $action,
-                'path'   => $this->module->path,
-            )
-        );
+    public function createController( $ctrlName, $action ) {
+        $args['action'] = $action;
+        $args['path'] = $this->path . '/modules/' . $ctrlName;
+        $ctrlFile = $args['path'] . '/Controller.php';
+        // $args['moduleName'] = $ctrlName;
+        if ( file_exists( $ctrlFile ) ) {
+            $ctrlPath = str_replace( CITRUS_PATH, '', $args['path'] );
+            $ctrlPath = str_replace( '/', '\\', $ctrlPath ) . '\Controller';
+            try { 
+                $r = new \ReflectionClass( $ctrlPath ); 
+                $inst = $r->newInstanceArgs( $args ? $args : array() );
+
+                $inException = in_array( $ctrlName, $this->security_exceptions );
+
+                $this->ctrl = \core\Citrus\Citrus::apply( $inst, Array( 
+                    'name' => $ctrlName, 
+
+                    // isProtected = true  if appIsProtected   && !inException
+                    // isProtected = true  if !appIsProtected  && inException
+                    // isProtected = false if appIsProtected   && inException
+                    // isProtected = false if !appIsProtected  && !inException
+                    'isProtected' => $this->isProtected ? $inException ? false : true : $inException ? true : false
+                ) );
+
+                return $this->ctrl;
+            } catch ( \Exception $e ) {
+                prr($e, true);
+            }
+        } else {
+            return false;
+        }
     }
     
     
@@ -159,15 +184,72 @@ class App {
      * Executes the controller method that the action determines.
      */
     public function executeCtrlAction( $force_external_post = false ) {
-        $act = $this->ctrl->executeAction( $force_external_post );
-        if ( $act ) {
-            if ( $this->ctrl->layout === true ) {
-                $this->view->displayLayout();
-            } else {
-                echo $this->ctrl->displayTemplate( $this->module->path );
+        if ( $this->ctrl->actionExists() ) {
+            if ( !$this->isProtected() ) {
+                $act = $this->ctrl->executeAction( $force_external_post );
+                if ( $act ) {
+                    if ( $this->ctrl->layout === true )
+                        $this->view->displayLayout();
+                    else
+                        echo $this->ctrl->displayTemplate();
+                }
+            } else $this->onActionProtected();
+        } else $this->onActionNotFound();
+    }
+
+
+    /** 
+      * @return true  if ( appIsProtected && !inException || !appIsProtected  && inException )
+      * @return false if ( appIsProtected && inException || !appIsProtected  && !inException )
+    */
+    public function isProtected() {
+        $protected = false;
+
+        $closure = $this->isProtected;
+        if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
+            $protected = $closure();
+        } else {
+            $protected = $closure;
+        }
+
+        $inException = in_array( $this->ctrl->name, $this->security_exceptions );
+        return $protected ? 
+                    $inException ? $this->ctrl->isActionProtected() : !$this->ctrl->isActionProtected() :
+                    $inException ? !$this->ctrl->isActionProtected() : $this->ctrl->isActionProtected();
+    }
+
+    /**
+     * Triggered when action is protected.
+     * if controller doesn't have method "onActionProtected"
+     */
+
+    public function onActionProtected() {
+        if ( method_exists( $this->ctrl, "onActionProtected" ) ) {
+            $this->ctrl->onActionProtected();
+        } else {
+            $closure = $this->onActionProtected;
+            if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
+                $closure();
             }
         }
     }
+
+    /**
+     * Triggered when action is not found.
+     * if controller doesn't have method "onActionNotFound"
+     */
+
+    public function onActionNotFound() {
+        if ( method_exists( $this->ctrl, "onActionNotFound" ) ) {
+            $this->ctrl->onActionNotFound();
+        } else {
+            $closure = $this->onActionNotFound;
+            if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
+                $closure();
+            }
+        }
+    }
+
     
     /**
      * Creates a configuration file from the template.
