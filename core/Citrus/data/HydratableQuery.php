@@ -126,4 +126,21 @@ class HydratableQuery extends \core\Citrus\db\SelectQuery {
         $inst->hydrate( $row );
         return $inst;
     }
+    
+    public function count() {
+        if ( !$this->targetClass ) throw new \Exception( "Cannot hydrate query: no target class specified." );
+        $i = 0;
+        $this->columns = array( "COUNT(DISTINCT(`$this->table`.`id`))" );
+        /*$this->leftJoins = Array();
+        foreach ( $this->assocs as $colName => $attr ) {
+            $table = $this->AddAlias( $attr['foreignTable'], 'i' . $i );
+            $join =  'i' . $i . '.' . $attr['foreignReference'] . " = " . $this->table . '.' . $colName;
+            $this->AddLeftJoin( $table, $join );
+            $i++;
+        }*/
+        $res = $this->Execute()->fetchColumn( 0 );
+        // $this->leftJoins = Array();
+        // $this->columns = Array();
+        return $res;
+    }
 }
