@@ -3,7 +3,7 @@
 return array(
     'default' => array(
         'app' => 'install',
-        'module' => 'main',
+        'controller' => 'main',
         'action' => 'index',
     ),
     'routes' => array( 

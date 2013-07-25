@@ -2,7 +2,7 @@
 
 
 $this->module               = new core\Citrus\mvc\Module( 'main', $this->path, 'index' );
-$this->isSecure 			= false;
+$this->isSecure 			= true;
 $this->titleTag 			= "";
 $this->layout               = 'main';
 $this->templates 		    = array();

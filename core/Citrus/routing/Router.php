@@ -38,12 +38,12 @@ class Router {
     
     public $request_uri;
     public $app;
-    public $module;
+    public $controller;
     public $action;
     public $params;
     
     public $default_app;
-    public $default_module;
+    public $default_controller;
     public $default_action;
 
     public $ext = '.(html|json)';
@@ -70,10 +70,10 @@ class Router {
     public function defaultRoutes() {
         $this->map( '/:app/' );
         $this->map( '/:action' . $this->ext );
-        $this->map( '/:app/:module/' );
-        $this->map( '/:app/:module/:action' . $this->ext );
-        $this->map( '/:app/:module/:id/:action' . $this->ext, array(), array( 'id' => '[0-9]+' ) );
-        $this->map( '/:app/:module/:action' . $this->ext );
+        $this->map( '/:app/:controller/' );
+        $this->map( '/:app/:controller/:action' . $this->ext );
+        $this->map( '/:app/:controller/:id/:action' . $this->ext, array(), array( 'id' => '[0-9]+' ) );
+        $this->map( '/:app/:controller/:action' . $this->ext );
     }
 
     public function map( $rule, $target = array(), $conditions = array() ) {
@@ -86,7 +86,7 @@ class Router {
         if ( count( $this->routes ) ) {
             foreach($this->routes as $route) {
                 if ($route->is_matched) {
-                    $this->setRoute($route);
+                    $this->setRoute( $route );
                     break;
                 }
             }
@@ -106,9 +106,9 @@ class Router {
             $this->loadAppRoutes();
         }
 
-        if ( isset( $params['module'] ) ) {
-            $this->module = $params['module']; 
-            unset( $params['module'] );
+        if ( isset( $params['controller'] ) ) {
+            $this->controller = $params['controller']; 
+            unset( $params['controller'] );
         }
 
         if ( isset( $params['action'] ) ) {
@@ -120,10 +120,9 @@ class Router {
             $this->id = $params['id']; 
         } 
         $this->params = array_merge( $params, $_GET );
-
         
-        if ( empty( $this->module ) ) { 
-            $this->module = $this->default_module;
+        if ( empty( $this->controller ) ) { 
+            $this->controller = $this->default_controller;
         }
         if ( empty( $this->action ) ) {
             $this->action = $this->default_action;
@@ -132,13 +131,13 @@ class Router {
             $this->id = null;
         }
 
-        $w = explode( '_', $this->module );
+        $w = explode( '_', $this->controller );
 
         foreach( $w as $k => $v ) {
             $w[$k] = ucfirst( $v );
         }
 
-        $this->module_name = implode('', $w);
+        $this->controller_name = implode('', $w);
     }
       
     public function loadRoutes() {
@@ -151,33 +150,46 @@ class Router {
                 if ( count( $routes ) ) {
                     foreach ( $routes as $route ) {
                         if ( isset( $route['url'] ) && isset( $route['target'] ) ) {
-                            $this->map( $route['url'], $route['target'] );
+                            $this->map( 
+                                $route['url'], 
+                                $route['target'], 
+                                isset( $route['conditions'] ) ? $route['conditions'] : Array() 
+                            );
                         }
                     }
                 }
             }
+            // balayage des apps
+            $cos = \core\Citrus\Citrus::getInstance();
+            foreach ( $cos->getAppsList() as $app) $this->loadAppRoutes( $app );
+            
          } else {
              throw new sys\Exception( "No routing file found." );
          }
     }
       
-    public function loadAppRoutes() {
-        $routesFile = CITRUS_PATH . '/apps/' . $this->app . '/config/routing.php';
-        if ( file_exists( $routesFile ) ) {
+    public function loadAppRoutes( $app = null ) {
+        $virtual = true;
+        if ( is_null($app)) {
+            $app = $this->app;
+            $virtual = false;
+        } 
+        $routesFile = CITRUS_PATH . '/apps/' . $app . '/config/routing.php';
+        if ( file_exists( $routesFile ) ) {            
             $routes = include $routesFile;
-            if ( isset( $routes['default']['module'] ) && isset( $routes['default']['action'] ) ) {
-                $this->default_module = $routes['default']['module'];
+            if ( isset( $routes['default']['controller'] ) && isset( $routes['default']['action'] ) && !$virtual ) {
+                $this->default_controller = $routes['default']['controller'];
                 $this->default_action = $routes['default']['action'];
             }
-            if ( is_array( $routes ) && count( $routes ) ) {
-                foreach ( $routes as $route ) {
+            if ( isset($routes['routes']) && is_array( $routes['routes'] ) && count( $routes ) ) {
+                foreach ( $routes['routes'] as $route ) {
                     if ( isset( $route['url'] ) && isset( $route['target'] ) ) {
-                        $this->map( $route['url'], $route['target'] );
+                        $this->map( $route['url'], $route['target'], isset($route['conditions']) ? $route['conditions'] : Array() );
                     }
                 }
             }
         } else {
-            throw new sys\Exception( "No routing file found for app '$this->app'." );
+            throw new sys\Exception( "No routing file found for app '$app'." );
         }
     }
 }
