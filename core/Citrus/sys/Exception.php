@@ -56,9 +56,9 @@ class Exception extends \Exception {
     public static function renderHtml( $exception, $message = null ) {
         $s = '';
         if ( $message ) {
-            $s .= '<p class="message">' . $message . '</p>';
+            $s .= '<pre class="message">' . $message . '</pre>';
         }
-        $s .= '<p class="message">' . $exception->getMessage() . '</p>'
+        $s .= '<pre class="message">' . $exception->getMessage() . '</pre>'
            . '<p>'
            . '<code>' . $exception->getFile() . '</code>, line ' . $exception->getLine() . '.'
            . '</p>'

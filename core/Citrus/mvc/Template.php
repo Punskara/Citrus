@@ -36,7 +36,7 @@ class Template {
     public $pageTitle;
     
     public function __construct( $name ) {
-        $this->name = $name;
+        $this->name = str_replace( "::","/",$name );
     }
     
     public function display( $path ) {
@@ -48,18 +48,23 @@ class Template {
             include $path . '/templates/' . $this->name . '.tpl.php';
             $tplContent = ob_get_contents();
             ob_get_clean();
+        } elseif ( file_exists( dirname( dirname( $path ) ) . '/templates/' . $this->name . '.tpl.php' ) ) {
+            ob_start();
+            include dirname( dirname( $path ) ) . '/templates/' . $this->name . '.tpl.php';
+            $tplContent = ob_get_contents();
+            ob_get_clean();
         }
         return $tplContent;
     }
     
     public function assign( $var, $val = null ) {
         if ( is_array( $var ) || $var instanceof Traversable ) {
-			foreach ( $var as $k => $v ) {
-				$this->vars[$k] = $v;
-			}
-		} else {
-			$this->vars[ $var ] = $val;
-		}
-		return $val;
+            foreach ( $var as $k => $v ) {
+                $this->vars[$k] = $v;
+            }
+        } else {
+            $this->vars[ $var ] = $val;
+        }
+        return $val;
     }
 }

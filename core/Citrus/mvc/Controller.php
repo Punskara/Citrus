@@ -87,10 +87,11 @@ class Controller {
      * 
      * @param string  $action  Name of the action we want to execute.
      */ 
-    public function __construct( $action ) {    
+    public function __construct( $action, $path = '' ) {    
         $this->action = $action;
         $this->request = new http\Request();
         $this->template = new Template( $action );
+        $this->path = $path;
     }
     
     
@@ -102,8 +103,8 @@ class Controller {
      * 
      * @see do_PageNotFound
      */
-    public function executeAction() {
-        if ( $this->request->method == 'POST' && !$this->request->refererIsInternal() ) {
+    public function executeAction( $force_external_post = false ) {
+        if ( $this->request->method == 'POST' && !$this->request->refererIsInternal() && !$force_external_post ) {
             exit;
         }
         $cos = Citrus::getInstance();
@@ -187,7 +188,7 @@ class Controller {
      * @param  string  $action  the action which we want to load the template
      */
     public function loadActionTemplate( $action ) {
-        $tplFile = $this->module->path . '/templates/' . $action . '.tpl.php';
+        $tplFile = $this->path . '/templates/' . $action . '.tpl.php';
         if ( file_exists( $tplFile ) ) {
             $this->app->view->template = $tplFile;
             $this->template->name = $action;
@@ -210,24 +211,26 @@ class Controller {
             }
         } else {
             #vexp($_POST);
-            $type = $this->request->param( 'modelType', FILTER_SANITIZE_STRING );
+            $type = $this->request->param( 'modelType', 'string' );
             if ( class_exists( $type ) ) {
                 $inst = new $type();
                 if ( isset( $_FILES ) ) {
-            		foreach ( $_FILES as $name => $file ) {
-            			if ( !empty( $file['name'] ) ) {
-            			    if ( $inst->$name ) {
-								unlink( CITRUS_PATH . 'web/upload' . $inst->$name );
-							}
-            				$upld = new kos_http_Uploader( $file );
-            				$upld->readFile();
-            				$up = $upld->moveFile( CITRUS_PATH . '/web/upload/' );
-            				$inst->args[$name] = $inst->$name = '/web/upload/' . $upld->fileName;
-            			}
-            		}
-            	}
+                    foreach ( $_FILES as $name => $file ) {
+                        if ( !empty( $file['name'] ) ) {
+                            if ( $inst->$name ) {
+                                unlink( CITRUS_PATH . 'web/upload' . $inst->$name );
+                            }
+                            $upld = new kos_http_Uploader( $file );
+                            $upld->readFile();
+                            $up = $upld->moveFile( CITRUS_PATH . '/web/upload/' );
+                            $inst->args[$name] = $inst->$name = '/web/upload/' . $upld->fileName;
+                        }
+                    }
+                }
                 $inst->hydrateByFilters();
                 $rec = $inst->save();
+                $inst->hydrateManyByFilters();
+                
                 #vexp($rec);exit();
                 if ( $this->request->isXHR ) {
                     if ( $rec ) {
@@ -235,10 +238,10 @@ class Controller {
                         exit;
                     }
                 } else {
-                    $loc = "index.php?cos_app={$cos->app->name}&cos_module={$cos->app->module->name}&cos_action=index";
-                    Http::redirect( $loc );
+                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+                    http\Http::redirect( $loc );
                 }
-            }
+            } else throw new sys\Exception( "Unknown class '$type'" );
         }
     }
     
@@ -256,13 +259,13 @@ class Controller {
     public function do_delete( $resourceType = null ) {
         $cos = Citrus::getInstance();
         $module = $this->module->name;
-        $id = $this->request->param( 'id', FILTER_VALIDATE_INT );
+        $id = $this->request->param( 'id', 'int' );
         if ( $id ) {
             if ( class_exists( $resourceType ) ) {
                 data\Model::deleteOne( $resourceType, $id );
             }
-            $loc = "index.php?cos_app={$cos->app->name}&cos_module={$cos->app->module->name}&cos_action=index";
-            Http::redirect( $loc );
+            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+            http\Http::redirect( $loc );
         }
     }
 
@@ -278,15 +281,17 @@ class Controller {
      * @todo Handle the case that the request is sent with AJAX.
      */
     public function do_deleteSeveral( $resourceType = null ) {
-        $module = $this->module->name;
-        $ids = $_POST['delete'];
-        if ( is_array( $ids ) ) {
-            if ( class_exists( $resourceType ) ) {
-                data\Model::deleteSeveral( $resourceType, $ids );
+        $cos = Citrus::getInstance();
+        if (isset($_POST['delete'])) {
+            $ids = $_POST['delete'];
+            if ( is_array( $ids ) ) {
+                if ( class_exists( $resourceType ) ) {
+                    \core\Citrus\data\Model::deleteSeveral( $resourceType, $ids );
+                }
             }
-            $loc = "index.php?cos_app={$cos->app->name}&cos_module={$cos->app->module->name}&cos_action=index";
-            Http::redirect( $loc );
         }
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->module->name}/";
+        http\Http::redirect( $loc );
     }
     public function do_captcha() {
         $this->layout = false;

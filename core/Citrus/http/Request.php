@@ -93,7 +93,7 @@ class Request {
      */
     public function param( $name, $filter ) {
         if ( isset( $this->params[$name] ) ) {
-            return filter_var( $this->params[$name], $filter );
+            return \core\Citrus\Filter::filterVar( $name, $filter, $this->method, $this->params );
         }
         return false;
     }

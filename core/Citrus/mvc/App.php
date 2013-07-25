@@ -35,88 +35,88 @@ class App {
     /**
      * @var string
      */
-	public $name;
-	
-	/**
-	 * @var \core\Citrus\User
-	 */
-	public $user;
-	
-	/**
+    public $name;
+    
+    /**
+     * @var \core\Citrus\User
+     */
+    public $user;
+    
+    /**
      * @var string
      */
-	public $titleTag;
-	
-	/**
+    public $titleTag;
+    
+    /**
      * @var \core\Citrus\mvc\Module
      */
-	public $module;
-	
-	/**
+    public $module;
+    
+    /**
      * @var \core\Citrus\mvc\Controller
      */
-	public $ctrl;
-	
-	/**
+    public $ctrl;
+    
+    /**
      * @var \core\Citrus\View
      */
-	public $view;
-	
-	/**
+    public $view;
+    
+    /**
      * @var string
      */
-	public $mainLayout;
-	
-	/**
+    public $mainLayout;
+    
+    /**
      * @var string
      */
-	public $path;
-	
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param string  $name  name of the app.
-	 * 
-	 * @throws \core\Citrus\sys\Exception if the name is not referenced.
-	 */
-	public function __construct( $name ) {
-	    if ( is_dir( CITRUS_APPS_PATH . $name ) ) {
-		    $this->name = $name;
-		    $this->path = CITRUS_APPS_PATH . $name;
-		    $this->mainLayout = $this->path . '/templates/main.tpl.php';
-		    $this->view = new View( $this );
+    public $path;
+    
+    
+    /**
+     * Constructor.
+     * 
+     * @param string  $name  name of the app.
+     * 
+     * @throws \core\Citrus\sys\Exception if the name is not referenced.
+     */
+    public function __construct( $name ) {
+        if ( is_dir( CITRUS_APPS_PATH . $name ) ) {
+            $this->name = $name;
+            $this->path = CITRUS_APPS_PATH . $name;
+            $this->mainLayout = $this->path . '/templates/main.tpl.php';
+            $this->view = new View( $this );
             $this->readConfig();
-		} else {
-		    throw new sys\Exception( "Unkown app $name" );
-		}
-	}
+        } else {
+            throw new sys\Exception( "Unkown app $name" );
+        }
+    }
 
-	public function __toString() {
-		return $this->name;
-	}
-	
-	/**
-	 * Reads app config and view files
-	 * 
-	 */
-	public function readConfig() {
-	    if ( file_exists( $this->path . '/config/config.php' ) ) {
-	        require_once $this->path . '/config/config.php';
-	    }
-	    if ( file_exists( $this->path . '/config/view.php' ) ) { 
-	        require_once $this->path . '/config/view.php';
-	    }
-	}
-	
-	/**
-	 * scans the modules directory and checks the existence 
-	 * of the module named $module. Returns true if the module exists, else returns false.
-	 *
-	 * @param string $module module name
-	 * @return boolean
-	 */
-	public function moduleExists( $module ) {
+    public function __toString() {
+        return $this->name;
+    }
+    
+    /**
+     * Reads app config and view files
+     * 
+     */
+    public function readConfig() {
+        if ( file_exists( $this->path . '/config/config.php' ) ) {
+            require_once $this->path . '/config/config.php';
+        }
+        if ( file_exists( $this->path . '/config/view.php' ) ) { 
+            require_once $this->path . '/config/view.php';
+        }
+    }
+    
+    /**
+     * scans the modules directory and checks the existence 
+     * of the module named $module. Returns true if the module exists, else returns false.
+     *
+     * @param string $module module name
+     * @return boolean
+     */
+    public function moduleExists( $module ) {
         $dir = $this->path . '/modules';
         $found = false;
         if ( is_dir( $dir ) ) {
@@ -141,7 +141,10 @@ class App {
     public function createModule( $moduleName, $action ) {
         $this->module = new Module( $moduleName, $this->path );
         $this->ctrl = $this->module->createController(
-            array( 'action' => $action )
+            array( 
+                'action' => $action,
+                'path'   => $this->module->path,
+            )
         );
     }
     
@@ -149,8 +152,8 @@ class App {
     /**
      * Executes the controller method that the action determines.
      */
-    public function executeCtrlAction() {
-        $this->ctrl->executeAction();
+    public function executeCtrlAction( $force_external_post = false ) {
+        $this->ctrl->executeAction( $force_external_post );
         if ( $this->ctrl->layout === true ) {
             $this->view->displayLayout();
         } else {
@@ -195,6 +198,28 @@ class App {
             $write = false;
             if ( $content ) {
                 $file = fopen( $this->path . '/config/view.php', 'w' );
+                $write = fwrite( $file, $content );
+                fclose( $file );
+            }
+            return $write;
+        } else return false;
+    }
+
+    /**
+     * Creates a 'routing' file from the template.
+     *
+     * @return boolean whether the file could be created or not.
+     */
+    public function generateRoutingFile() {
+        if ( is_dir( $this->path ) ) {
+            $templateFile = CITRUS_PATH . '/core/Citrus/mvc/templates/routing.tpl';
+            $tpl =  fopen( $templateFile, 'r' );
+            $content = fread( $tpl, filesize( $templateFile ) );
+            fclose( $tpl );
+            
+            $write = false;
+            if ( $content ) {
+                $file = fopen( $this->path . '/config/routing.php', 'w' );
                 $write = fwrite( $file, $content );
                 fclose( $file );
             }
