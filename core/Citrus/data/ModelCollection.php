@@ -19,7 +19,7 @@
 
 /**
  * @package Citrus\data
- * @subpackage Citrus\data\Schema
+ * @subpackage Citrus\data\ModelCollection
  * @author Rémi Cazalet <remi@caramia.fr>
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
@@ -28,9 +28,25 @@
 namespace core\Citrus\data;
 use \core\Citrus\Citrus;
 
+/**
+ * This class creates an object handling a HydratableQuery
+ * with flexibility
+ */
+
 class ModelCollection {
+    /**
+     * @var Array
+     */
     public $items = Array();
+
+    /**
+     * @var String
+     */
     public $targetClass;
+
+    /**
+     * @var core\Citrus\data\HydratableQuery
+     */
     public $query;
     
     public function __construct( $targetClass ) {
@@ -51,11 +67,22 @@ class ModelCollection {
         }
     }
     
+    /**
+     * launches the query and stores results into $items;
+     */
     public function fetch() {
         $this->query->columns = Array( '*' );
         $this->items = $this->query->hydrateList();
     }
     
+
+    /**
+     * Builds an array containing the results of the query
+     * indexed by choosen column
+     * 
+     * @param $col    String    index
+     * @return Array
+     */
     public function toArrayIndexedBy( $col ) {
         if ( property_exists( $this->targetClass, $col ) ) {
             $array = Array();
@@ -67,6 +94,11 @@ class ModelCollection {
         return false;
     }
     
+
+    /**
+     * Returns the number of entries in Array $items
+     * @return Integer
+     */
     public function count() {
         return count( $this->items );
     }
