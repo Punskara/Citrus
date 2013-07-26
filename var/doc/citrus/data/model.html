@@ -1,0 +1,508 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:27 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Model (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/data/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/data/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\data\Model</div>
+<a href="../../source/data/model.php.html#line40" class="location">data/Model.php at line 40</a>
+
+<h1>Class Model</h1>
+
+<pre class="tree"><strong>Model</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Model</strong></p>
+
+<div class="comment" id="overview_description"><p>This class is parent for any persistant object used with Citrus
+Its methods are useful to CRUD objects,
+and to generate back office forms and lists</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#args">$args</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/form/form.html">Form</a></td>
+<td class="description"><p class="name"><a href="#form">$form</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/data/schema.html">Schema</a></td>
+<td class="description"><p class="name"><a href="#schema">$schema</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#tableName">$tableName</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constructor">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#__construct()">__construct</a>()</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#save()">save</a>(bool forced)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateWithArgs()">hydrateWithArgs</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateByFilters()">hydrateByFilters</a>()</p><p class="description">Hydrates an object with filtered vars in _POST</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateManyByFilters()">hydrateManyByFilters</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#delete()">delete</a>(mixed id)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#generateForm()">generateForm</a>()</p><p class="description">Generates an HTML form from the schema of the object</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#displayForm()">displayForm</a>()</p><p class="description">Displays generated HTML form</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#selectAll()">selectAll</a>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass, bool pager)</p><p class="description">Data accessor : loads all objects of type $targetClass in database</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#selectAllWhere()">selectAllWhere</a>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass, mixed where, bool or_where, bool order, bool orderType, bool limit)</p><p class="description">Data accessor : loads all objects of type $targetClass in database</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#selectAllLimit()">selectAllLimit</a>(mixed targetClass, mixed limit, bool pager)</p></td>
+</tr>
+<tr>
+<td class="type">static  <a href="../../citrus/data/schema.html">Schema</a></td>
+<td class="description"><p class="name"><a href="#getSchema()">getSchema</a>($targetClass Type, mixed targetClass)</p><p class="description">Gets the schema of the object</p></td>
+</tr>
+<tr>
+<td class="type">static  integer</td>
+<td class="description"><p class="name"><a href="#count()">count</a>(mixed targetClass, bool where)</p><p class="description">Counts how many objects of $targetClass exists in database
+according to the $where parameter.</p></td>
+</tr>
+<tr>
+<td class="type"> false|object</td>
+<td class="description"><p class="name"><a href="#getOne()">getOne</a>(integer id)</p><p class="description">Fetches the object of ID $id</p></td>
+</tr>
+<tr>
+<td class="type">static  false|object</td>
+<td class="description"><p class="name"><a href="#selectOne()">selectOne</a>(integer id, mixed targetClass)</p><p class="description">Fetches the object of ID $id</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#selectWhere()">selectWhere</a>($targetClass string, $where targetClass, mixed where)</p><p class="description">Data accessor : loads all objects of type $targetClass in database</p></td>
+</tr>
+<tr>
+<td class="type"> false|object</td>
+<td class="description"><p class="name"><a href="#hydrate()">hydrate</a>(array args)</p><p class="description">Hydrates the object</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#hydrateAssoc()">hydrateAssoc</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  boolean</td>
+<td class="description"><p class="name"><a href="#deleteOne()">deleteOne</a>(string targetClass, integer id)</p><p class="description">Deletes the object of type $targetClass which ID is $id</p></td>
+</tr>
+<tr>
+<td class="type">static  boolean</td>
+<td class="description"><p class="name"><a href="#deleteSeveral()">deleteSeveral</a>(string targetClass, array ids)</p><p class="description">Deletes the objects of type $targetClass which ID is in the array $ids</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#serialize()">serialize</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#toArray()">toArray</a>(mixed merged)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#toJSON()">toJSON</a>()</p></td>
+</tr>
+<tr>
+<td class="type">static  void</td>
+<td class="description"><p class="name"><a href="#select()">select</a>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass)</p><p class="description">Data accessor : loads all objects of type $targetClass in database</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/data/model.php.html#line50" class="location">data/Model.php at line 50</a>
+
+<h3 id="args">args</h3>
+<code class="signature">public  array <strong>$args</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line79" class="location">data/Model.php at line 79</a>
+
+<h3 id="form">form</h3>
+<code class="signature">public  <a href="../../citrus/html/form/form.html">Form</a> <strong>$form</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line74" class="location">data/Model.php at line 74</a>
+
+<h3 id="schema">schema</h3>
+<code class="signature">public  <a href="../../citrus/data/schema.html">Schema</a> <strong>$schema</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line69" class="location">data/Model.php at line 69</a>
+
+<h3 id="tableName">tableName</h3>
+<code class="signature">public  string <strong>$tableName</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Constructor Detail</h2>
+<a href="../../source/data/model.php.html#line83" class="location">data/Model.php at line 83</a>
+
+<h3 id="__construct()">__construct</h3>
+<code class="signature">public  void <strong>__construct</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/data/model.php.html#line110" class="location">data/Model.php at line 110</a>
+
+<h3 id="save()">save</h3>
+<code class="signature">public  void <strong>save</strong>(bool forced)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line172" class="location">data/Model.php at line 172</a>
+
+<h3 id="hydrateWithArgs()">hydrateWithArgs</h3>
+<code class="signature">public  void <strong>hydrateWithArgs</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Deprecated:</dt>
+<dd>Any use of $args will be removed</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line188" class="location">data/Model.php at line 188</a>
+
+<h3 id="hydrateByFilters()">hydrateByFilters</h3>
+<code class="signature">public  void <strong>hydrateByFilters</strong>()</code>
+<div class="details">
+<p>Hydrates an object with filtered vars in _POST</p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line210" class="location">data/Model.php at line 210</a>
+
+<h3 id="hydrateManyByFilters()">hydrateManyByFilters</h3>
+<code class="signature">public  void <strong>hydrateManyByFilters</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line222" class="location">data/Model.php at line 222</a>
+
+<h3 id="delete()">delete</h3>
+<code class="signature">public  void <strong>delete</strong>(mixed id)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line234" class="location">data/Model.php at line 234</a>
+
+<h3 id="generateForm()">generateForm</h3>
+<code class="signature">public  void <strong>generateForm</strong>()</code>
+<div class="details">
+<p>Generates an HTML form from the schema of the object</p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line291" class="location">data/Model.php at line 291</a>
+
+<h3 id="displayForm()">displayForm</h3>
+<code class="signature">public  void <strong>displayForm</strong>()</code>
+<div class="details">
+<p>Displays generated HTML form</p></div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line317" class="location">data/Model.php at line 317</a>
+
+<h3 id="selectAll()">selectAll</h3>
+<code class="signature">public static  void <strong>selectAll</strong>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass, bool pager)</code>
+<div class="details">
+<p>Data accessor : loads all objects of type $targetClass in database</p><dl>
+<dt>Parameters:</dt>
+<dd>string - Type of object</dd>
+<dd>\core\Citrus\data\Pager|boolean - Pager object</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line352" class="location">data/Model.php at line 352</a>
+
+<h3 id="selectAllWhere()">selectAllWhere</h3>
+<code class="signature">public static  void <strong>selectAllWhere</strong>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass, mixed where, bool or_where, bool order, bool orderType, bool limit)</code>
+<div class="details">
+<p>Data accessor : loads all objects of type $targetClass in database</p><dl>
+<dt>Parameters:</dt>
+<dd>string - Type of object</dd>
+<dd>\core\Citrus\data\Pager|boolean - Pager object</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line404" class="location">data/Model.php at line 404</a>
+
+<h3 id="selectAllLimit()">selectAllLimit</h3>
+<code class="signature">public static  void <strong>selectAllLimit</strong>(mixed targetClass, mixed limit, bool pager)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line440" class="location">data/Model.php at line 440</a>
+
+<h3 id="getSchema()">getSchema</h3>
+<code class="signature">public static  <a href="../../citrus/data/schema.html">Schema</a> <strong>getSchema</strong>($targetClass Type, mixed targetClass)</code>
+<div class="details">
+<p>Gets the schema of the object</p><dl>
+<dt>Parameters:</dt>
+<dd>Type - of the object</dd>
+<dt>Returns:</dt>
+<dd>The schema.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line463" class="location">data/Model.php at line 463</a>
+
+<h3 id="count()">count</h3>
+<code class="signature">public static  integer <strong>count</strong>(mixed targetClass, bool where)</code>
+<div class="details">
+<p>Counts how many objects of $targetClass exists in database
+according to the $where parameter.</p><dl>
+<dt>Returns:</dt>
+<dd>the number of objects.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line486" class="location">data/Model.php at line 486</a>
+
+<h3 id="getOne()">getOne</h3>
+<code class="signature">public  false|object <strong>getOne</strong>(integer id)</code>
+<div class="details">
+<p>Fetches the object of ID $id</p><dl>
+<dt>Deprecated:</dt>
+<dd>Replaced by selectOne</dd>
+<dt>Parameters:</dt>
+<dd>id - object ID in database</dd>
+<dt>Returns:</dt>
+<dd>whether if the object is found or not</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line517" class="location">data/Model.php at line 517</a>
+
+<h3 id="selectOne()">selectOne</h3>
+<code class="signature">public static  false|object <strong>selectOne</strong>(integer id, mixed targetClass)</code>
+<div class="details">
+<p>Fetches the object of ID $id</p><dl>
+<dt>Parameters:</dt>
+<dd>id - object ID in database</dd>
+<dt>Returns:</dt>
+<dd>whether if the object is found or not</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line547" class="location">data/Model.php at line 547</a>
+
+<h3 id="selectWhere()">selectWhere</h3>
+<code class="signature">public static  void <strong>selectWhere</strong>($targetClass string, $where targetClass, mixed where)</code>
+<div class="details">
+<p>Data accessor : loads all objects of type $targetClass in database</p><dl>
+<dt>Parameters:</dt>
+<dd>string - Type of object</dd>
+<dd></dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line588" class="location">data/Model.php at line 588</a>
+
+<h3 id="hydrate()">hydrate</h3>
+<code class="signature">public  false|object <strong>hydrate</strong>(array args)</code>
+<div class="details">
+<p>Hydrates the object</p><dl>
+<dt>Deprecated:</dt>
+<dd>Replaced by the use of HydratableQuery</dd>
+<dt>Parameters:</dt>
+<dd>args - class properties</dd>
+<dt>Returns:</dt>
+<dd>whether if the object is found or not</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line627" class="location">data/Model.php at line 627</a>
+
+<h3 id="hydrateAssoc()">hydrateAssoc</h3>
+<code class="signature">public  void <strong>hydrateAssoc</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line652" class="location">data/Model.php at line 652</a>
+
+<h3 id="deleteOne()">deleteOne</h3>
+<code class="signature">public static  boolean <strong>deleteOne</strong>(string targetClass, integer id)</code>
+<div class="details">
+<p>Deletes the object of type $targetClass which ID is $id</p><dl>
+<dt>Parameters:</dt>
+<dd>targetClass - type of the object</dd>
+<dd>id - id of the object</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line673" class="location">data/Model.php at line 673</a>
+
+<h3 id="deleteSeveral()">deleteSeveral</h3>
+<code class="signature">public static  boolean <strong>deleteSeveral</strong>(string targetClass, array ids)</code>
+<div class="details">
+<p>Deletes the objects of type $targetClass which ID is in the array $ids</p><dl>
+<dt>Parameters:</dt>
+<dd>targetClass - type of the object</dd>
+<dd>ids - array of IDs to delete</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line681" class="location">data/Model.php at line 681</a>
+
+<h3 id="serialize()">serialize</h3>
+<code class="signature">public  void <strong>serialize</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line685" class="location">data/Model.php at line 685</a>
+
+<h3 id="toArray()">toArray</h3>
+<code class="signature">public  void <strong>toArray</strong>(mixed merged)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line699" class="location">data/Model.php at line 699</a>
+
+<h3 id="toJSON()">toJSON</h3>
+<code class="signature">public  void <strong>toJSON</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/model.php.html#line711" class="location">data/Model.php at line 711</a>
+
+<h3 id="select()">select</h3>
+<code class="signature">public static  void <strong>select</strong>($targetClass string, $pager \core\Citrus\data\Pager|boolean, mixed targetClass)</code>
+<div class="details">
+<p>Data accessor : loads all objects of type $targetClass in database</p><dl>
+<dt>Parameters:</dt>
+<dd>string - Type of object</dd>
+<dd>\core\Citrus\data\Pager|boolean - Pager object</dd>
+</dl>
+</div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

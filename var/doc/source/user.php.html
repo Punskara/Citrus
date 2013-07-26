@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:28 +0000">
+
+<link rel="stylesheet" type="text/css" href="../stylesheet.css">
+<link rel="start" href="../overview-summary.html">
+
+<title>User.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../overview-files.html">Files</a></li>
+<li><a href="../deprecated-list.html">Deprecated</a></li>
+<li><a href="../todo-list.html">Todo</a></li>
+<li><a href="../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>User.php</h1>
+<div class="comment" id="overview_description"><p></p></div>
+
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus
+<a name="line22"></a> * @subpackage Citrus\User
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line30"></a> * @Entity @Table(name=&quot;citrus_user&quot;)
+<a name="line31"></a> */</span>
+<a name="line32"></a>&nbsp;
+<a name="line33"></a><span style="color: #e2874e;">namespace</span> core\Citrus<span style="color: #fff;">;</span>
+<a name="line34"></a>&nbsp;
+<a name="line35"></a><span style="color: #99cf4d;">class</span> User <span style="color: #99cf4d;">extends</span> data\Model <span style="color: #fff;">&#123;</span>
+<a name="line36"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line37"></a>    * @Id @Column(type=&quot;integer&quot;) @GeneratedValue
+<a name="line38"></a>    */</span>
+<a name="line39"></a>    <span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$id</span><span style="color: #fff;">;</span>
+<a name="line40"></a>&nbsp;
+<a name="line41"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line42"></a>     * @Column(type=&quot;string&quot;)
+<a name="line43"></a>     */</span>
+<a name="line44"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">;</span>
+<a name="line45"></a>&nbsp;
+<a name="line46"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line47"></a>     * @Column(type=&quot;string&quot;)
+<a name="line48"></a>     */</span>
+<a name="line49"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$password</span><span style="color: #fff;">;</span>
+<a name="line50"></a>&nbsp;
+<a name="line51"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line52"></a>     * @Column(type=&quot;string&quot;)
+<a name="line53"></a>     */</span>
+<a name="line54"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$name</span><span style="color: #fff;">;</span>
+<a name="line55"></a>&nbsp;
+<a name="line56"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line57"></a>     * @Column(type=&quot;string&quot;)
+<a name="line58"></a>     */</span>
+<a name="line59"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$email</span><span style="color: #fff;">;</span>
+<a name="line60"></a>&nbsp;
+<a name="line61"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line62"></a>     * @Column(type=&quot;boolean&quot;)
+<a name="line63"></a>     */</span>
+<a name="line64"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$valid</span><span style="color: #fff;">;</span>
+<a name="line65"></a>&nbsp;
+<a name="line66"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line67"></a>     * @Column(type=&quot;boolean&quot;)
+<a name="line68"></a>     */</span>
+<a name="line69"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$isAdmin</span><span style="color: #fff;">;</span>
+<a name="line70"></a>&nbsp;
+<a name="line71"></a>    <span style="color: #99cf4d;">const</span> TABLENAME <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'citrus_user'</span><span style="color: #fff;">;</span>
+<a name="line72"></a>&nbsp;
+<a name="line73"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __construct<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line74"></a>        <span style="color: #99cf4d;">parent</span><span style="color: #e2874e;">::</span>__construct<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line75"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line76"></a>&nbsp;
+<a name="line77"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __toString<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span>  <span style="color: #fff;">&#123;</span>
+<a name="line78"></a>        <span style="color: #e2874e;">return</span> <span style="color: #fff;">&#40;</span>string<span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">name</span><span style="color: #fff;">;</span>
+<a name="line79"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line80"></a>&nbsp;
+<a name="line81"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> login<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$password</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line82"></a>	    <span style="color: #3e87e3;">$user</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fetchUser</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$password</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line83"></a>	    <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$user</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line84"></a>		    <span style="color: #3e87e3;">$_SESSION</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'CitrusUserLogin'</span><span style="color: #fff;">&#93;</span> 	<span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #fff;">;</span>
+<a name="line85"></a>		    <span style="color: #3e87e3;">$_SESSION</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'CitrusUserId'</span><span style="color: #fff;">&#93;</span>       <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span><span style="color: #fff;">;</span>
+<a name="line86"></a>		    <span style="color: #3e87e3;">$_SESSION</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'CitrusUser'</span><span style="color: #fff;">&#93;</span>         <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$user</span><span style="color: #fff;">;</span>
+<a name="line87"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line88"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$user</span><span style="color: #fff;">;</span>
+<a name="line89"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line90"></a>&nbsp;
+<a name="line91"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> isLogged<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line92"></a>		<span style="color: #e2874e;">return</span> <span style="color: #fff;">&#40;</span> 
+<a name="line93"></a>			<a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$_SESSION</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'CitrusUserLogin'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span>  <span style="color: #e2874e;">&amp;&amp;</span> 
+<a name="line94"></a>			<a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$_SESSION</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'CitrusUserId'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span>
+<a name="line95"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line96"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line97"></a>&nbsp;
+<a name="line98"></a>	<span style="color: #99cf4d;">private</span> <span style="color: #99cf4d;">function</span> fetchUser<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$password</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line99"></a>	    <span style="color: #3e87e3;">$cos</span> <span style="color: #e2874e;">=</span> Citrus<span style="color: #e2874e;">::</span><span style="color: #fff;">getInstance</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line100"></a>&nbsp;
+<a name="line101"></a>	    <span style="color: #3e87e3;">$password</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/md5"><span style="color: #dad085;">md5</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$password</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line102"></a>&nbsp;
+<a name="line103"></a>	    <span style="color: #3e87e3;">$exists</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$cos</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">db</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">execute</span><span style="color: #fff;">&#40;</span> 
+<a name="line104"></a>	        <span style="color: #4fa742;">&quot;SELECT * FROM &quot;</span> <span style="color: #e2874e;">.</span> <span style="color: #99cf4d;">self</span><span style="color: #e2874e;">::</span><span style="color: #fff;">TABLENAME</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;
+<a name="line105"></a>	        WHERE login = '<span style="color: #869a95;">$login</span>' 
+<a name="line106"></a>	        AND password = '<span style="color: #869a95;">$password</span>'&quot;</span>
+<a name="line107"></a>	    <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fetchObject</span><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'\\core\\Citrus\\User'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line108"></a>&nbsp;
+<a name="line109"></a>	    <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$exists</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line110"></a>    	    <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span>    <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$exists</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #fff;">;</span>
+<a name="line111"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">name</span>     <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$exists</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">name</span><span style="color: #fff;">;</span>
+<a name="line112"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">email</span>    <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$exists</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">email</span><span style="color: #fff;">;</span>
+<a name="line113"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span>       <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$exists</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span><span style="color: #fff;">;</span>
+<a name="line114"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line115"></a>	    <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$exists</span><span style="color: #fff;">;</span>
+<a name="line116"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line117"></a>&nbsp;
+<a name="line118"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">function</span> createTable<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line119"></a>	    <span style="color: #3e87e3;">$q</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">&quot;CREATE TABLE `citrus_user` (
+<a name="line120"></a>            `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+<a name="line121"></a>            `login` VARCHAR( 255 ) NOT NULL ,
+<a name="line122"></a>            `password` VARCHAR( 255 ) NOT NULL ,
+<a name="line123"></a>            `name` VARCHAR( 255 ) NOT NULL ,
+<a name="line124"></a>            `email` VARCHAR( 255 ) NOT NULL ,
+<a name="line125"></a>            `isadmin` TINYINT NOT NULL ,
+<a name="line126"></a>            `valid` TINYINT NOT NULL
+<a name="line127"></a>        ) ENGINE = MYISAM ;<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line128"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$q</span><span style="color: #fff;">;</span>
+<a name="line129"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line130"></a>&nbsp;
+<a name="line131"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">function</span> insertFirstUser<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line132"></a>	    <span style="color: #3e87e3;">$q</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">&quot;INSERT INTO `citrus_user` (
+<a name="line133"></a>            `id` ,
+<a name="line134"></a>            `login` ,
+<a name="line135"></a>            `password` ,
+<a name="line136"></a>            `name` ,
+<a name="line137"></a>            `email` ,
+<a name="line138"></a>            `isadmin`,
+<a name="line139"></a>            `valid`
+<a name="line140"></a>        )
+<a name="line141"></a>        VALUES (
+<a name="line142"></a>            NULL , 'admin', '1a1dc91c907325c69271ddf0c944bc72', 'root', 'remi@caramia.fr', 1, 1
+<a name="line143"></a>        );<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line144"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$q</span><span style="color: #fff;">;</span>
+<a name="line145"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line146"></a>&nbsp;
+<a name="line147"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> getIP<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line148"></a>	    <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$_SERVER</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'REMOTE_ADDR'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">;</span>
+<a name="line149"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line150"></a>&nbsp;
+<a name="line151"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> getUserAgent<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line152"></a>	    <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$_SERVER</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'HTTP_USER_AGENT'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">;</span>
+<a name="line153"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line154"></a>&nbsp;
+<a name="line155"></a>&nbsp;
+<a name="line156"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __get<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$name</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line157"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> property_exists<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$name</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line158"></a>            <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #3e87e3;">$name</span><span style="color: #fff;">;</span>
+<a name="line159"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line160"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line161"></a>&nbsp;
+<a name="line162"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __set<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$name</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line163"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> property_exists<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$name</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line164"></a>            <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #3e87e3;">$name</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">;</span>
+<a name="line165"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line166"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line167"></a><span style="color: #fff;">&#125;</span>
+<a name="line168"></a>&nbsp;
+<a name="line169"></a>&nbsp;</pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

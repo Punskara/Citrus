@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:32 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>wiki/Wiki.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>wiki/Wiki.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\wiki
+<a name="line22"></a> * @subpackage Citrus\wiki\Wiki
+<a name="line23"></a> * @author Nicolas Mouret &lt;nicolas@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a><span style="color: #e2874e;">namespace</span> core\Wiki<span style="color: #fff;">;</span>
+<a name="line29"></a>&nbsp;
+<a name="line30"></a><span style="color: #99cf4d;">class</span> Wiki <span style="color: #99cf4d;">extends</span> Wstream <span style="color: #fff;">&#123;</span>
+<a name="line31"></a>&nbsp;
+<a name="line32"></a>	<span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$config</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line33"></a>		<span style="color: #4fa742;">'protocole'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'http'</span><span style="color: #fff;">,</span>
+<a name="line34"></a>		<span style="color: #4fa742;">'url'</span>       <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'muffin-local'</span><span style="color: #fff;">,</span>
+<a name="line35"></a>		<span style="color: #4fa742;">'path'</span>      <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'/mediawiki/api.php'</span>
+<a name="line36"></a>	<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line37"></a>&nbsp;
+<a name="line38"></a>	<span style="color: #aeaeae; font-style: italic;">/* configuration et initialisation */</span>
+<a name="line39"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> w_url<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line40"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">config</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'protocole'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'://'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">config</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'url'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">config</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'path'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">;</span>
+<a name="line41"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line42"></a>&nbsp;
+<a name="line43"></a>	<span style="color: #aeaeae; font-style: italic;">/* fonctionnalitées */</span>
+<a name="line44"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_login<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$pass</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line45"></a>		<span style="color: #aeaeae; font-style: italic;">// identification</span>
+<a name="line46"></a>&nbsp;
+<a name="line47"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line48"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'login'</span><span style="color: #fff;">,</span>
+<a name="line49"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line50"></a>				<span style="color: #4fa742;">'lgname'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$login</span><span style="color: #fff;">,</span>
+<a name="line51"></a>				<span style="color: #4fa742;">'lgpassword'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$pass</span>
+<a name="line52"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line53"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line54"></a>&nbsp;
+<a name="line55"></a>&nbsp;
+<a name="line56"></a>		<span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> \HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line57"></a>&nbsp;
+<a name="line58"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">wiki</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookieprefix'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">cookieprefix</span><span style="color: #fff;">;</span>
+<a name="line59"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_cookie</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">wiki</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookieprefix'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;_session&quot;</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">sessionid</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line60"></a>&nbsp;
+<a name="line61"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">result</span> <span style="color: #e2874e;">==</span> <span style="color: #4fa742;">'NeedToken'</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line62"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_param</span><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'lgtoken'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">token</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line63"></a>			<span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line64"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line65"></a>&nbsp;
+<a name="line66"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">result</span> <span style="color: #e2874e;">==</span> <span style="color: #4fa742;">'Success'</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line67"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_cookie</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">wiki</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookieprefix'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;UserID&quot;</span><span style="color: #fff;">,</span> 		<span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">lguserid</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line68"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_cookie</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">wiki</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookieprefix'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;UserName&quot;</span><span style="color: #fff;">,</span> 	<span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">lgusername</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line69"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_cookie</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">wiki</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookieprefix'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;Token&quot;</span><span style="color: #fff;">,</span> 		<span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">login</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">lgtoken</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line70"></a>			<span style="color: #e2874e;">return</span> <span style="color: #3387cc;">true</span><span style="color: #fff;">;</span>
+<a name="line71"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line72"></a>		<span style="color: #e2874e;">else</span> <span style="color: #e2874e;">return</span> <span style="color: #3387cc;">false</span><span style="color: #fff;">;</span>
+<a name="line73"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line74"></a>&nbsp;
+<a name="line75"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_logout<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line76"></a>		<span style="color: #aeaeae; font-style: italic;">// deconnexion</span>
+<a name="line77"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line78"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'logout'</span><span style="color: #fff;">,</span>
+<a name="line79"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span>
+<a name="line80"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line81"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line82"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line83"></a>&nbsp;
+<a name="line84"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_watchlist<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line85"></a>		<span style="color: #aeaeae; font-style: italic;">// liste de suivi</span>
+<a name="line86"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line87"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line88"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line89"></a>				<span style="color: #4fa742;">'list'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'watchlist'</span><span style="color: #fff;">,</span>
+<a name="line90"></a>				<span style="color: #4fa742;">'wlprop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'ids|title|flags|user|comment|timestamp|patrol|sizes'</span>
+<a name="line91"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line92"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line93"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line94"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line95"></a>&nbsp;
+<a name="line96"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_watchlistraw<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line97"></a>		<span style="color: #aeaeae; font-style: italic;">// liste de suivi2 ?</span>
+<a name="line98"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line99"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line100"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line101"></a>				<span style="color: #4fa742;">'list'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'watchlistraw'</span>
+<a name="line102"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line103"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line104"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line105"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line106"></a>&nbsp;
+<a name="line107"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_pagecreate<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$content</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line108"></a>		<span style="color: #aeaeae; font-style: italic;">// création d'une page</span>
+<a name="line109"></a>&nbsp;
+<a name="line110"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line111"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line112"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line113"></a>				<span style="color: #4fa742;">'prop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'info'</span><span style="color: #fff;">,</span>
+<a name="line114"></a>				<span style="color: #4fa742;">'titles'</span><span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line115"></a>				<span style="color: #4fa742;">'intoken'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'edit'</span>
+<a name="line116"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line117"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line118"></a>		<span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line119"></a>		<a href="http://www.php.net/list"><span style="color: #dad085;">list</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$k</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$v</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/each"><span style="color: #dad085;">each</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">query</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">pages</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line120"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$k</span> <span style="color: #e2874e;">&lt;</span> <span style="color: #3e87e3;">0</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span> <span style="color: #aeaeae; font-style: italic;">// fichier inexistant</span>
+<a name="line121"></a>			<span style="color: #3e87e3;">$editToken</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$v</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">edittoken</span><span style="color: #fff;">;</span>
+<a name="line122"></a>&nbsp;
+<a name="line123"></a>			<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line124"></a>				<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'edit'</span><span style="color: #fff;">,</span>
+<a name="line125"></a>				<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line126"></a>					<span style="color: #4fa742;">'title'</span><span style="color: #e2874e;">=&gt;</span><span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line127"></a>					<span style="color: #4fa742;">'text'</span><span style="color: #e2874e;">=&gt;</span><span style="color: #3e87e3;">$content</span><span style="color: #fff;">,</span>
+<a name="line128"></a>					<span style="color: #4fa742;">'createonly'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">true</span><span style="color: #fff;">,</span>
+<a name="line129"></a>					<span style="color: #4fa742;">'token'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$editToken</span>
+<a name="line130"></a>				<span style="color: #fff;">&#41;</span>
+<a name="line131"></a>			<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line132"></a>			<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> \HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line133"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line134"></a>		<span style="color: #e2874e;">else</span> <span style="color: #e2874e;">return</span> <span style="color: #4fa742;">&quot;fichier deja existant&quot;</span><span style="color: #fff;">;</span>
+<a name="line135"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line136"></a>&nbsp;
+<a name="line137"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_pagemodif<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$content</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line138"></a>		<span style="color: #aeaeae; font-style: italic;">// Modification d'une page existante</span>
+<a name="line139"></a>&nbsp;
+<a name="line140"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line141"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line142"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line143"></a>				<span style="color: #4fa742;">'prop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'info'</span><span style="color: #fff;">,</span>
+<a name="line144"></a>				<span style="color: #4fa742;">'titles'</span><span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line145"></a>				<span style="color: #4fa742;">'intoken'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'edit'</span>
+<a name="line146"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line147"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line148"></a>		<span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line149"></a>		<a href="http://www.php.net/list"><span style="color: #dad085;">list</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$k</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$v</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/each"><span style="color: #dad085;">each</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">query</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">pages</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line150"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span><span style="color: #3e87e3;">$k</span><span style="color: #e2874e;">&gt;</span><span style="color: #3e87e3;">0</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span> <span style="color: #aeaeae; font-style: italic;">// fichier existant</span>
+<a name="line151"></a>			<span style="color: #3e87e3;">$editToken</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$v</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">edittoken</span><span style="color: #fff;">;</span>
+<a name="line152"></a>&nbsp;
+<a name="line153"></a>			<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line154"></a>				<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'edit'</span><span style="color: #fff;">,</span>
+<a name="line155"></a>				<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line156"></a>					<span style="color: #4fa742;">'title'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line157"></a>					<span style="color: #4fa742;">'text'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$content</span><span style="color: #fff;">,</span>
+<a name="line158"></a>					<span style="color: #4fa742;">'nocreate'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">true</span><span style="color: #fff;">,</span>
+<a name="line159"></a>					<span style="color: #4fa742;">'token'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$editToken</span>
+<a name="line160"></a>				<span style="color: #fff;">&#41;</span>
+<a name="line161"></a>			<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line162"></a>			<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> \HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line163"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line164"></a>		<span style="color: #e2874e;">else</span> <span style="color: #e2874e;">return</span> <span style="color: #4fa742;">&quot;fichier inexistant&quot;</span><span style="color: #fff;">;</span>
+<a name="line165"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line166"></a>&nbsp;
+<a name="line167"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_pagerevision<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$title</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line168"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line169"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line170"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line171"></a>				<span style="color: #4fa742;">'prop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'revisions'</span><span style="color: #fff;">,</span>
+<a name="line172"></a>				<span style="color: #4fa742;">'titles'</span><span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line173"></a>				<span style="color: #4fa742;">'rvlimit'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'500'</span><span style="color: #fff;">,</span>
+<a name="line174"></a>				<span style="color: #4fa742;">'rvprop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'timestamp|user|comment|content'</span>
+<a name="line175"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line176"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line177"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> \HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line178"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line179"></a>&nbsp;
+<a name="line180"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> w_pagecontent<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$title</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line181"></a>		<span style="color: #3e87e3;">$param</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line182"></a>			<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'query'</span><span style="color: #fff;">,</span>
+<a name="line183"></a>			<span style="color: #4fa742;">'options'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line184"></a>				<span style="color: #4fa742;">'prop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'revisions'</span><span style="color: #fff;">,</span>
+<a name="line185"></a>				<span style="color: #4fa742;">'titles'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$title</span><span style="color: #fff;">,</span>
+<a name="line186"></a>				<span style="color: #4fa742;">'rvprop'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'timestamp|user|comment|content'</span>
+<a name="line187"></a>			<span style="color: #fff;">&#41;</span>
+<a name="line188"></a>		<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line189"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_build</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> \HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line190"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line191"></a>&nbsp;
+<a name="line192"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

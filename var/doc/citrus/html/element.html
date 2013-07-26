@@ -1,0 +1,311 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:27 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Element (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/html/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/html/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\html\Element</div>
+<a href="../../source/html/element.php.html#line33" class="location">html/Element.php at line 33</a>
+
+<h1>Class Element</h1>
+
+<pre class="tree"><strong>Element</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Element</strong></p>
+
+<div class="comment" id="overview_description"><p>This class manages an html element</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#attributes">$attributes</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#children">$children</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#classes">$classes</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#closeTag">$closeTag</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#id">$id</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#inline">$inline</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#innerHtml">$innerHtml</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#tagName">$tagName</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constructor">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#__construct()">__construct</a>(string tagName, array params)</p><p class="description">Constructor
+Adds an element to the document</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#renderHtml()">renderHtml</a>()</p><p class="description">Render the html code for the tag.</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#addClass()">addClass</a>(string class, mixed className)</p><p class="description">Adds a class to the tag</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#removeClass()">removeClass</a>(string class, mixed className)</p><p class="description">Removes one of the classes of the tag</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#addHtml()">addHtml</a>(string html)</p><p class="description">Adds HTML code into the tag</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#addChild()">addChild</a>(string tagName, array params)</p><p class="description">Adds a child to the tag</p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/html/element.html">Element</a></td>
+<td class="description"><p class="name"><a href="#addChildren()">addChildren</a>(array children)</p><p class="description">Adds children to the tag</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/html/element.php.html#line52" class="location">html/Element.php at line 52</a>
+
+<h3 id="attributes">attributes</h3>
+<code class="signature">public  array <strong>$attributes</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line67" class="location">html/Element.php at line 67</a>
+
+<h3 id="children">children</h3>
+<code class="signature">public  array <strong>$children</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line47" class="location">html/Element.php at line 47</a>
+
+<h3 id="classes">classes</h3>
+<code class="signature">public  array <strong>$classes</strong> = array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line72" class="location">html/Element.php at line 72</a>
+
+<h3 id="closeTag">closeTag</h3>
+<code class="signature">public  boolean <strong>$closeTag</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line42" class="location">html/Element.php at line 42</a>
+
+<h3 id="id">id</h3>
+<code class="signature">public  string <strong>$id</strong> = ''</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line62" class="location">html/Element.php at line 62</a>
+
+<h3 id="inline">inline</h3>
+<code class="signature">public  boolean <strong>$inline</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line57" class="location">html/Element.php at line 57</a>
+
+<h3 id="innerHtml">innerHtml</h3>
+<code class="signature">public  string <strong>$innerHtml</strong> = ''</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line37" class="location">html/Element.php at line 37</a>
+
+<h3 id="tagName">tagName</h3>
+<code class="signature">public  string <strong>$tagName</strong> = ''</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Constructor Detail</h2>
+<a href="../../source/html/element.php.html#line81" class="location">html/Element.php at line 81</a>
+
+<h3 id="__construct()">__construct</h3>
+<code class="signature">public  void <strong>__construct</strong>(string tagName, array params)</code>
+<div class="details">
+<p>Constructor
+Adds an element to the document</p><dl>
+<dt>Parameters:</dt>
+<dd>tagName - name of the html tag</dd>
+<dd>params - parameters for the tag : attributes, etc…</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/html/element.php.html#line95" class="location">html/Element.php at line 95</a>
+
+<h3 id="renderHtml()">renderHtml</h3>
+<code class="signature">public  string <strong>renderHtml</strong>()</code>
+<div class="details">
+<p>Render the html code for the tag.</p><dl>
+<dt>Returns:</dt>
+<dd>$html the html code</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line133" class="location">html/Element.php at line 133</a>
+
+<h3 id="addClass()">addClass</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>addClass</strong>(string class, mixed className)</code>
+<div class="details">
+<p>Adds a class to the tag</p><dl>
+<dt>Parameters:</dt>
+<dd>class - the name of the class</dd>
+<dt>Returns:</dt>
+<dd>$this this object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line147" class="location">html/Element.php at line 147</a>
+
+<h3 id="removeClass()">removeClass</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>removeClass</strong>(string class, mixed className)</code>
+<div class="details">
+<p>Removes one of the classes of the tag</p><dl>
+<dt>Parameters:</dt>
+<dd>class - the name of the class</dd>
+<dt>Returns:</dt>
+<dd>$this this object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line162" class="location">html/Element.php at line 162</a>
+
+<h3 id="addHtml()">addHtml</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>addHtml</strong>(string html)</code>
+<div class="details">
+<p>Adds HTML code into the tag</p><dl>
+<dt>Parameters:</dt>
+<dd>html - the html code</dd>
+<dt>Returns:</dt>
+<dd>$this this object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line177" class="location">html/Element.php at line 177</a>
+
+<h3 id="addChild()">addChild</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>addChild</strong>(string tagName, array params)</code>
+<div class="details">
+<p>Adds a child to the tag</p><dl>
+<dt>Parameters:</dt>
+<dd>tagName - the name of the child tag</dd>
+<dd>params - parameters for the tag : attributes, inline</dd>
+<dt>Returns:</dt>
+<dd>$this this object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/html/element.php.html#line193" class="location">html/Element.php at line 193</a>
+
+<h3 id="addChildren()">addChildren</h3>
+<code class="signature">public  <a href="../../citrus/html/element.html">Element</a> <strong>addChildren</strong>(array children)</code>
+<div class="details">
+<p>Adds children to the tag</p><dl>
+<dt>Parameters:</dt>
+<dd>children - An array of \core\Citrus\html\Elements</dd>
+<dt>Returns:</dt>
+<dd>$this this object.</dd>
+</dl>
+</div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

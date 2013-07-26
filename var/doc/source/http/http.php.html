@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:31 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>http/Http.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>http/Http.php</h1>
+<div class="comment" id="overview_description"><p></p></div>
+
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\http
+<a name="line22"></a> * @subpackage Citrus\http\Http
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus\http<span style="color: #fff;">;</span>
+<a name="line30"></a><span style="color: #e2874e;">use</span> core\Citrus\Citrus<span style="color: #fff;">;</span>
+<a name="line31"></a>&nbsp;
+<a name="line32"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line33"></a> * This class provides a redirection function
+<a name="line34"></a> */</span>
+<a name="line35"></a><span style="color: #99cf4d;">class</span> Http <span style="color: #fff;">&#123;</span>
+<a name="line36"></a>&nbsp;
+<a name="line37"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line38"></a>     * Redirects browser using the header() function
+<a name="line39"></a>     *
+<a name="line40"></a>     * @param string  $url  Target url
+<a name="line41"></a>     * @param string  $message  A message to memorize in session
+<a name="line42"></a>     * @param array  $args  Various parameters to pass to the url.
+<a name="line43"></a>     * 
+<a name="line44"></a>     * @todo Improve the use of $args, and get rid of this old 'extraParams' array to
+<a name="line45"></a>     * get something cleaner. 
+<a name="line46"></a>     */</span>
+<a name="line47"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">function</span> redirect<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$url</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$message</span> <span style="color: #e2874e;">=</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$args</span> <span style="color: #e2874e;">=</span> <span style="color: #3387cc;">null</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line48"></a>        <span style="color: #3e87e3;">$extraParams</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">;</span>
+<a name="line49"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$args</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'extraParams'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line50"></a>            <span style="color: #3e87e3;">$extraParams</span> <span style="color: #e2874e;">.=</span> <span style="color: #4fa742;">'?'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$args</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'extraParams'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">;</span>
+<a name="line51"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line52"></a>&nbsp;
+<a name="line53"></a>        <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/substr"><span style="color: #dad085;">substr</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$url</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">1</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">==</span> <span style="color: #4fa742;">'/'</span> <span style="color: #e2874e;">&amp;&amp;</span> <a href="http://www.php.net/substr"><span style="color: #dad085;">substr</span></a><span style="color: #fff;">&#40;</span> CITRUS_PROJECT_URL<span style="color: #fff;">,</span> <a href="http://www.php.net/strlen"><span style="color: #dad085;">strlen</span></a><span style="color: #fff;">&#40;</span> CITRUS_PROJECT_URL <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">-</span> <span style="color: #3e87e3;">1</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">1</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line54"></a>            <span style="color: #3e87e3;">$location</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/substr"><span style="color: #dad085;">substr</span></a><span style="color: #fff;">&#40;</span> CITRUS_PROJECT_URL<span style="color: #fff;">,</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">,</span> <a href="http://www.php.net/strlen"><span style="color: #dad085;">strlen</span></a><span style="color: #fff;">&#40;</span> CITRUS_PROJECT_URL <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">-</span> <span style="color: #3e87e3;">1</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line55"></a>            <span style="color: #3e87e3;">$location</span> <span style="color: #e2874e;">.=</span> <span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$extraParams</span><span style="color: #fff;">;</span>
+<a name="line56"></a>        <span style="color: #fff;">&#125;</span> <span style="color: #e2874e;">else</span> <span style="color: #fff;">&#123;</span>
+<a name="line57"></a>            <span style="color: #3e87e3;">$location</span> <span style="color: #e2874e;">=</span> CITRUS_PROJECT_URL <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$extraParams</span><span style="color: #fff;">;</span>
+<a name="line58"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line59"></a>        <a href="http://www.php.net/header"><span style="color: #dad085;">header</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;location:<span style="color: #869a95;">$location</span>&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line60"></a>        <a href="http://www.php.net/exit"><span style="color: #dad085;">exit</span></a><span style="color: #fff;">;</span>
+<a name="line61"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line62"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

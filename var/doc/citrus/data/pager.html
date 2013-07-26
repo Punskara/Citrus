@@ -1,0 +1,437 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:27 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Pager (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/data/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/data/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\data\Pager</div>
+<a href="../../source/data/pager.php.html#line37" class="location">data/Pager.php at line 37</a>
+
+<h1>Class Pager</h1>
+
+<pre class="tree"><strong>Pager</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Pager</strong></p>
+
+<div class="comment" id="overview_description"><p>This class works with an HydratableQuery object. It generates a pager
+to use with big lists.</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#coll">$coll</a></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#currentPage">$currentPage</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#limitStart">$limitStart</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#nbPages">$nbPages</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> mixed</td>
+<td class="description"><p class="name"><a href="#nbRows">$nbRows</a></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#pagesAfterCurrent">$pagesAfterCurrent</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#pagesAfterEnd">$pagesAfterEnd</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#pagesBeforeCurrent">$pagesBeforeCurrent</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#pagesBeforeStart">$pagesBeforeStart</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#rows">$rows</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#rowsPerPage">$rowsPerPage</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#startPage">$startPage</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#targetClass">$targetClass</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constructor">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#__construct()">__construct</a>(string targetClass, integer rowsPerPage, mixed location)</p><p class="description">Contructor.</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getResultSet()">getResultSet</a>()</p><p class="description">Makes the SQL query</p></td>
+</tr>
+<tr>
+<td class="type"> array</td>
+<td class="description"><p class="name"><a href="#getResultSetWhere()">getResultSetWhere</a>(string where, bool or_where, bool order, bool orderType)</p><p class="description">Makes the SQL query using the $where conditions</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#setCondition()">setCondition</a>(mixed where)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#displayPager()">displayPager</a>(bool clean_query)</p><p class="description">Displays pagination links</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#renderPagesLinks()">renderPagesLinks</a>(mixed start, mixed end, mixed extParam)</p><p class="description">Displays pages links</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#renderStartButtons()">renderStartButtons</a>(mixed extParam)</p><p class="description">Displays start button links (first, previous)</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#renderEndButtons()">renderEndButtons</a>(mixed extParam)</p><p class="description">Displays end of pagination links (next, last)</p></td>
+</tr>
+<tr>
+<td class="type"> integer</td>
+<td class="description"><p class="name"><a href="#countRows()">countRows</a>()</p><p class="description">Counts the number of rows of the resultset</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#prepareCollection()">prepareCollection</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getCollection()">getCollection</a>(mixed where, bool orderType)</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getLocalizableCollection()">getLocalizableCollection</a>(mixed search, mixed columns, bool orderType)</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/data/pager.php.html#line111" class="location">data/Pager.php at line 111</a>
+
+<h3 id="coll">coll</h3>
+<code class="signature">public  mixed <strong>$coll</strong></code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line61" class="location">data/Pager.php at line 61</a>
+
+<h3 id="currentPage">currentPage</h3>
+<code class="signature">public  integer <strong>$currentPage</strong> = 1</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line51" class="location">data/Pager.php at line 51</a>
+
+<h3 id="limitStart">limitStart</h3>
+<code class="signature">public  integer <strong>$limitStart</strong> = 0</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line66" class="location">data/Pager.php at line 66</a>
+
+<h3 id="nbPages">nbPages</h3>
+<code class="signature">public  integer <strong>$nbPages</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line73" class="location">data/Pager.php at line 73</a>
+
+<h3 id="nbRows">nbRows</h3>
+<code class="signature">public  mixed <strong>$nbRows</strong></code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line83" class="location">data/Pager.php at line 83</a>
+
+<h3 id="pagesAfterCurrent">pagesAfterCurrent</h3>
+<code class="signature">public  integer <strong>$pagesAfterCurrent</strong> = 3</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line94" class="location">data/Pager.php at line 94</a>
+
+<h3 id="pagesAfterEnd">pagesAfterEnd</h3>
+<code class="signature">public  integer <strong>$pagesAfterEnd</strong> = 3</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line78" class="location">data/Pager.php at line 78</a>
+
+<h3 id="pagesBeforeCurrent">pagesBeforeCurrent</h3>
+<code class="signature">public  integer <strong>$pagesBeforeCurrent</strong> = 3</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line89" class="location">data/Pager.php at line 89</a>
+
+<h3 id="pagesBeforeStart">pagesBeforeStart</h3>
+<code class="signature">public  integer <strong>$pagesBeforeStart</strong> = 3</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line71" class="location">data/Pager.php at line 71</a>
+
+<h3 id="rows">rows</h3>
+<code class="signature">public  integer <strong>$rows</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line56" class="location">data/Pager.php at line 56</a>
+
+<h3 id="rowsPerPage">rowsPerPage</h3>
+<code class="signature">public  integer <strong>$rowsPerPage</strong> = 3</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line46" class="location">data/Pager.php at line 46</a>
+
+<h3 id="startPage">startPage</h3>
+<code class="signature">public  integer <strong>$startPage</strong> = 0</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line41" class="location">data/Pager.php at line 41</a>
+
+<h3 id="targetClass">targetClass</h3>
+<code class="signature">public  string <strong>$targetClass</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Constructor Detail</h2>
+<a href="../../source/data/pager.php.html#line120" class="location">data/Pager.php at line 120</a>
+
+<h3 id="__construct()">__construct</h3>
+<code class="signature">public  void <strong>__construct</strong>(string targetClass, integer rowsPerPage, mixed location)</code>
+<div class="details">
+<p>Contructor.</p><dl>
+<dt>Parameters:</dt>
+<dd>targetClass - type of the objects in the list.</dd>
+<dd>rowsPerPage - number of rows per page.</dd>
+<dt>Throws:</dt>
+<dd><a href="../../citrus/sys/exception.html">\Exception</a> - if the $targetClass is not a referenced class.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/data/pager.php.html#line147" class="location">data/Pager.php at line 147</a>
+
+<h3 id="getResultSet()">getResultSet</h3>
+<code class="signature">public  array <strong>getResultSet</strong>()</code>
+<div class="details">
+<p>Makes the SQL query</p><dl>
+<dt>Returns:</dt>
+<dd>$rec the objects fetched by the query;</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line158" class="location">data/Pager.php at line 158</a>
+
+<h3 id="getResultSetWhere()">getResultSetWhere</h3>
+<code class="signature">public  array <strong>getResultSetWhere</strong>(string where, bool or_where, bool order, bool orderType)</code>
+<div class="details">
+<p>Makes the SQL query using the $where conditions</p><dl>
+<dt>Parameters:</dt>
+<dd>where - SQL conditions</dd>
+<dt>Returns:</dt>
+<dd>$rec the objects fetched by the query;</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line164" class="location">data/Pager.php at line 164</a>
+
+<h3 id="setCondition()">setCondition</h3>
+<code class="signature">public  void <strong>setCondition</strong>(mixed where)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line174" class="location">data/Pager.php at line 174</a>
+
+<h3 id="displayPager()">displayPager</h3>
+<code class="signature">public  string <strong>displayPager</strong>(bool clean_query)</code>
+<div class="details">
+<p>Displays pagination links</p><dl>
+<dt>Returns:</dt>
+<dd>$html HTML for links</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line249" class="location">data/Pager.php at line 249</a>
+
+<h3 id="renderPagesLinks()">renderPagesLinks</h3>
+<code class="signature">public  string <strong>renderPagesLinks</strong>(mixed start, mixed end, mixed extParam)</code>
+<div class="details">
+<p>Displays pages links</p><dl>
+<dt>Returns:</dt>
+<dd>$html HTML for links</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line277" class="location">data/Pager.php at line 277</a>
+
+<h3 id="renderStartButtons()">renderStartButtons</h3>
+<code class="signature">public  string <strong>renderStartButtons</strong>(mixed extParam)</code>
+<div class="details">
+<p>Displays start button links (first, previous)</p><dl>
+<dt>Returns:</dt>
+<dd>$html HTML for links</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line307" class="location">data/Pager.php at line 307</a>
+
+<h3 id="renderEndButtons()">renderEndButtons</h3>
+<code class="signature">public  string <strong>renderEndButtons</strong>(mixed extParam)</code>
+<div class="details">
+<p>Displays end of pagination links (next, last)</p><dl>
+<dt>Returns:</dt>
+<dd>$html HTML for links</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line338" class="location">data/Pager.php at line 338</a>
+
+<h3 id="countRows()">countRows</h3>
+<code class="signature">public  integer <strong>countRows</strong>()</code>
+<div class="details">
+<p>Counts the number of rows of the resultset</p><dl>
+<dt>Returns:</dt>
+<dd>number of rows.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line347" class="location">data/Pager.php at line 347</a>
+
+<h3 id="prepareCollection()">prepareCollection</h3>
+<code class="signature">public  void <strong>prepareCollection</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line351" class="location">data/Pager.php at line 351</a>
+
+<h3 id="getCollection()">getCollection</h3>
+<code class="signature">public  void <strong>getCollection</strong>(mixed where, bool orderType)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/data/pager.php.html#line384" class="location">data/Pager.php at line 384</a>
+
+<h3 id="getLocalizableCollection()">getLocalizableCollection</h3>
+<code class="signature">public  void <strong>getLocalizableCollection</strong>(mixed search, mixed columns, bool orderType)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

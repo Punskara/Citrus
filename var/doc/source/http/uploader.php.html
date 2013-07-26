@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:31 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>http/Uploader.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>http/Uploader.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\http
+<a name="line22"></a> * @subpackage Citrus\http\Uploader
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus\http<span style="color: #fff;">;</span>
+<a name="line30"></a>&nbsp;
+<a name="line31"></a><span style="color: #99cf4d;">class</span> Uploader <span style="color: #fff;">&#123;</span>
+<a name="line32"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line33"></a>	 * Maximal size of the uploaded file
+<a name="line34"></a>	 * @var int
+<a name="line35"></a>	 */</span>
+<a name="line36"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$maxFileSize</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">;</span>
+<a name="line37"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line38"></a>	 * Characters allowed in the file name (in a Regular Expression format)
+<a name="line39"></a>	 * @var string
+<a name="line40"></a>	 */</span>
+<a name="line41"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$validChars</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'.A-Z0-9_ !@#$%^&amp;()+={}\[\]\',~`-'</span><span style="color: #fff;">;</span>
+<a name="line42"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line43"></a>	 * List of forbidden extensions
+<a name="line44"></a>	 * @var array
+<a name="line45"></a>	 */</span>
+<a name="line46"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$invalidExtensions</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'php'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'phtml'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'cgi'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'fcgi'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'pl'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'py'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'rb'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'asp'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line47"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line48"></a>	 * List of allowed extensions
+<a name="line49"></a>	 * @var array
+<a name="line50"></a>	 */</span>
+<a name="line51"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$validExtensions</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line52"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line53"></a>	 * Uploaded file name
+<a name="line54"></a>	 * @var string
+<a name="line55"></a>	 */</span>
+<a name="line56"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$fileName</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">;</span>
+<a name="line57"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line58"></a>	 * Uploaded file extension
+<a name="line59"></a>	 * @var string
+<a name="line60"></a>	 */</span>
+<a name="line61"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$fileExt</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">;</span>
+<a name="line62"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line63"></a>	 * Uploaded file libelle (filename without extension)
+<a name="line64"></a>	 * @var string
+<a name="line65"></a>	 */</span>
+<a name="line66"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$fileLibelle</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">;</span>
+<a name="line67"></a>&nbsp;
+<a name="line68"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line69"></a>     * the file
+<a name="line70"></a>     * @var $mixed;
+<a name="line71"></a>     */</span>
+<a name="line72"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">;</span>
+<a name="line73"></a>&nbsp;
+<a name="line74"></a>    <span style="color: #aeaeae; font-style: italic;">/**
+<a name="line75"></a>     * Constructor
+<a name="line76"></a>     *
+<a name="line77"></a>     * @param  mixed  $file  The file
+<a name="line78"></a>     *
+<a name="line79"></a>     * @throws \Exception if the file is not found or if an upload error has occured. 
+<a name="line80"></a>     */</span>
+<a name="line81"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __construct<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line82"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span>
+<a name="line83"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;No upload found&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line84"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'error'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">&amp;&amp;</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'error'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span>
+<a name="line85"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;Error &quot;</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'error'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line86"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'tmp_name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">||</span> <span style="color: #e2874e;">!@</span><a href="http://www.php.net/is_uploaded_file"><span style="color: #dad085;">is_uploaded_file</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'tmp_name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span>
+<a name="line87"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;Upload failed is_uploaded_file test&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line88"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span>
+<a name="line89"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;File has no name&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line90"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><a href="http://www.php.net/file"><span style="color: #dad085;">file</span></a> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$file</span><span style="color: #fff;">;</span>
+<a name="line91"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line92"></a>&nbsp;
+<a name="line93"></a>&nbsp;
+<a name="line94"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line95"></a>	 * Reads the file to determine its name and extention
+<a name="line96"></a>	 *
+<a name="line97"></a>	 * @throws \Exception if the file is too big, the extension is not allowed.
+<a name="line98"></a>	 *
+<a name="line99"></a>	 */</span>
+<a name="line100"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> <a href="http://www.php.net/readfile"><span style="color: #dad085;">readFile</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line101"></a>        <span style="color: #3e87e3;">$fileName</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[^'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">validChars</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">']|\.+$/i'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">,</span> <a href="http://www.php.net/basename"><span style="color: #dad085;">basename</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><a href="http://www.php.net/file"><span style="color: #dad085;">file</span></a><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line102"></a>		<span style="color: #3e87e3;">$ext</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strtolower"><span style="color: #dad085;">strtolower</span></a><span style="color: #fff;">&#40;</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$pos</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strrpos"><span style="color: #dad085;">strrpos</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$fileName</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'.'</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> ? <a href="http://www.php.net/substr"><span style="color: #dad085;">substr</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$fileName</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$pos</span><span style="color: #e2874e;">+</span><span style="color: #3e87e3;">1</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">:</span> <span style="color: #4fa742;">''</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line103"></a>		<span style="color: #3e87e3;">$libelle</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strtolower"><span style="color: #dad085;">strtolower</span></a><span style="color: #fff;">&#40;</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$pos</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strrpos"><span style="color: #dad085;">strrpos</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$fileName</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'.'</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> ? <a href="http://www.php.net/substr"><span style="color: #dad085;">substr</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$fileName</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$pos</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">:</span> <span style="color: #3e87e3;">$fileName</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line104"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">maxFileSize</span> <span style="color: #e2874e;">&amp;&amp;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">maxFileSize</span> <span style="color: #e2874e;">&lt;</span> <a href="http://www.php.net/filesize"><span style="color: #dad085;">filesize</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><a href="http://www.php.net/file"><span style="color: #dad085;">file</span></a><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'tmp_name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> 
+<a name="line105"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;File exceeds maximum allowed size&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line106"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/in_array"><span style="color: #dad085;">in_array</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$ext</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">invalidExtensions</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> 
+<a name="line107"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;File extension rejected.&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line108"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">validExtensions</span> <span style="color: #e2874e;">&amp;&amp;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/in_array"><span style="color: #dad085;">in_array</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$ext</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">validExtensions</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> 
+<a name="line109"></a>			<span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> \Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;File extension rejected: <span style="color: #869a95;">$ext</span> (&quot;</span> <span style="color: #e2874e;">.</span> <a href="http://www.php.net/implode"><span style="color: #dad085;">implode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">','</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">validExtensions</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">')'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line110"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileName</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$fileName</span><span style="color: #fff;">;</span>
+<a name="line111"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileLibelle</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$libelle</span><span style="color: #fff;">;</span>
+<a name="line112"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileExt</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$ext</span><span style="color: #fff;">;</span>
+<a name="line113"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line114"></a>&nbsp;
+<a name="line115"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> testFile<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$dest</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line116"></a>        <span style="color: #3e87e3;">$cpt</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">0</span><span style="color: #fff;">;</span>
+<a name="line117"></a>		<span style="color: #e2874e;">while</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/is_file"><span style="color: #dad085;">is_file</span></a> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$dest</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'/'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileName</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">&amp;&amp;</span> <span style="color: #3e87e3;">$cpt</span><span style="color: #e2874e;">++</span> <span style="color: #fff;">&#41;</span> 
+<a name="line118"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileName</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileLibelle</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'.'</span> <span style="color: #e2874e;">.</span> <a href="http://www.php.net/sprintf"><span style="color: #dad085;">sprintf</span></a> <span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'%04d'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$cpt</span> <span style="color: #fff;">&#41;</span><span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'.'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileExt</span><span style="color: #fff;">;</span>
+<a name="line119"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line120"></a>&nbsp;
+<a name="line121"></a>	<span style="color: #aeaeae; font-style: italic;">/**
+<a name="line122"></a>	 * Moves the file from the temp dir to the target destination
+<a name="line123"></a>	 *
+<a name="line124"></a>	 * @param string  $dest  Path of target destination
+<a name="line125"></a>	 *
+<a name="line126"></a>	 * @throws \Exception if the file could'nt be moved
+<a name="line127"></a>	 * 
+<a name="line128"></a>	 * @return boolean
+<a name="line129"></a>	 */</span>
+<a name="line130"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> moveFile<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$dest</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line131"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/file_exists"><span style="color: #dad085;">file_exists</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><a href="http://www.php.net/file"><span style="color: #dad085;">file</span></a><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'tmp_name'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line132"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">testFile</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$dest</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line133"></a>			<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!@</span><a href="http://www.php.net/move_uploaded_file"><span style="color: #dad085;">move_uploaded_file</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><a href="http://www.php.net/file"><span style="color: #dad085;">file</span></a><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">&quot;tmp_name&quot;</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$dest</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'/'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">fileName</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line134"></a>			    <span style="color: #e2874e;">throw</span> <span style="color: #e2874e;">new</span> Exception<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;File could not be moved&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line135"></a>		    <span style="color: #fff;">&#125;</span>
+<a name="line136"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line137"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3387cc;">true</span><span style="color: #fff;">;</span>
+<a name="line138"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line139"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

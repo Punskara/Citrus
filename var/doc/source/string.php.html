@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:28 +0000">
+
+<link rel="stylesheet" type="text/css" href="../stylesheet.css">
+<link rel="start" href="../overview-summary.html">
+
+<title>String.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../overview-files.html">Files</a></li>
+<li><a href="../deprecated-list.html">Deprecated</a></li>
+<li><a href="../todo-list.html">Todo</a></li>
+<li><a href="../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>String.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus
+<a name="line22"></a> * @subpackage Citrus\String
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus<span style="color: #fff;">;</span>
+<a name="line30"></a>&nbsp;
+<a name="line31"></a><span style="color: #99cf4d;">class</span> String <span style="color: #fff;">&#123;</span>
+<a name="line32"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">function</span> slug2<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$string</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line33"></a>        <span style="color: #3e87e3;">$str</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strtolower"><span style="color: #dad085;">strtolower</span></a><span style="color: #fff;">&#40;</span> <a href="http://www.php.net/trim"><span style="color: #dad085;">trim</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$string</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line34"></a>        <span style="color: #3e87e3;">$char</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/explode"><span style="color: #dad085;">explode</span></a><span style="color: #fff;">&#40;</span><span style="color: #4fa742;">','</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;à,â,ä,â,è,é,ë,ê,î,ï,ô,ö,ù,ü,û,ç&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line35"></a>        <span style="color: #3e87e3;">$rep</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/explode"><span style="color: #dad085;">explode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">','</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;a,a,a,a,e,e,e,e,i,i,o,o,u,u,u,c&quot;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line36"></a>&nbsp;
+<a name="line37"></a>        <span style="color: #3e87e3;">$str</span> <span style="color: #e2874e;">=</span> <span style="color: #99cf4d;">self</span><span style="color: #e2874e;">::</span><span style="color: #fff;">accent</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$str</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line38"></a>        <span style="color: #3e87e3;">$str</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[^a-z0-9-]/'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'-'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$str</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line39"></a>        <span style="color: #3e87e3;">$str</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/-+/'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$str</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line40"></a>        <span style="color: #3e87e3;">$str</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/trim"><span style="color: #dad085;">trim</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$str</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'-'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line41"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$str</span><span style="color: #fff;">;</span>
+<a name="line42"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line43"></a>&nbsp;
+<a name="line44"></a>    <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">function</span> slug<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$string</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line45"></a>        <span style="color: #3e87e3;">$string</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/strtolower"><span style="color: #dad085;">strtolower</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$string</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line46"></a>        <span style="color: #3e87e3;">$repl</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span> 
+<a name="line47"></a>            <span style="color: #4fa742;">&quot;à&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;a&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ä&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;a&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;â&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;a&quot;</span><span style="color: #fff;">,</span>
+<a name="line48"></a>            <span style="color: #4fa742;">&quot;é&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;e&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;è&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;e&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ë&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;e&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ê&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;e&quot;</span><span style="color: #fff;">,</span>
+<a name="line49"></a>            <span style="color: #4fa742;">&quot;î&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;i&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ï&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;i&quot;</span><span style="color: #fff;">,</span>
+<a name="line50"></a>            <span style="color: #4fa742;">&quot;ô&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;o&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ö&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;o&quot;</span><span style="color: #fff;">,</span>
+<a name="line51"></a>            <span style="color: #4fa742;">&quot;ù&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;u&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;û&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;u&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;ü&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;u&quot;</span><span style="color: #fff;">,</span>
+<a name="line52"></a>            <span style="color: #4fa742;">&quot;ç&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'c'</span><span style="color: #fff;">,</span>
+<a name="line53"></a>            <span style="color: #4fa742;">&quot;'&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;’&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span>
+<a name="line54"></a>            <span style="color: #4fa742;">&quot;<span style="color: #ddf2a4;">\&quot;</span>&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;\(&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;\)&quot;</span> <span style="color: #e2874e;">=&gt;</span><span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span>
+<a name="line55"></a>            <span style="color: #4fa742;">&quot;&amp;&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;:&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;:&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span>
+<a name="line56"></a>            <span style="color: #4fa742;">&quot;\?&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;!&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;,&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span>
+<a name="line57"></a>            <span style="color: #4fa742;">&quot;\.&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;\/&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot; &quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span>
+<a name="line58"></a>            <span style="color: #4fa742;">&quot;--&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;-&quot;</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;'&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">&quot;&quot;</span><span style="color: #fff;">,</span>
+<a name="line59"></a>            <span style="color: #4fa742;">&quot;%C9&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">'e'</span><span style="color: #fff;">,</span> 
+<a name="line60"></a>            <span style="color: #4fa742;">&quot;#39;&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">&quot;#34;&quot;</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">,</span>
+<a name="line61"></a>        <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line62"></a>        <span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$repl</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$find</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$rep</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line63"></a>            <span style="color: #3e87e3;">$string</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">&quot;/&quot;</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$find</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;/&quot;</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$rep</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$string</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line64"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line65"></a>&nbsp;
+<a name="line66"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$string</span><span style="color: #fff;">;</span>
+<a name="line67"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line68"></a>&nbsp;
+<a name="line69"></a>    <span style="color: #99cf4d;">static</span> <span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> accent<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line70"></a>        <span style="color: #3e87e3;">$search</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[àâä]/iu'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'a'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line71"></a>        <span style="color: #3e87e3;">$search</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[éèëê]/iu'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'e'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line72"></a>        <span style="color: #3e87e3;">$search</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[îï]/iu'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'i'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line73"></a>        <span style="color: #3e87e3;">$search</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[ôö]/iu'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'o'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line74"></a>        <span style="color: #3e87e3;">$search</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/preg_replace"><span style="color: #dad085;">preg_replace</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'/[ùûü]/iu'</span><span style="color: #fff;">,</span> <span style="color: #4fa742;">'u'</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$search</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>  
+<a name="line75"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$search</span><span style="color: #fff;">;</span>
+<a name="line76"></a>    <span style="color: #fff;">&#125;</span>
+<a name="line77"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

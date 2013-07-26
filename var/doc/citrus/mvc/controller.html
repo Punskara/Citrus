@@ -1,0 +1,501 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:27 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>Controller (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li><a href="../../citrus/mvc/package-summary.html">Namespace</a></li>
+<li class="active">Class</li>
+<li><a href="../../citrus/mvc/package-tree.html">Tree</a></li>
+<li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<div class="small_links">
+Summary: <a href="#summary_field">Field</a> | <a href="#summary_method">Method</a> | <a href="#summary_constr">Constr</a>
+Detail: <a href="#detail_field">Field</a> | <a href="#detail_method">Method</a> | <a href="#summary_constr">Constr</a>
+</div>
+<hr>
+
+<div class="qualifiedName">Citrus\mvc\Controller</div>
+<a href="../../source/mvc/controller.php.html#line38" class="location">mvc/Controller.php at line 38</a>
+
+<h1>Class Controller</h1>
+
+<pre class="tree"><strong>Controller</strong><br /></pre>
+
+<hr>
+
+<p class="signature">public  class <strong>Controller</strong></p>
+
+<div class="comment" id="overview_description"><p>The C in MVC. Communicate with Citrus, the Model and the View to
+execute the right action.</p></div>
+
+<hr>
+
+<table id="summary_field">
+<tr><th colspan="2">Field Summary</th></tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#action">$action</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> Boolean</td>
+<td class="description"><p class="name"><a href="#isProtected">$isProtected</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#layout">$layout</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#metadesc">$metadesc</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#metakey">$metakey</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#moduleName">$moduleName</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#name">$name</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#pageTitle">$pageTitle</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#path">$path</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/http/request.html">Request</a></td>
+<td class="description"><p class="name"><a href="#request">$request</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> Array</td>
+<td class="description"><p class="name"><a href="#security_exceptions">$security_exceptions</a></p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> <a href="../../citrus/mvc/template.html">Template</a></td>
+<td class="description"><p class="name"><a href="#template">$template</a></p><p class="description"></p></td>
+</tr>
+</table>
+
+<table id="summary_constructor">
+<tr><th colspan="2">Constructor Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#__construct()">__construct</a>(string action, str path)</p><p class="description">Contructor</p></td>
+</tr>
+</table>
+
+<table id="summary_method">
+<tr><th colspan="2">Method Summary</th></tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#executeAction()">executeAction</a>(bool force_external_post)</p><p class="description">Executes the action given by request. </p></td>
+</tr>
+<tr>
+<td class="type"> false</td>
+<td class="description"><p class="name"><a href="#isActionProtected()">isActionProtected</a>()</p><p class="description"></p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#onActionProtected()">onActionProtected</a>()</p><p class="description">Triggered when action is protected</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#onActionNotFound()">onActionNotFound</a>()</p><p class="description">Triggered when action is not found</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_Exception()">do_Exception</a>(<a href="../../citrus/sys/exception.html">Exception</a> e)</p><p class="description">Exception action : action that is executed if the system catches an exception.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_PageNotFound()">do_PageNotFound</a>(string message)</p><p class="description">Is executed if the action doesn't exist.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_PageForbidden()">do_PageForbidden</a>(mixed message)</p></td>
+</tr>
+<tr>
+<td class="type"> boolean</td>
+<td class="description"><p class="name"><a href="#actionExists()">actionExists</a>()</p><p class="description">Determines if the action exists.</p></td>
+</tr>
+<tr>
+<td class="type"> string</td>
+<td class="description"><p class="name"><a href="#displayTemplate()">displayTemplate</a>()</p><p class="description">Displays the action template.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#loadActionTemplate()">loadActionTemplate</a>(string action)</p><p class="description">Loads the template of another action than the action given.</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_save()">do_save</a>()</p><p class="description">Generic function to save an object in database. </p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_delete()">do_delete</a>(string resourceType)</p><p class="description">Generic function to delete an object from database.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_deleteSeveral()">do_deleteSeveral</a>(string resourceType)</p><p class="description">Generic function to delete several objects from database.
+</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#do_captcha()">do_captcha</a>()</p></td>
+</tr>
+<tr>
+<td class="type"> void</td>
+<td class="description"><p class="name"><a href="#getPath()">getPath</a>()</p></td>
+</tr>
+</table>
+
+<h2 id="detail_field">Field Detail</h2>
+<a href="../../source/mvc/controller.php.html#line43" class="location">mvc/Controller.php at line 43</a>
+
+<h3 id="action">action</h3>
+<code class="signature">public  string <strong>$action</strong> = false</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line93" class="location">mvc/Controller.php at line 93</a>
+
+<h3 id="isProtected">isProtected</h3>
+<code class="signature">public  Boolean <strong>$isProtected</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line68" class="location">mvc/Controller.php at line 68</a>
+
+<h3 id="layout">layout</h3>
+<code class="signature">public  boolean <strong>$layout</strong> = true</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line73" class="location">mvc/Controller.php at line 73</a>
+
+<h3 id="metadesc">metadesc</h3>
+<code class="signature">public  string <strong>$metadesc</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line78" class="location">mvc/Controller.php at line 78</a>
+
+<h3 id="metakey">metakey</h3>
+<code class="signature">public  string <strong>$metakey</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line88" class="location">mvc/Controller.php at line 88</a>
+
+<h3 id="moduleName">moduleName</h3>
+<code class="signature">public  string <strong>$moduleName</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line48" class="location">mvc/Controller.php at line 48</a>
+
+<h3 id="name">name</h3>
+<code class="signature">public  string <strong>$name</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line63" class="location">mvc/Controller.php at line 63</a>
+
+<h3 id="pageTitle">pageTitle</h3>
+<code class="signature">public  string <strong>$pageTitle</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line83" class="location">mvc/Controller.php at line 83</a>
+
+<h3 id="path">path</h3>
+<code class="signature">public  string <strong>$path</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line53" class="location">mvc/Controller.php at line 53</a>
+
+<h3 id="request">request</h3>
+<code class="signature">public  <a href="../../citrus/http/request.html">Request</a> <strong>$request</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line99" class="location">mvc/Controller.php at line 99</a>
+
+<h3 id="security_exceptions">security_exceptions</h3>
+<code class="signature">public  Array <strong>$security_exceptions</strong> = Array()</code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line58" class="location">mvc/Controller.php at line 58</a>
+
+<h3 id="template">template</h3>
+<code class="signature">public  <a href="../../citrus/mvc/template.html">Template</a> <strong>$template</strong></code>
+<div class="details">
+<p></p></div>
+
+<hr>
+
+<h2 id="detail_method">Constructor Detail</h2>
+<a href="../../source/mvc/controller.php.html#line106" class="location">mvc/Controller.php at line 106</a>
+
+<h3 id="__construct()">__construct</h3>
+<code class="signature">public  void <strong>__construct</strong>(string action, str path)</code>
+<div class="details">
+<p>Contructor</p><dl>
+<dt>Parameters:</dt>
+<dd>action - Name of the action we want to execute.</dd>
+</dl>
+</div>
+
+<hr>
+
+<h2 id="detail_method">Method Detail</h2>
+<a href="../../source/mvc/controller.php.html#line122" class="location">mvc/Controller.php at line 122</a>
+
+<h3 id="executeAction()">executeAction</h3>
+<code class="signature">public  void <strong>executeAction</strong>(bool force_external_post)</code>
+<div class="details">
+<p>Executes the action given by request.
+Stops if the request method is POST and referer is external.
+Creates the http response and executes do_PageNotFound if action
+doesn't exist.</p><dl>
+<dt>See Also:</dt>
+<dd><a href="../../citrus/mvc/controller.html#do_PageNotFound()">do_PageNotFound</a></dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line163" class="location">mvc/Controller.php at line 163</a>
+
+<h3 id="isActionProtected()">isActionProtected</h3>
+<code class="signature">public  false <strong>isActionProtected</strong>()</code>
+<div class="details">
+<p></p><dl>
+<dt>Returns:</dt>
+<dd>if ( ctrlIsProtected && !inException || !ctrlIsProtected && inException )</dd>
+<dd>if ( ctrlIsProtected && inException || !ctrlIsProtected && !inException )</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line172" class="location">mvc/Controller.php at line 172</a>
+
+<h3 id="onActionProtected()">onActionProtected</h3>
+<code class="signature">public  void <strong>onActionProtected</strong>()</code>
+<div class="details">
+<p>Triggered when action is protected</p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line179" class="location">mvc/Controller.php at line 179</a>
+
+<h3 id="onActionNotFound()">onActionNotFound</h3>
+<code class="signature">public  void <strong>onActionNotFound</strong>()</code>
+<div class="details">
+<p>Triggered when action is not found</p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line188" class="location">mvc/Controller.php at line 188</a>
+
+<h3 id="do_Exception()">do_Exception</h3>
+<code class="signature">public  void <strong>do_Exception</strong>(<a href="../../citrus/sys/exception.html">Exception</a> e)</code>
+<div class="details">
+<p>Exception action : action that is executed if the system catches an exception.</p><dl>
+<dt>Parameters:</dt>
+<dd>e - The exception to handle.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line199" class="location">mvc/Controller.php at line 199</a>
+
+<h3 id="do_PageNotFound()">do_PageNotFound</h3>
+<code class="signature">public  void <strong>do_PageNotFound</strong>(string message)</code>
+<div class="details">
+<p>Is executed if the action doesn't exist.</p><dl>
+<dt>Parameters:</dt>
+<dd>message - A message to display in the 404 page.</dd>
+<dt>See Also:</dt>
+<dd>\core\Citrus\Citrus::pageNotFound()</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line203" class="location">mvc/Controller.php at line 203</a>
+
+<h3 id="do_PageForbidden()">do_PageForbidden</h3>
+<code class="signature">public  void <strong>do_PageForbidden</strong>(mixed message)</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line212" class="location">mvc/Controller.php at line 212</a>
+
+<h3 id="actionExists()">actionExists</h3>
+<code class="signature">public  boolean <strong>actionExists</strong>()</code>
+<div class="details">
+<p>Determines if the action exists.</p><dl>
+<dt>Returns:</dt>
+<dd>True if the method exists, else false.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line222" class="location">mvc/Controller.php at line 222</a>
+
+<h3 id="displayTemplate()">displayTemplate</h3>
+<code class="signature">public  string <strong>displayTemplate</strong>()</code>
+<div class="details">
+<p>Displays the action template.</p><dl>
+<dt>Returns:</dt>
+<dd>The content of the template.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line231" class="location">mvc/Controller.php at line 231</a>
+
+<h3 id="loadActionTemplate()">loadActionTemplate</h3>
+<code class="signature">public  void <strong>loadActionTemplate</strong>(string action)</code>
+<div class="details">
+<p>Loads the template of another action than the action given.</p><dl>
+<dt>Parameters:</dt>
+<dd>action - the action which we want to load the template</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line245" class="location">mvc/Controller.php at line 245</a>
+
+<h3 id="do_save()">do_save</h3>
+<code class="signature">public  void <strong>do_save</strong>()</code>
+<div class="details">
+<p>Generic function to save an object in database. Only accessible in POST method.
+This function saves the object, upload the files if needed ans redirects to the
+index of the module of the app. If used with AJAX, this will only display "ok".</p></div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line300" class="location">mvc/Controller.php at line 300</a>
+
+<h3 id="do_delete()">do_delete</h3>
+<code class="signature">public  void <strong>do_delete</strong>(string resourceType)</code>
+<div class="details">
+<p>Generic function to delete an object from database.
+This function saves the object, upload the files if needed ans redirects to the
+index of the module of the app.</p><dl>
+<dt>Parameters:</dt>
+<dd>resourceType - Name of the class of the object we want to delete.</dd>
+<dt>Todo:</dt>
+<dd>Throw an exception if class $resourceType doesn't exist</dd>
+<dd>Prevent this function to be executed if method is not POST</dd>
+<dd>Handle the case that the request is sent with AJAX.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line324" class="location">mvc/Controller.php at line 324</a>
+
+<h3 id="do_deleteSeveral()">do_deleteSeveral</h3>
+<code class="signature">public  void <strong>do_deleteSeveral</strong>(string resourceType)</code>
+<div class="details">
+<p>Generic function to delete several objects from database.
+This function saves the object, upload the files if needed ans redirects to the
+index of the module of the app.</p><dl>
+<dt>Parameters:</dt>
+<dd>resourceType - Name of the class of the object we want to delete.</dd>
+<dt>Todo:</dt>
+<dd>Throw an exception if class $resourceType doesn't exist</dd>
+<dd>Prevent this function to be executed if method is not POST</dd>
+<dd>Handle the case that the request is sent with AJAX.</dd>
+</dl>
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line337" class="location">mvc/Controller.php at line 337</a>
+
+<h3 id="do_captcha()">do_captcha</h3>
+<code class="signature">public  void <strong>do_captcha</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<a href="../../source/mvc/controller.php.html#line343" class="location">mvc/Controller.php at line 343</a>
+
+<h3 id="getPath()">getPath</h3>
+<code class="signature">public  void <strong>getPath</strong>()</code>
+<div class="details">
+</div>
+
+<hr>
+
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

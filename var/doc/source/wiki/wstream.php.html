@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:32 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../stylesheet.css">
+<link rel="start" href="../../overview-summary.html">
+
+<title>wiki/Wstream.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../overview-files.html">Files</a></li>
+<li><a href="../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../todo-list.html">Todo</a></li>
+<li><a href="../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>wiki/Wstream.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\wiki
+<a name="line22"></a> * @subpackage Citrus\wiki\Wstream
+<a name="line23"></a> * @author Nicolas Mouret &lt;nicolas@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a><span style="color: #e2874e;">namespace</span> core\Citrus\Wiki<span style="color: #fff;">;</span>
+<a name="line30"></a>&nbsp;
+<a name="line31"></a>abstract <span style="color: #99cf4d;">class</span> Wstream <span style="color: #fff;">&#123;</span>
+<a name="line32"></a>&nbsp;
+<a name="line33"></a>	<span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$stream</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span>
+<a name="line34"></a>		<span style="color: #4fa742;">'lnk'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">,</span>
+<a name="line35"></a>		<span style="color: #4fa742;">'method'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">,</span>
+<a name="line36"></a>		<span style="color: #4fa742;">'action'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">,</span>
+<a name="line37"></a>		<span style="color: #4fa742;">'vars'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">,</span>
+<a name="line38"></a>		<span style="color: #4fa742;">'files'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">,</span>
+<a name="line39"></a>		<span style="color: #4fa742;">'cookies'</span> <span style="color: #e2874e;">=&gt;</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span>
+<a name="line40"></a>	<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line41"></a>&nbsp;
+<a name="line42"></a>	<span style="color: #99cf4d;">private</span> <span style="color: #3e87e3;">$wiki</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a> <span style="color: #fff;">&#40;</span>
+<a name="line43"></a>		<span style="color: #4fa742;">'cookieprefix'</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3387cc;">null</span><span style="color: #fff;">,</span>
+<a name="line44"></a>	<span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line45"></a>&nbsp;
+<a name="line46"></a>	abstract <span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> w_url<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line47"></a>&nbsp;
+<a name="line48"></a>&nbsp;
+<a name="line49"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> str_init<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line50"></a>		<span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">w_url</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">.</span><span style="color: #4fa742;">'?'</span><span style="color: #fff;">;</span>
+<a name="line51"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #e2874e;">!</span><a href="http://www.php.net/is_null"><span style="color: #dad085;">is_null</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'action'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">.=</span> <span style="color: #4fa742;">'action='</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'action'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'&amp;'</span><span style="color: #fff;">;</span>
+<a name="line52"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'method'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">!=</span> HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span>
+<a name="line53"></a>			<span style="color: #e2874e;">foreach</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'vars'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$k</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$v</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">.=</span> <span style="color: #3e87e3;">$k</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'='</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$v</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'&amp;'</span><span style="color: #fff;">;</span>
+<a name="line54"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #e2874e;">new</span> HttpRequest<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line55"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">setUrl</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$url</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'format=json'</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line56"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">setMethod</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'method'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line57"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line58"></a>&nbsp;
+<a name="line59"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> str_build<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$method</span> <span style="color: #e2874e;">=</span> HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_GET</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line60"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'vars'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line61"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'files'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line62"></a>		<span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'options'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$key</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_param</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$key</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line63"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/isset"><span style="color: #dad085;">isset</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'action'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'action'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$param</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'action'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">;</span>
+<a name="line64"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'method'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$method</span><span style="color: #fff;">;</span>
+<a name="line65"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">str_init</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line66"></a>		<span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$this</span><span style="color: #fff;">;</span>
+<a name="line67"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line68"></a>&nbsp;
+<a name="line69"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> str_send<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line70"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'vars'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'format'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'json'</span><span style="color: #fff;">;</span>
+<a name="line71"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'method'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">==</span> HttpRequest<span style="color: #e2874e;">::</span><span style="color: #fff;">METH_POST</span> <span style="color: #fff;">&#41;</span>
+<a name="line72"></a>			<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">addPostFields</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'vars'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line73"></a>		<span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'files'</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$key</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line74"></a>		    <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">addPostFile</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$key</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">,</span> <a href="http://www.php.net/mime_content_type"><span style="color: #dad085;">mime_content_type</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line75"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line76"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">addCookies</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookies'</span><span style="color: #fff;">&#93;</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line77"></a>&nbsp;
+<a name="line78"></a>		<span style="color: #e2874e;">try</span> <span style="color: #fff;">&#123;</span>
+<a name="line79"></a>			<span style="color: #3e87e3;">$res</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'lnk'</span><span style="color: #fff;">&#93;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">send</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">getBody</span><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line80"></a>		    <span style="color: #e2874e;">return</span> <a href="http://www.php.net/json_decode"><span style="color: #dad085;">json_decode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$res</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line81"></a>		<span style="color: #fff;">&#125;</span> <span style="color: #e2874e;">catch</span> <span style="color: #fff;">&#40;</span> HttpException <span style="color: #3e87e3;">$ex</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line82"></a>		    <span style="color: #e2874e;">echo</span> <span style="color: #3e87e3;">$ex</span><span style="color: #fff;">;</span>
+<a name="line83"></a>		<span style="color: #fff;">&#125;</span>
+<a name="line84"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line85"></a>&nbsp;
+<a name="line86"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> str_param<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$key</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line87"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/is_file"><span style="color: #dad085;">is_file</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'files'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">&#91;</span> <span style="color: #3e87e3;">$key</span> <span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">;</span>
+<a name="line88"></a>		<span style="color: #e2874e;">else</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'vars'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">&#91;</span> <span style="color: #3e87e3;">$key</span> <span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">;</span>
+<a name="line89"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line90"></a>&nbsp;
+<a name="line91"></a>	<span style="color: #99cf4d;">protected</span> <span style="color: #99cf4d;">function</span> str_cookie<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$key</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$value</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line92"></a>		<span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">stream</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">'cookies'</span><span style="color: #fff;">&#93;</span><span style="color: #fff;">&#91;</span> <span style="color: #3e87e3;">$key</span> <span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$value</span><span style="color: #fff;">;</span>
+<a name="line93"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line94"></a>&nbsp;
+<a name="line95"></a><span style="color: #fff;">&#125;</span></pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang="en">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="generator" content="PHPDoctor 2RC4 (http://peej.github.com/phpdoctor/)">
+<meta name="when" content="Fri, 26 Jul 2013 09:03:30 +0000">
+
+<link rel="stylesheet" type="text/css" href="../../../stylesheet.css">
+<link rel="start" href="../../../overview-summary.html">
+
+<title>html/form/SelectOne.php (Citrus)</title>
+
+</head>
+<div class="header">
+<ul>
+<li><a href="../../../overview-summary.html">Overview</a></li>
+<li>Package</li><li>Class</li><li>Tree</li><li><a href="../../../overview-files.html">Files</a></li>
+<li><a href="../../../deprecated-list.html">Deprecated</a></li>
+<li><a href="../../../todo-list.html">Todo</a></li>
+<li><a href="../../../index-all.html">Index</a></li>
+</ul>
+</div>
+
+<div class="apiContent"><div class="small_links">
+</div>
+<hr>
+
+<h1>html/form/SelectOne.php</h1>
+<hr>
+
+<a name="line1"></a><pre class="php" style="font-family:monospace;"><span style="color: #fff;">&lt;?php</span>
+<a name="line2"></a><span style="color: #aeaeae; font-style: italic;">/*
+<a name="line3"></a>.---------------------------------------------------------------------------.
+<a name="line4"></a>|  Software: Citrus PHP Framework                                           |
+<a name="line5"></a>|   Version: 1.0                                                            |
+<a name="line6"></a>|   Contact: devs@citrus-project.net                                        |
+<a name="line7"></a>|      Info: http://citrus-project.net                                      |
+<a name="line8"></a>|   Support: http://citrus-project.net/documentation/                       |
+<a name="line9"></a>| ------------------------------------------------------------------------- |
+<a name="line10"></a>|   Authors: Rémi Cazalet                                                   |
+<a name="line11"></a>|          : Nicolas Mouret                                                 |
+<a name="line12"></a>|   Founder: Studio Caramia                                                 |
+<a name="line13"></a>|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+<a name="line14"></a>| ------------------------------------------------------------------------- |
+<a name="line15"></a>|   For the full copyright and license information, please view the LICENSE |
+<a name="line16"></a>|   file that was distributed with this source code.                        |
+<a name="line17"></a>'---------------------------------------------------------------------------'
+<a name="line18"></a>*/</span>
+<a name="line19"></a>&nbsp;
+<a name="line20"></a><span style="color: #aeaeae; font-style: italic;">/**
+<a name="line21"></a> * @package Citrus\html\form
+<a name="line22"></a> * @subpackage Citrus\html\form\SelectOne
+<a name="line23"></a> * @author Rémi Cazalet &lt;remi@caramia.fr&gt;
+<a name="line24"></a> * @license http://opensource.org/licenses/mit-license.php The MIT License
+<a name="line25"></a> */</span>
+<a name="line26"></a>&nbsp;
+<a name="line27"></a>&nbsp;
+<a name="line28"></a>&nbsp;
+<a name="line29"></a>&nbsp;
+<a name="line30"></a><span style="color: #e2874e;">namespace</span> core\Citrus\html\form<span style="color: #fff;">;</span>
+<a name="line31"></a>&nbsp;
+<a name="line32"></a><span style="color: #99cf4d;">class</span> SelectOne <span style="color: #99cf4d;">extends</span> FormElement <span style="color: #fff;">&#123;</span>
+<a name="line33"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #3e87e3;">$options</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line34"></a>&nbsp;
+<a name="line35"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> __toString<span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line36"></a>		<span style="color: #3e87e3;">$attrs</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/array"><span style="color: #dad085;">array</span></a><span style="color: #fff;">&#40;</span><span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line37"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$attrs</span><span style="color: #fff;">&#91;</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'id=&quot;'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'&quot;'</span><span style="color: #fff;">;</span>
+<a name="line38"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">name</span> <span style="color: #fff;">&#41;</span> <span style="color: #3e87e3;">$attrs</span><span style="color: #fff;">&#91;</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'name=&quot;'</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">name</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">'&quot;'</span><span style="color: #fff;">;</span>
+<a name="line39"></a>		<span style="color: #3e87e3;">$attrs</span> <span style="color: #e2874e;">=</span> <a href="http://www.php.net/implode"><span style="color: #dad085;">implode</span></a><span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">' '</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$attrs</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line40"></a>		<span style="color: #3e87e3;">$elt</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">&quot;&lt;select &quot;</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$attrs</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;&gt;<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line41"></a>		<span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/count"><span style="color: #dad085;">count</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">options</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line42"></a>            <span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">options</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$value</span> <span style="color: #e2874e;">=&gt;</span> <span style="color: #3e87e3;">$text</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line43"></a>                <span style="color: #3e87e3;">$selected</span> <span style="color: #e2874e;">=</span> <span style="color: #fff;">&#40;</span>string<span style="color: #fff;">&#41;</span><span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">value</span> <span style="color: #e2874e;">==</span> <span style="color: #fff;">&#40;</span>string<span style="color: #fff;">&#41;</span><span style="color: #3e87e3;">$value</span> ? <span style="color: #4fa742;">' selected=&quot;selected&quot;'</span> <span style="color: #e2874e;">:</span> <span style="color: #4fa742;">''</span><span style="color: #fff;">;</span>
+<a name="line44"></a>                <span style="color: #3e87e3;">$elt</span> <span style="color: #e2874e;">.=</span> <span style="color: #4fa742;">&quot;<span style="color: #ddf2a4;">\t</span>&lt;option value=<span style="color: #ddf2a4;">\&quot;</span><span style="color: #869a95;">$value</span><span style="color: #ddf2a4;">\&quot;</span><span style="color: #869a95;">$selected</span>&gt;<span style="color: #869a95;">$text</span>&lt;/option&gt;<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line45"></a>            <span style="color: #fff;">&#125;</span>
+<a name="line46"></a>        <span style="color: #fff;">&#125;</span> <span style="color: #e2874e;">else</span> <span style="color: #fff;">&#123;</span>
+<a name="line47"></a>            <span style="color: #3e87e3;">$elt</span> <span style="color: #e2874e;">.=</span> <span style="color: #4fa742;">&quot;<span style="color: #ddf2a4;">\t</span>&lt;option value=<span style="color: #ddf2a4;">\&quot;</span><span style="color: #ddf2a4;">\&quot;</span>&gt;&quot;</span> <span style="color: #e2874e;">.</span> tr<span style="color: #fff;">&#40;</span> <span style="color: #4fa742;">'Choose'</span> <span style="color: #fff;">&#41;</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">&quot;&lt;/option&gt;<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line48"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line49"></a>        <span style="color: #3e87e3;">$elt</span> <span style="color: #e2874e;">.=</span> <span style="color: #4fa742;">&quot;&lt;/select&gt;<span style="color: #ddf2a4;">\n</span>&quot;</span><span style="color: #fff;">;</span>
+<a name="line50"></a>        <span style="color: #e2874e;">return</span> <span style="color: #3e87e3;">$elt</span><span style="color: #fff;">;</span>
+<a name="line51"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line52"></a>&nbsp;
+<a name="line53"></a>	<span style="color: #99cf4d;">public</span> <span style="color: #99cf4d;">function</span> makeOptions<span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$class</span><span style="color: #fff;">,</span> <span style="color: #3e87e3;">$blank</span> <span style="color: #e2874e;">=</span> <span style="color: #3387cc;">false</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line54"></a>	    <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <a href="http://www.php.net/class_exists"><span style="color: #dad085;">class_exists</span></a><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$class</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line55"></a>            <span style="color: #3e87e3;">$items</span> <span style="color: #e2874e;">=</span> \core\Citrus\data\Model<span style="color: #e2874e;">::</span><span style="color: #fff;">selectAll</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$class</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line56"></a>            <span style="color: #3e87e3;">$schema</span> <span style="color: #e2874e;">=</span> \core\Citrus\data\Model<span style="color: #e2874e;">::</span><span style="color: #fff;">getSchema</span><span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$class</span> <span style="color: #fff;">&#41;</span><span style="color: #fff;">;</span>
+<a name="line57"></a>            <span style="color: #e2874e;">if</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$blank</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line58"></a>                <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">options</span><span style="color: #fff;">&#91;</span><span style="color: #4fa742;">''</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #4fa742;">'-- '</span> <span style="color: #e2874e;">.</span> <span style="color: #3e87e3;">$schema</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">pluralDescription</span> <span style="color: #e2874e;">.</span> <span style="color: #4fa742;">' --'</span><span style="color: #fff;">;</span>
+<a name="line59"></a>            <span style="color: #fff;">&#125;</span>
+<a name="line60"></a>            <span style="color: #e2874e;">foreach</span> <span style="color: #fff;">&#40;</span> <span style="color: #3e87e3;">$items</span> <span style="color: #e2874e;">as</span> <span style="color: #3e87e3;">$item</span> <span style="color: #fff;">&#41;</span> <span style="color: #fff;">&#123;</span>
+<a name="line61"></a>                <span style="color: #3e87e3;">$this</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">options</span><span style="color: #fff;">&#91;</span><span style="color: #3e87e3;">$item</span><span style="color: #e2874e;">-&gt;</span><span style="color: #fff;">id</span><span style="color: #fff;">&#93;</span> <span style="color: #e2874e;">=</span> <span style="color: #3e87e3;">$item</span><span style="color: #fff;">;</span>
+<a name="line62"></a>            <span style="color: #fff;">&#125;</span>
+<a name="line63"></a>        <span style="color: #fff;">&#125;</span>
+<a name="line64"></a>	<span style="color: #fff;">&#125;</span>
+<a name="line65"></a>&nbsp;
+<a name="line66"></a><span style="color: #fff;">&#125;</span>
+<a name="line67"></a>&nbsp;
+<a name="line68"></a>&nbsp;</pre>
+<p id="footer">This document was generated by <a href="http://peej.github.com/phpdoctor/">PHPDoctor: The PHP Documentation Creator</a></p>
+
+</div>
+
+</body>
+
+</html>
