@@ -279,7 +279,7 @@ class Controller {
                         exit;
                     }
                 } else {
-                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
+                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
                     http\Http::redirect( $loc );
                 }
             } else throw new sys\Exception( "Unknown class '$type'" );
@@ -305,7 +305,7 @@ class Controller {
             if ( class_exists( $resourceType ) ) {
                 data\Model::deleteOne( $resourceType, $id );
             }
-            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
+            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
             http\Http::redirect( $loc );
         }
     }
@@ -331,7 +331,7 @@ class Controller {
                 }
             }
         }
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->ctrl->name}/";
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
         http\Http::redirect( $loc );
     }
     public function do_captcha() {

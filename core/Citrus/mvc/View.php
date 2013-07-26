@@ -129,8 +129,8 @@ class View {
                 }
             }
         }
-        if ( $cos->app && $cos->app->ctrl ) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name ;
+        if ( $cos->app && $cos->app->controller ) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name ;
             if ( is_file( CITRUS_WWW_PATH . $src . '.css') ) 
                 $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . 
                             CITRUS_PROJECT_URL . $src . 
@@ -193,8 +193,8 @@ class View {
             }
         }
         
-        if ( $cos->app && $cos->app->ctrl ) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.css' ;
+        if ( $cos->app && $cos->app->controller ) {
+            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.css' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
@@ -270,8 +270,8 @@ class View {
             }
         }
         
-        if ( $cos->app && $cos->app->ctrl ) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.js' ;
+        if ( $cos->app && $cos->app->controller ) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
@@ -312,8 +312,8 @@ class View {
                 }
             }
         }
-        if ( $cos->app && $cos->app->ctrl ) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->ctrl->name . '.js' ;
+        if ( $cos->app && $cos->app->controller ) {
+            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
             if (is_file(CITRUS_WWW_PATH . $src)) 
                 $files[] = '<script type="text/javascript" src="' . CITRUS_PROJECT_URL . $src . '"></script>';
         }
@@ -343,6 +343,6 @@ class View {
      */
     public function displayTemplate() {
         $cos = Citrus::getInstance();
-        return $cos->app->ctrl->displayTemplate( $cos->app->ctrl->path );
+        return $cos->app->controller->displayTemplate( $cos->app->controller->path );
     }
 }

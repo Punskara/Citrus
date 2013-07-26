@@ -21,21 +21,21 @@ $head->addChild( 'meta', array(
         'inline' => true,
     ) );
 
-if ( $cos->app->ctrl->metadesc ) { 
+if ( $cos->app->controller->metadesc ) { 
     $head->addChild( 'meta', '', array(
         'attributes' => array(
             'name' => 'description',
-            'content' => $cos->app->ctrl->metadesc,
+            'content' => $cos->app->controller->metadesc,
         ),
         'inline' => true,
     ) );
 } 
-if ( $cos->app->ctrl->metakey ) {    
+if ( $cos->app->controller->metakey ) {    
     $head->addChild( 'meta', array(
         'classes' => array(),
         'attributes' => array(
             'name' => 'keywords',
-            'content' => $cos->app->ctrl->metakey,
+            'content' => $cos->app->controller->metakey,
         ),
         'inline' => true,
         'closeTag' => false,
@@ -45,7 +45,7 @@ if ( $cos->app->ctrl->metakey ) {
 // page title
 $title = $head->addChild( 'title' );
 $siteName = '';
-if ( $cos->app->ctrl->pageTitle ) $siteName .= $cos->app->ctrl->pageTitle . ' - ';
+if ( $cos->app->controller->pageTitle ) $siteName .= $cos->app->controller->pageTitle . ' - ';
 $siteName .= $cos->app->titleTag;
 $title->addHtml( $siteName );
 

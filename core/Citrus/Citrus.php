@@ -646,6 +646,6 @@ class Citrus {
     }   
     
     public function getController() {
-        return $this->app->ctrl;
+        return $this->app->controller;
     }
 }

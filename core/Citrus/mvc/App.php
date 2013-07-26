@@ -48,14 +48,9 @@ class App {
     public $titleTag;
     
     /**
-     * @var \core\Citrus\mvc\Module
-     */
-    public $module;
-    
-    /**
      * @var \core\Citrus\mvc\Controller
      */
-    public $ctrl;
+    public $controller;
     
     /**
      * @var \core\Citrus\View
@@ -160,7 +155,7 @@ class App {
 
                 $inException = in_array( $ctrlName, $this->security_exceptions );
 
-                $this->ctrl = \core\Citrus\Citrus::apply( $inst, Array( 
+                $this->controller = \core\Citrus\Citrus::apply( $inst, Array( 
                     'name' => $ctrlName, 
 
                     // isProtected = true  if appIsProtected   && !inException
@@ -170,7 +165,7 @@ class App {
                     'isProtected' => $this->isProtected ? $inException ? false : true : $inException ? true : false
                 ) );
 
-                return $this->ctrl;
+                return $this->controller;
             } catch ( \Exception $e ) {
                 prr($e, true);
             }
@@ -184,14 +179,14 @@ class App {
      * Executes the controller method that the action determines.
      */
     public function executeCtrlAction( $force_external_post = false ) {
-        if ( $this->ctrl->actionExists() ) {
+        if ( $this->controller->actionExists() ) {
             if ( !$this->isProtected() ) {
-                $act = $this->ctrl->executeAction( $force_external_post );
+                $act = $this->controller->executeAction( $force_external_post );
                 if ( $act ) {
-                    if ( $this->ctrl->layout === true )
+                    if ( $this->controller->layout === true )
                         $this->view->displayLayout();
                     else
-                        echo $this->ctrl->displayTemplate();
+                        echo $this->controller->displayTemplate();
                 }
             } else $this->onActionProtected();
         } else $this->onActionNotFound();
@@ -212,10 +207,14 @@ class App {
             $protected = $closure;
         }
 
-        $inException = in_array( $this->ctrl->name, $this->security_exceptions );
+        $inException = in_array( $this->controller->name, $this->security_exceptions );
         return $protected ? 
-                    $inException ? $this->ctrl->isActionProtected() : !$this->ctrl->isActionProtected() :
-                    $inException ? !$this->ctrl->isActionProtected() : $this->ctrl->isActionProtected();
+                    $inException ? 
+                        $this->controller->isActionProtected()
+                        : !$this->controller->isActionProtected()
+                    : $inException ? 
+                        !$this->controller->isActionProtected()
+                        : $this->controller->isActionProtected();
     }
 
     /**
@@ -224,8 +223,8 @@ class App {
      */
 
     public function onActionProtected() {
-        if ( method_exists( $this->ctrl, "onActionProtected" ) ) {
-            $this->ctrl->onActionProtected();
+        if ( method_exists( $this->controller, "onActionProtected" ) ) {
+            $this->controller->onActionProtected();
         } else {
             $closure = $this->onActionProtected;
             if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
@@ -240,8 +239,8 @@ class App {
      */
 
     public function onActionNotFound() {
-        if ( method_exists( $this->ctrl, "onActionNotFound" ) ) {
-            $this->ctrl->onActionNotFound();
+        if ( method_exists( $this->controller, "onActionNotFound" ) ) {
+            $this->controller->onActionNotFound();
         } else {
             $closure = $this->onActionNotFound;
             if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
