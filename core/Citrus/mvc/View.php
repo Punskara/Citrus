@@ -123,6 +123,7 @@ class View {
                     $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                     if ( $media == 'print' ) $s = substr( $s, 1 );
                     if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                    elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
                     else $href = CITRUS_PROJECT_URL . "css/$s";
                     $css_type = strpos( $s, '.less' ) !== false ? 'text/less' : 'text/css';
                     $sheets[] = '<link rel="stylesheet" media="screen" type="' . $css_type . '" href="' . $href . '" />';
@@ -178,6 +179,7 @@ class View {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );
                 if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
                 else $href = CITRUS_PROJECT_URL . "css/$s";
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
@@ -258,6 +260,7 @@ class View {
         if ( count( $this->addedJavascripts ) ) {
             foreach ( $this->addedJavascripts as $s ) {
                 if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                elseif ( substr( $s, 0, 1 ) === '/' )  $src = $s;
                 else $src = CITRUS_PROJECT_URL . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
@@ -307,6 +310,7 @@ class View {
             if ( count( $this->addedJavascripts ) ) {
                 foreach ( $this->addedJavascripts as $s ) {
                     if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                    elseif ( substr( $s, 0, 1 ) === '/' )  $src = $s;
                     else $src = CITRUS_PROJECT_URL . "js/$s";
                     $files[] = '<script type="text/javascript" src="' . $src . '"></script>';
                 }

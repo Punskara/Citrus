@@ -52,43 +52,41 @@ class Debug {
         $this->timer->stop();
         $queryString = htmlentities( $this->request->queryString );
         $s = "<div id=\"CitrusDebugBar\">\n";
-        
-        $s .= "<div class=\"content\">\n";
-        $s .= '<a href="#" onclick="$(\'.citrusDebugQString\').slideToggle(300);return false;">Request</a> ';
-        $s .= '<a href="#" onclick="$(\'.citrusDebugSQLQueries\').slideToggle(300);return false;">SQL (' . count( $this->queries ) . ')</a> ';
-        $s .= '<a href="#" onclick="$(\'.citrusDebugTimer\').slideToggle(300);return false;">Time (' . $this->timer->getExecTime() . ' ms)</a> ';
-        $s .= '<a href="#" onclick="$(\'#CitrusDebugBar\').fadeOut();return false;">Close</a> ';
-        $s .= "</div>\n";
-        
-        $s .= "\t<div class=\"citrusDebugQString citrusDebugPane\">\n";
-        $s .= "\t\t<ul>\n";
-        $s .= "\t\t\t<li>Query string : $queryString</li>\n";
-        $s .= "\t\t\t<li>Method : {$this->request->method}</li>\n";
-        $s .= "\t\t</ul>\n";
-        $s .= "</div>\n";
-        if ( count( $this->queries ) ) {
-            $s .= "\t\t<div class=\"citrusDebugSQLQueries citrusDebugPane\">\n";
-            $s .= "\t\t<ol>\n";
-            foreach ( $this->queries as $q ) {
-                $s .= "\t\t\t<li>$q</li>";
-            }
-            $s .= "\t\t</ol>";
-            $s .= "\t</div>";
-        }
-        if ( $this->timers ) {
-            $s .= "\t\t<div class=\"citrusDebugTimer citrusDebugPane\">\n";
-            $s .= "\t\t<ol>\n";
-            foreach ( $this->timers as $timer ) {
-                $s .= "<li>$timer->label: ";
-                $s .= $timer->getExecTime();
-                $s .= " ms</li>";
-            }
-            $s .= "\t\t</ol>\n";
+            $s .= '<a href="#" id="showDebugBar" class="icon-bug">&nbsp;</a>' . "\n";
+            $s .= "<div class=\"content\">\n";
+                $s .= '<a href="#request" id="tamere"><i class="icon-exchange"></i>Request</a> ';
+                $s .= '<a href="#sql"><i class="icon-tasks"></i>SQL (' . count( $this->queries ) . ')</a> ';
+                $s .= '<a href="#timer"><i class="icon-time"></i>Time (' . $this->timer->getExecTime() . ' ms)</a> ';
+                $s .= '<a href="#close"><i class="icon-remove"></i>Close</a> ';
             $s .= "</div>\n";
-        }
-        $s .= '<script type="text/javascript">';
-        //$s .= "$('#CitrusDebugBar').draggable({ axis: 'y', handle: '.content', containment: 'body' });";
-        $s .= '</script>';
+        
+            $s .= "\t<div id=\"citrusDebugQString\" class=\"citrusDebugPane\">\n";
+                $s .= "\t\t<ul>\n";
+                $s .= "\t\t\t<li>Query string : $queryString</li>\n";
+                $s .= "\t\t\t<li>Method : {$this->request->method}</li>\n";
+                $s .= "\t\t</ul>\n";
+            $s .= "</div>\n";
+        
+            $s .= "\t\t<div id=\"citrusDebugSQLQueries\" class=\"citrusDebugPane\">\n";
+                if ( count( $this->queries ) ) {
+                    $s .= "\t\t<ol>\n";
+                    foreach ( $this->queries as $q ) {
+                        $s .= "\t\t\t<li><pre>$q</pre></li>";
+                    }
+                    $s .= "\t\t</ol>";
+                }
+            $s .= "\t</div>";
+            $s .= "\t\t<div id=\"citrusDebugTimer\" class=\"citrusDebugPane\">\n";
+                if ( $this->timers ) {
+                    $s .= "\t\t<ol>\n";
+                    foreach ( $this->timers as $timer ) {
+                        $s .= "<li>$timer->label: ";
+                        $s .= $timer->getExecTime();
+                        $s .= " ms</li>";
+                    }
+                    $s .= "\t\t</ol>\n";
+                }
+            $s .= "</div>\n";
         $s .= "</div>\n";
         return $s;
     }
