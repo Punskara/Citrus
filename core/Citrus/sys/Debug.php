@@ -57,7 +57,7 @@ class Debug {
                 $s .= '<a href="#request" id="tamere"><i class="icon-exchange"></i>Request</a> ';
                 $s .= '<a href="#sql"><i class="icon-tasks"></i>SQL (' . count( $this->queries ) . ')</a> ';
                 $s .= '<a href="#timer"><i class="icon-time"></i>Time (' . $this->timer->getExecTime() . ' ms)</a> ';
-                $s .= '<a href="#close"><i class="icon-remove"></i>Close</a> ';
+                $s .= '<a href="#close"><i class="icon-remove"></i>Remove</a> ';
             $s .= "</div>\n";
         
             $s .= "\t<div id=\"citrusDebugQString\" class=\"citrusDebugPane\">\n";
