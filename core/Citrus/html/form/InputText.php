@@ -39,7 +39,7 @@ class InputText extends FormElement {
 		if ( $this->name ) $attrs[] = 'name="' . $this->name . '"';
 		$attrs[] = 'value="' . $this->value . '"';
 		$attrs = implode( ' ', $attrs );
-		
+		$this->classes[] = 'form-control';
 		$classes = $this->classesString();
 		
 		return "<input " . $attrs . " " . $classes . " />";

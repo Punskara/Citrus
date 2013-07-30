@@ -49,21 +49,39 @@ class Form {
     public function renderElement( $name, $classes = array() ) {
         if ( !isset( $this->elements[$name] ) ) return '';
         $elt = $this->elements[$name];
-        
-        foreach ( $classes as $class ) {
+        /*foreach ( $classes as $class ) {
             $classes[] = $class;
-        }
+        }*/
         $classes = implode( ' ', $classes ) . '';
         if ( $elt instanceof InputHidden ) {
             $str = (string)$elt;
         } elseif ( $elt instanceof RichText ) {
-            $str = "<div class=\"formRow $classes\">\n";
+            $str = "<div class=\"form-group $classes\">\n";
             if ( $elt->label ) $str .= "<label for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
             $str .= (string)$elt . "\n</div>\n";
         } else {
-            $str = "<div class=\"formRow\">\n";
-            if ( $elt->label ) $str .= "<label class=\"inline\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
-            $str .= (string)$elt . "\n</div>\n";
+            $str = "<div class=\"form-group $classes\">\n";
+            if ( $elt->label ) {
+                $str .= "<label class=\"col-lg-2 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
+            }
+            $str .= '<div class="col-lg-10">' . "\n\t";
+            $str .= (string)$elt;
+            $str .= "\n</div>\n";
+            $str .= "\n</div>\n";
+        }
+        return $str;
+    }
+    
+    public function renderElements( $elements = Array() ) {
+        $str = '';
+        if ( count( $elements ) > 0 ) {
+            foreach ( $elements as $e ) {
+                if ( is_array( $e ) ) {
+                    $str .= $this->renderElement( $e );
+                } else {
+                    $str .= $this->renderElement( $e );
+                }
+            }
         }
         return $str;
     }

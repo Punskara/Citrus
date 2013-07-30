@@ -37,6 +37,9 @@ class InputPassword extends FormElement {
 		if ( $this->name ) $attrs[] = 'name="' . $this->name . '"';
 		#$attrs[] = 'value="' . $this->value . '"';
 		$attrs = implode( ' ', $attrs );
-		return "<input " . $attrs . " />";
+        $this->classes[] = 'form-control';
+        $classes = $this->classesString();
+        
+        return "<input " . $attrs . " " . $classes . " />";
 	}
 }
