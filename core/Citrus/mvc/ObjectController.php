@@ -30,6 +30,7 @@ namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
 use core\Citrus\http;
 use core\Citrus\sys;
+use core\Citrus\data;
 
 /**
  * Extends Controller to provide model-related actions
@@ -37,24 +38,61 @@ use core\Citrus\sys;
  */
 class ObjectController extends Controller {
     public function do_index() {
-        $schema = Citrus\data\Model::getSchema( $this->className );
-        $cos = Citrus\Citrus::getInstance();
+        $schema = data\Model::getSchema( $this->className );
+        $cos = Citrus::getInstance();
+
         if ( $schema ) {
-            $liste = Citrus\data\Model::selectAll( $this->className );
-            if ($this->request->isXHR) {
+            $pager_min = 15;
+            $pager = new \core\Citrus\data\Pager( $schema->className, $pager_min );
+            
+            $list = $pager->getCollection();
+
+            if ( $this->request->isXHR ) {
                 $this->layout = false;
-                $this->template = new Citrus\mvc\Template('_index-list');
-                $this->template->assign( 'search', $this->request->param( 'search', 'string' ) );
-                $this->template->assign( 'order', $this->request->param( 'order', 'string' ) );
-                $this->template->assign( 'orderType', $this->request->param( 'orderType', 'string' ) );
+                $search     = $this->request->param( 'search', 'string' );
+                $order      = $this->request->param( 'order', 'string' );
+                $orderType  = $this->request->param( 'orderType', 'string' );
+                
+                if ( $search ) {
+                    $where = array();
+                    foreach ( $schema->linkColumns as $cols ) {
+                        $where[] = "$cols LIKE '%$search%'"; 
+                    }
+                    $list = $pager->getCollection( 
+                        $where, true, 
+                        isset( $order ) ? $order : false, 
+                        isset( $orderType ) ? $orderType : false
+                    );
+                }
+                
+                $this->template = new Template( '_index-list' );
+                $this->template->assign( 'search', $search );
+                $this->template->assign( 'order', $order );
+                $this->template->assign( 'orderType', $orderType );
             } else {
+                $cos->app->view->addJavascript( 'backend/listing.js' );
                 $this->loadActionTemplate( 'index' );
             }
             $this->template->assign( 'schema', $schema );
-            $this->template->assign( 'liste', $liste );
-            $this->template->assign( 'sidebar', 'sidebar-tree' );
+            $this->template->assign( 'list', $list );
+            $this->template->assign( 'pager', $pager );
         }
         else Citrus\Citrus::pageForbidden();
+    }
+
+    public function do_edit() {
+        $schema = data\Model::getSchema( $this->className );
+        $this->layout = !$this->request->isXHR;
+        $id = $this->request->param( 'id', 'int' );
+        if ( $id ) {
+            $res = \core\Citrus\data\Model::selectOne( $this->className, $id );
+        } else {
+            $res = new $this->className();
+        }
+        $res->generateForm();
+        $this->template->assign( 'res', $res );
+        $this->template->assign( 'schema', $schema );
+        $this->template->assign( 'layout', $this->layout );
     }
 
 
@@ -118,7 +156,8 @@ class ObjectController extends Controller {
      * @todo Prevent this function to be executed if method is not POST
      * @todo Handle the case that the request is sent with AJAX.
      */
-    public function do_delete( $resourceType = null ) {
+    public function do_delete() {
+        $resourceType = $this->className;
         $cos = Citrus::getInstance();
         $module = $this->module->name;
         $id = $this->request->param( 'id', 'int' );
@@ -142,9 +181,10 @@ class ObjectController extends Controller {
      * @todo Prevent this function to be executed if method is not POST
      * @todo Handle the case that the request is sent with AJAX.
      */
-    public function do_deleteSeveral( $resourceType = null ) {
+    public function do_deleteSeveral() {
+        $resourceType = $this->className;
         $cos = Citrus::getInstance();
-        if (isset($_POST['delete'])) {
+        if ( isset($_POST['delete'] ) ) {
             $ids = $_POST['delete'];
             if ( is_array( $ids ) ) {
                 if ( class_exists( $resourceType ) ) {
@@ -155,4 +195,5 @@ class ObjectController extends Controller {
         $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
         http\Http::redirect( $loc );
     }
+
 }
