@@ -90,7 +90,7 @@ class Controller {
     /**
      * @var Boolean
      */
-    public $isProtected;
+    public $is_protected = false;
 
 
     /**
@@ -162,7 +162,7 @@ class Controller {
     */
     public function isActionProtected() {
         $inException = in_array( $this->action, $this->security_exceptions );
-        return $this->isProtected ? $inException ? false : true : $inException ? true : false;
+        return $this->is_protected ? $inException ? false : true : $inException ? true : false;
     }
 
 

@@ -1,16 +1,15 @@
 <?php
 
-$this->titleTag             = "Citrus";
-$this->layout               = 'main';
+$this->titleTag     = "Citrus";
+$this->layout       = 'main';
 
-$this->isProtected 			= false;
-$this->security_exceptions = Array(
-    // "main",
-);
+$this->is_protected = false;
 
 
-/*$this->isProtected = function() {
+/*$this->isAccessAllowed  = function() use( &$self ) {
+    // app : $self
     $cos = \core\Citrus\Citrus::getInstance();
+    
     if ( isset( $_SESSION['CitrusUser'] ) && get_class( $_SESSION['CitrusUser'] ) ) {
         $cos->user = $_SESSION['CitrusUser'];
     } if ( isset($_SESSION['CitrusUserId'] ) ) {
@@ -22,12 +21,18 @@ $this->security_exceptions = Array(
     }
 
     $logged = $cos->user->isLogged();
-    if ( !$logged ) {
-        $redir = $cos->projectName . '_REDIRECT_URI';
-        if ( !isset( $_SESSION[$redir] ) ) {
-            $_SESSION[$redir] = substr( $_SERVER['REQUEST_URI'], strlen( CITRUS_PROJECT_URL ) );
-        }
-        return true;
+
+    if ( $self->is_protected ) {
+        if ( $self->controller->isActionProtected() ) $ret = $logged;
+        else $ret = true;
+    } else {
+        if ( $self->controller->isActionProtected() ) $ret = $logged;
+        else $ret = true;
     }
-    return false;
+    return $ret;
+};
+
+
+$this->onActionProtected = function() {
+    \core\Citrus\http\Http::redirect( CITRUS_PROJECT_URL . 'backend/login' );
 };*/

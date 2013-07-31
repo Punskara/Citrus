@@ -68,13 +68,19 @@ class App {
     public $path;
     
     /**
-     * @var Array
+     * @var Boolean
      */
-    public $security_exceptions = Array();
+    public $is_protected = false;
 
-    public $is_protected = true;
+    /**
+     * @var Closure
+     */
+    public $isAccessAllowed;
 
-    public $isProtected;
+    /**
+     * @var Closure
+     */
+    public $onActionProtected;
 
     /**
      * Constructor.
@@ -155,12 +161,9 @@ class App {
                 $r = new \ReflectionClass( $ctrlPath ); 
                 $inst = $r->newInstanceArgs( $args ? $args : array() );
 
-                $inException = in_array( $ctrlName, $this->security_exceptions );
-
                 $this->controller = \core\Citrus\Citrus::apply( $inst, Array( 
                     'name' => $ctrlName, 
                 ) );
-                $this->controller->isProtected = $this->isProtected() ? $inException ? false : true : $inException ? true : false;
 
                 return $this->controller;
             } catch ( \Exception $e ) {
@@ -176,46 +179,32 @@ class App {
      * Executes the controller method that the action determines.
      */
     public function executeCtrlAction( $force_external_post = false ) {
-        if ( $this->controller->actionExists() ) {
-            if ( !$this->controller->isActionProtected() ) {
-                $act = $this->controller->executeAction( $force_external_post );
-                if ( $act ) {
-                    if ( $this->controller->layout === true )
-                        $this->view->displayLayout();
-                    else
-                        echo $this->controller->displayTemplate();
-                }
-            } else $this->onActionProtected();
+        if ( !$this->isAccessAllowed() ) {
+            $this->onActionProtected();
+        } elseif ( $this->controller->actionExists() ) {
+            $act = $this->controller->executeAction( $force_external_post );
+            if ( $act ) {
+                if ( $this->controller->layout === true )
+                    $this->view->displayLayout();
+                else
+                    echo $this->controller->displayTemplate();
+            }
         } else $this->onActionNotFound();
     }
 
-
-    /** 
-      * @return true  if ( appIsProtected && !inException || !appIsProtected  && inException )
-      * @return false if ( appIsProtected && inException || !appIsProtected  && !inException )
-    */
-    public function isProtected() {
-        $protected = false;
-
-        $closure = $this->isProtected;
+    public function isAccessAllowed() {
+        $allowed = $this->is_protected;
+        $closure = $this->isAccessAllowed;
         if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
-            $protected = $closure();
+            $self = $this;
+            $allowed = $closure();
         } else {
-            $protected = $closure;
+            if ( $this->controller->isActionProtected() ) $allowed = false;
+            else $allowed = true;
+            if ( $this->controller->isActionProtected() ) $allowed = false;
+            else $allowed = true;
         }
-        return $protected;
-
-        /*$inException = in_array( $this->controller->name, $this->security_exceptions );
-
-        $this->is_protected = $protected ? 
-                    $inException ? 
-                        $this->controller->isActionProtected()
-                        : !$this->controller->isActionProtected()
-                    : $inException ? 
-                        !$this->controller->isActionProtected()
-                        : $this->controller->isActionProtected();
-
-        return $this->is_protected;*/
+        return $allowed;
     }
 
     /**
@@ -224,13 +213,11 @@ class App {
      */
 
     public function onActionProtected() {
-        if ( method_exists( $this->controller, "onActionProtected" ) ) {
-            $this->controller->onActionProtected();
+        $closure = $this->onActionProtected;
+        if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
+            $closure();
         } else {
-            $closure = $this->onActionProtected;
-            if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
-                $closure();
-            }
+            $this->controller->onActionProtected();
         }
     }
 
