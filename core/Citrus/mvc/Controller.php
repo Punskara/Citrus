@@ -191,6 +191,7 @@ class Controller {
     }
     
     /**
+     * Shows up the default "Page not found" template
      * Is executed if the action doesn't exist.
      *
      * @param string  $message  A message to display in the 404 page.
@@ -200,6 +201,13 @@ class Controller {
         Citrus::pageNotFound( $message );
     }
 
+    /**
+     * Shows up the default "Page forbidden" template
+     * Can be executed when the action is not allowed.
+     *
+     * @param string  $message  A message to display in the 404 page.
+     * @see \core\Citrus\Citrus::pageNotFound()
+     */
     public function do_PageForbidden( $message = null ) {
         Citrus::pageForbidden( $message );
     }
@@ -234,110 +242,6 @@ class Controller {
             $this->app->view->template = $tplFile;
             $this->template->name = $action;
         }
-    }
-    
-    
-    /**
-     * Generic function to save an object in database. Only accessible in POST method.
-     * This function saves the object, upload the files if needed ans redirects to the
-     * index of the module of the app. If used with AJAX, this will only display "ok".
-     */
-    public function do_save() {
-        $cos = Citrus::getInstance();
-        if ( $this->request->method != 'POST' ) {
-            if ( $cos->debug ) {
-                throw new Exception( 'Bad method request' );
-            } else {
-                Citrus::pageNotFound();
-            }
-        } else {
-            #vexp($_POST);
-            $type = $this->request->param( 'modelType', 'string' );
-            if ( class_exists( $type ) ) {
-                $inst = new $type();
-                if ( isset( $_FILES ) ) {
-                    foreach ( $_FILES as $name => $file ) {
-                        if ( !empty( $file['name'] ) ) {
-                            if ( $inst->$name ) {
-                                unlink( CITRUS_PATH . 'web/upload' . $inst->$name );
-                            }
-                            $upld = new kos_http_Uploader( $file );
-                            $upld->readFile();
-                            $up = $upld->moveFile( CITRUS_PATH . '/web/upload/' );
-                            $inst->args[$name] = $inst->$name = '/web/upload/' . $upld->fileName;
-                        }
-                    }
-                }
-                $inst->hydrateByFilters();
-                $rec = $inst->save();
-                $inst->hydrateManyByFilters();
-                
-                #vexp($rec);exit();
-                if ( $this->request->isXHR ) {
-                    if ( $rec ) {
-                        echo "ok";
-                        exit;
-                    }
-                } else {
-                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
-                    http\Http::redirect( $loc );
-                }
-            } else throw new sys\Exception( "Unknown class '$type'" );
-        }
-    }
-    
-    /**
-     * Generic function to delete an object from database.
-     * This function saves the object, upload the files if needed ans redirects to the
-     * index of the module of the app.
-     * 
-     * @param string  $resourceType  Name of the class of the object we want to delete.
-     * 
-     * @todo Throw an exception if class $resourceType doesn't exist
-     * @todo Prevent this function to be executed if method is not POST
-     * @todo Handle the case that the request is sent with AJAX.
-     */
-    public function do_delete( $resourceType = null ) {
-        $cos = Citrus::getInstance();
-        $module = $this->module->name;
-        $id = $this->request->param( 'id', 'int' );
-        if ( $id ) {
-            if ( class_exists( $resourceType ) ) {
-                data\Model::deleteOne( $resourceType, $id );
-            }
-            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
-            http\Http::redirect( $loc );
-        }
-    }
-
-    /**
-     * Generic function to delete several objects from database.
-     * This function saves the object, upload the files if needed ans redirects to the
-     * index of the module of the app.
-     * 
-     * @param string  $resourceType  Name of the class of the object we want to delete.
-     * 
-     * @todo Throw an exception if class $resourceType doesn't exist
-     * @todo Prevent this function to be executed if method is not POST
-     * @todo Handle the case that the request is sent with AJAX.
-     */
-    public function do_deleteSeveral( $resourceType = null ) {
-        $cos = Citrus::getInstance();
-        if (isset($_POST['delete'])) {
-            $ids = $_POST['delete'];
-            if ( is_array( $ids ) ) {
-                if ( class_exists( $resourceType ) ) {
-                    \core\Citrus\data\Model::deleteSeveral( $resourceType, $ids );
-                }
-            }
-        }
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
-        http\Http::redirect( $loc );
-    }
-    public function do_captcha() {
-        $this->layout = false;
-        $cap = new Captcha();
-        $cap->display();
     }
 
     public function getPath() {
