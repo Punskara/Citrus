@@ -19,7 +19,7 @@ $lib = CITRUS_CLASS_PATH . "doctrine-orm/";
 Doctrine\ORM\Tools\Setup::registerAutoloadDirectory( $lib );
 
 try {
-    $cos = core\Citrus\Citrus::getInstance();    
+    $cos = core\Citrus\Citrus::getInstance( !isset( $_SERVER['HTTP_HOST'] ) );    
 } catch ( core\Citrus\sys\Exception $e ) {
     core\Citrus\sys\Debug::handleException( $e, true );
 }

@@ -180,10 +180,10 @@ class Citrus {
      *
      * @return \core\Citrus\Citrus
      */
-    public static function getInstance() {
+    public static function getInstance( $cli = false ) {
         if ( is_null( self::$instance ) ) {
             try {
-                self::$instance = new Citrus();
+                self::$instance = new Citrus( $cli );
             } catch ( Exception $e ) {
                 sys\Debug::handleException( $e, true );
             }
@@ -196,14 +196,18 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no valid host is found.
      */
-    private function __construct() {
+    private function __construct( $cli = false ) {
+        if ( $cli ) {
+            $this->BootCli();
+            return;
+        }
         $this->Boot();
         #if ( $this->host instanceof core\Citrus\Host ) {
         if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
             $this->hasRewriteEngine = $this->host->services['hasRewriteEngine'];
             if ( $this->debug ) {
                 ini_set( 'display_errors', 0 );
-                error_reporting( -1 );
+                error_reporting( E_ALL );
             }
             
             define( 'CITRUS_PROJECT_URL', $this->host->baseUrl );
@@ -267,6 +271,9 @@ class Citrus {
         set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
     }
 
+    public function BootCli() {
+        $this->registerAutoload();
+    }
 
     /**
      * Loads configuration file.
@@ -275,9 +282,9 @@ class Citrus {
      */
     public function loadConfiguration() {
         if ( !$this->config ) {
-            if ( file_exists( CITRUS_PATH . '/' . self::$configFile ) ) {
+            if ( file_exists( CITRUS_PATH . self::$configFile ) ) {
                 $this->config = include_once CITRUS_PATH . self::$configFile;
-            } else if ( file_exists( CITRUS_PATH . '/' . self::$configFileInstall ) ) {
+            } else if ( file_exists( CITRUS_PATH . self::$configFileInstall ) ) {
                 $this->config = include_once CITRUS_PATH . self::$configFileInstall;
             } else {
                 throw new sys\Exception( "Unable to find configuration file." );
