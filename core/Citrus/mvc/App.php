@@ -72,8 +72,10 @@ class App {
      */
     public $security_exceptions = Array();
 
+    public $is_protected = true;
 
-    public $isProtected = true;
+    public $isProtected;
+
     /**
      * Constructor.
      * 
@@ -157,13 +159,8 @@ class App {
 
                 $this->controller = \core\Citrus\Citrus::apply( $inst, Array( 
                     'name' => $ctrlName, 
-
-                    // isProtected = true  if appIsProtected   && !inException
-                    // isProtected = true  if !appIsProtected  && inException
-                    // isProtected = false if appIsProtected   && inException
-                    // isProtected = false if !appIsProtected  && !inException
-                    'isProtected' => $this->isProtected ? $inException ? false : true : $inException ? true : false
                 ) );
+                $this->controller->isProtected = $this->isProtected() ? $inException ? false : true : $inException ? true : false;
 
                 return $this->controller;
             } catch ( \Exception $e ) {
@@ -180,7 +177,7 @@ class App {
      */
     public function executeCtrlAction( $force_external_post = false ) {
         if ( $this->controller->actionExists() ) {
-            if ( !$this->isProtected() ) {
+            if ( !$this->controller->isActionProtected() ) {
                 $act = $this->controller->executeAction( $force_external_post );
                 if ( $act ) {
                     if ( $this->controller->layout === true )
@@ -206,15 +203,19 @@ class App {
         } else {
             $protected = $closure;
         }
+        return $protected;
 
-        $inException = in_array( $this->controller->name, $this->security_exceptions );
-        return $protected ? 
+        /*$inException = in_array( $this->controller->name, $this->security_exceptions );
+
+        $this->is_protected = $protected ? 
                     $inException ? 
                         $this->controller->isActionProtected()
                         : !$this->controller->isActionProtected()
                     : $inException ? 
                         !$this->controller->isActionProtected()
                         : $this->controller->isActionProtected();
+
+        return $this->is_protected;*/
     }
 
     /**
