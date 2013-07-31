@@ -252,7 +252,7 @@ class Pager {
         $search = $cos->app->controller->request->param( 'search', 'string' );
         $order = $cos->app->controller->request->param( 'order', 'string' );
         $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
-        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}.html";
+        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         else $loc = $this->location;
         for ( $i = $start; $i <= $end; $i++ ) {
             if ( $i == $this->currentPage ) {
@@ -280,7 +280,7 @@ class Pager {
         $search = $cos->app->controller->request->param( 'search', 'string' );
         $order = $cos->app->controller->request->param( 'order', 'string' );
         $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}.html";
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         
         if ( $this->currentPage != 1 ) {
             $html .= link_to( 
@@ -310,7 +310,7 @@ class Pager {
         $search = $cos->app->controller->request->param( 'search', 'string' );
         $order = $cos->app->controller->request->param( 'order', 'string' );
         $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}.html";
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         
         if ( $this->currentPage != $this->nbPages ) {
             $next = $this->currentPage + 1;
