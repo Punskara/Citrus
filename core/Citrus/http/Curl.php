@@ -174,7 +174,7 @@ class Curl {
             fclose( $fp );
         }
         if ( $ret === FALSE ) {
-            throw new \Exception( "Error: '" . curl_error( $this->_ch ) . "'" );
+            throw new CurlExecFailedException( "Error: '" . curl_error( $this->_ch ) . "'" );
         }
         return $ret;
     }
