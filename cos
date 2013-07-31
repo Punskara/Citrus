@@ -1,0 +1,68 @@
+#!/usr/bin/env php
+<?php
+chdir( dirname( __FILE__ ) );
+include 'boot.php';
+
+// command
+$command = null;
+if ( isset( $argv[1] ) ) {
+    $command = $argv[1];
+}
+if ( $command ) {
+    switch ( $command ) {
+        case 'cssmin':
+            if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
+                try {
+                    $m = \core\lib\minifiers\CSSMinifier::minify(
+                        $argv[2], $argv[3]
+                    );
+                    echo "Minified!\n";
+                } catch ( \core\Citrus\sys\Exception $e ) {
+                    echo $e->getMessage();
+                } catch ( \core\Citrus\http\CurlExecFailedException $e ) {
+                    echo $e->getMessage() . "\n";
+                }
+
+            } else {
+                echo "syntax: cssmin input output\n";
+            }
+            break;
+        case 'jsmin':
+            if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
+                try {
+                    $m = \core\lib\minifiers\JSMinifier::minify(
+                        $argv[2], $argv[3]
+                    );
+                    echo "Minified!\n";
+                } catch ( \core\Citrus\sys\Exception $e ) {
+                    echo $e->getMessage();
+                } catch ( \core\Citrus\http\CurlExecFailedException $e ) {
+                    echo $e->getMessage() . "\n";
+                }
+
+            } else {
+                echo "syntax: jsmin input output\n";
+            }
+            break;
+
+        case 'compile-less':
+            require 'core/lib/lessphp/lessc.inc.php';
+            if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
+                try {
+                    lessc::ccompile( $argv[2], $argv[3] );
+                    echo "Minified!\n";
+                } catch ( Exception $ex ) {
+                    exit( "Error:\n" . $ex->getMessage() );
+                }
+            } else {
+                echo "syntax: compile-less input output\n";
+            }
+            break;
+        
+        default:
+            break;
+    }
+} else {
+    echo "Commands: jsmin, cssmin, compile-less.\n";
+}
+
