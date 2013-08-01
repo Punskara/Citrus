@@ -44,8 +44,6 @@ class ObjectController extends Controller {
         if ( $schema ) {
             $pager_min = 15;
             $pager = new \core\Citrus\data\Pager( $schema->className, $pager_min );
-            
-            $list = $pager->getCollection();
 
             if ( $this->request->isXHR ) {
                 $this->layout = false;
@@ -53,23 +51,24 @@ class ObjectController extends Controller {
                 $order      = $this->request->param( 'order', 'string' );
                 $orderType  = $this->request->param( 'orderType', 'string' );
                 
+                $where = array();
                 if ( $search ) {
-                    $where = array();
                     foreach ( $schema->linkColumns as $cols ) {
                         $where[] = "$cols LIKE '%$search%'"; 
                     }
-                    $list = $pager->getCollection( 
-                        $where, true, 
-                        isset( $order ) ? $order : false, 
-                        isset( $orderType ) ? $orderType : false
-                    );
                 }
+                $list = $pager->getCollection( 
+                    $where,
+                    isset( $order ) ? $order : false, 
+                    isset( $orderType ) ? $orderType : false
+                );
                 
                 $this->template = new Template( '_index-list' );
                 $this->template->assign( 'search', $search );
                 $this->template->assign( 'order', $order );
                 $this->template->assign( 'orderType', $orderType );
             } else {
+                $list = $pager->getCollection( array(), $schema->orderColumn );
                 $cos->app->view->addJavascript( 'backend/listing.js' );
                 $this->loadActionTemplate( 'index' );
             }

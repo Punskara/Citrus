@@ -132,12 +132,14 @@ class Debug {
         $logger = new Logger( 'error' );
         $logger->logEvent( $msg . ' ' . $file . ' on line ' . $line );
         $logger->writeLog();
-        $err = new Error( $number, $msg, $file, $line, $context, $stack );
+
+        // $err = new Error( $number, $msg, $file, $line, $context, $stack );
 
         if ( $cos->debug ) {
-            $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error.tpl' );
-            $msg = Error::renderHtml( $err );
-            $errorTpl = preg_replace( '#\{citrus_error\}#', $msg, $errorTpl );
+
+            // $msg = Error::renderHtml( $err );
+            $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context );
+            
         } else {
             $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
         }
@@ -154,5 +156,32 @@ class Debug {
             list( $type, $message, $file, $line ) = array_values( $err );
             self::handleError( $type, $message, $file, $line, null );
         }
+    }
+
+    public static function renderErrorHtml( $number, $msg, $file, $line, $context, $message = null, $trace = false ) {
+        $s = '';
+        if ( $message ) {
+            $s .= '<p class="message">' . $message . '</p>';
+        }
+        $s .= '<p class="message">' . $msg . '</p>'
+           . '<p>'
+           . '<code>' . $file . '</code>, line ' . $line . '.'
+           . '</p>';
+        if ( $trace ) {
+            $s .= '<p>Trace :</p>';
+            $s .= '<ol>';
+            foreach ( $err->getTrace() as $tr ) {
+                $s .= '<li><code>';
+                if ( isset( $tr['class'] ) ) $s .= $tr['class'];
+                if ( isset( $tr['type'] ) ) $s .= $tr['type'];
+                $s .= $tr['function'] . '</code> '
+                    . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
+                    . '</li>';
+            }
+            $s .= '</ol>';
+        }
+        $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error.tpl' );
+        $errorTpl = preg_replace( '#\{citrus_error\}#', $s, $errorTpl );
+        return $errorTpl;
     }
 }
