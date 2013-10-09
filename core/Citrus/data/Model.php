@@ -219,81 +219,13 @@ class Model {
         }
     }
 
-    public function delete( $id ) {
+    public function delete() {
         $cos = \core\Citrus\Citrus::getInstance();
         $tableName = $this->tableName ? $this->tableName : $this->schema->tableName;
         $del = $cos->db->execute(
-            "DELETE FROM $tableName WHERE id = $id"
+            "DELETE FROM $tableName WHERE id = $this->id"
         );
         return $del;
-    }
-    
-    /**
-     * Generates an HTML form from the schema of the object
-     */
-    public function generateForm() {
-        $this->form = new Form\Form();
-        $props = $this->schema->properties;
-        $this->form->elements['modelType'] = new Form\InputHidden( 
-            'modelType', '', 'modelType', array(), $value = $this->schema->className
-        );
-        foreach ( $props as $propName => $propAttr ) {
-            if ( isset( $propAttr['inputType'] ) ) {
-                if ( class_exists( '\\core\\Citrus\\html\\form\\' . $propAttr['inputType'] ) ) {
-                    $element = '\\core\\Citrus\\html\\form\\' . $propAttr['inputType'];
-                    $classes = ( isset( $propAttr['null'] ) && $propAttr['null'] == false ) ? array( 'required' ) : array();
-                    if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
-                    $this->form->elements[$propName] = new $element( 
-                        $propName, 
-                        isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
-                        $propName,
-                        $classes,
-                        $this->$propName
-                    );
-                    if ( $element == '\\core\\Citrus\\html\\form\\SelectOne' ) {
-                        if ( isset( $propAttr['modelType'] ) ) {
-                            $this->form->elements[$propName]->makeOptions( 
-                                $propAttr['modelType'],
-                                isset( $propAttr['firstBlank'] )
-                            );
-                        } elseif ( isset( $propAttr['options'] ) ) {
-                            $this->form->elements[$propName]->options = $propAttr['options'];
-                        }
-                    }
-                }
-            }
-        }
-        $manyProps = $this->schema->manyProperties;
-        foreach ( $manyProps as $propName => $propAttr ) {
-            if ( isset( $propAttr['inputType'] ) ) {
-                $inputType = $propAttr['inputType'];
-                $element = '\\core\\Citrus\\html\\form\\' . $inputType;
-            } else {
-                $element = '\\core\\Citrus\\html\\form\\SelectMany';
-            }
-            if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
-            $this->form->elements[$propName] = new $element( 
-                $propName, 
-                isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
-                $propName,
-                $classes,
-                $this->$propName
-            );
-            $this->form->elements[$propName]->makeOptions( $propAttr['modelType'] );
-        }
-        
-        #return $this->form->html;
-    }
-    
-    /**
-     * Displays generated HTML form
-     */
-    public function displayForm() {
-        $render = '';
-        foreach ( $this->form->elements as $elt ) {
-            $render .= $this->form->renderElement( $elt->name );
-        }
-        return $render;
     }
     
     protected function _getProps() {
