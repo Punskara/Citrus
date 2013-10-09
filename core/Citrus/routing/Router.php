@@ -46,7 +46,7 @@ class Router {
     public $default_controller;
     public $default_action;
 
-    public $ext = '.(html|json)';
+    public $ext = '';
 
     public $routes = array();
     
@@ -161,7 +161,7 @@ class Router {
             }
             // balayage des apps
             $cos = \core\Citrus\Citrus::getInstance();
-            foreach ( $cos->getAppsList() as $app) $this->loadAppRoutes( $app );
+            foreach ( $cos->getAppsList() as $app ) $this->loadAppRoutes( $app );
             
          } else {
              throw new sys\Exception( "No routing file found." );
