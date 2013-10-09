@@ -80,8 +80,9 @@ class Controller extends mvc\Controller {
                 $json['hosts'][] = (object) $host;
             }
             
-            $cos = Citrus::getInstance();
-            foreach ( $cos->getAppsList() as $app ) $res[ $app ] =  $cos->getModulesList( $app );
+            // $cos = Citrus::getInstance();
+            $installer = new \apps\install\Installer();
+            foreach ( $installer->getAppsList() as $app ) $res[ $app ] =  $installer->getModulesList( $app );
             
             $json['apps'] = $res;
             $out = json_encode( (object) $json ).';';
@@ -155,7 +156,7 @@ class Controller extends mvc\Controller {
 
     public function do_model() { 
         $this->view->layout = false; 
-        $this->template->assign( 'shema', is_file( CITRUS_PATH . '/include/schema.sql' ));
+        $this->view->assign( 'shema', is_file( CITRUS_PATH . '/include/schema.sql' ));
     }
     
     public function do_buildSchema() {
