@@ -66,7 +66,7 @@
 		</tbody>
 	</table>
 </div>
-<form name="" action="generate.html" method="post" id="f_addAppMod">
+<form action="generate" method="post" id="f_addAppMod">
 	<label>
 		<span class="label inline">Application par défaut</span>
 		<select name="defaultApp"></select>

@@ -17,10 +17,10 @@
 		<p>Le shéma SQL a correctement été éxecuté.</p>
 	</div>
 	<nav>
-		<a href="installation.html">installation</a>
-		<a href="configuration.html" class="disabled">configuration</a>
-		<a href="apps.html" class="disabled">apps</a>
-		<a href="model.html" class="disabled">model</a>
+		<a href="installation">installation</a>
+		<a href="configuration" id="configuration" class="disabled">configuration</a>
+		<a href="apps" id="apps" class="disabled">apps</a>
+		<a href="model" id="model" class="disabled">model</a>
 	</nav>
 </header>
 <div class="msgboxLight" id="modified">
