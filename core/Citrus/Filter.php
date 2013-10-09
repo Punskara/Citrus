@@ -54,12 +54,13 @@ class Filter {
                 'flags'  => FILTER_FORCE_ARRAY,
             ),
         );
-        $method_int = INPUT_GET;
+        // $method_int = INPUT_GET;
         $args = $params;
-        if ( $method == "POST" ) { 
+
+        /*if ( $method == "POST" ) { 
             $method_int = INPUT_POST;
             $args = $_POST;
-        }
+        }*/
         
         $inarray_type = '';
         if ( preg_match("/array\[([A-Za-z])+\]/", $type ) ) {
@@ -105,7 +106,6 @@ class Filter {
                     }
                 break;
                 default:
-                    // vexp($args, true);
                      $value = filter_var( $args[$var_name], $typesCorresp[$type] );
                      $value = trim( $value, ',' );
                  break;
