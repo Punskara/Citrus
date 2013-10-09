@@ -100,14 +100,6 @@ class Citrus {
      */
     public $projectName;
     
-    
-    /**
-     * @access public
-     * @var \core\Citrus\mvc\Template
-     */
-    public $template;
-    
-    
     /**
      * @access public
      * @var array
