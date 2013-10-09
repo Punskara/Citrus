@@ -67,12 +67,15 @@ class User extends data\Model {
      * @Column(type="boolean")
      */
     public $isAdmin;
+
+    public $datecreated;
+    public $datemodified;
     
     const TABLENAME = 'citrus_user';
 
-    public function __construct() {
+    /*public function __construct() {
         parent::__construct();
-    }
+    }*/
 
     public function __toString()  {
         return (string) $this->name;
@@ -115,20 +118,29 @@ class User extends data\Model {
 	    return $exists;
 	}
 	
-	public static function createTable() {
-	    $q = "CREATE TABLE `citrus_user` (
-            `id` BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
-            `login` VARCHAR( 255 ) NOT NULL ,
-            `password` VARCHAR( 255 ) NOT NULL ,
-            `name` VARCHAR( 255 ) NOT NULL ,
-            `email` VARCHAR( 255 ) NOT NULL ,
-            `isadmin` TINYINT NOT NULL ,
-            `valid` TINYINT NOT NULL
-        ) ENGINE = MYISAM ;\n";
-        return $q;
+	public function getIP() {
+	    return $_SERVER['REMOTE_ADDR'];
 	}
 	
-	public static function insertFirstUser() {
+	public function getUserAgent() {
+	    return $_SERVER['HTTP_USER_AGENT'];
+	}
+
+
+    public function __get( $name ) {
+        if ( property_exists( $this, $name ) ) {
+            return $this->$name;
+        }
+    }
+    
+    public function __set( $name, $value ) {
+        if ( property_exists( $this, $name ) ) {
+            $this->$name = $value;
+        }
+    }
+}
+
+irstUser() {
 	    $q = "INSERT INTO `citrus_user` (
             `id` ,
             `login` ,
