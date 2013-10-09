@@ -39,7 +39,6 @@ use \core\Citrus\html\form\Form;
  */
 class ObjectController extends Controller {
     public function do_index( $request ) {
-        // if ( $request->isXHR ) sleep(2);
         $schema = data\Model::getSchema( $this->className );
         $cos = Citrus::getInstance();
         
@@ -58,7 +57,7 @@ class ObjectController extends Controller {
 
             if ( $search !== false ) {
                 if ( $origin == "search-form" ) {
-                    $this->template = new Template( '_index-list' );
+                    $this->view = new View( '_index-list' );
                 }
                 foreach ( $schema->linkColumns as $cols ) {
                     $where[] = "$cols LIKE '%$search%'"; 
@@ -69,15 +68,14 @@ class ObjectController extends Controller {
                 isset( $order ) ? $order : false, 
                 isset( $orderType ) ? $orderType : false
             );
-            
-            // $this->template = new Template( '_index-list' );
-            $this->template->assign( 'search', $search );
-            $this->template->assign( 'order', $order );
-            $this->template->assign( 'orderType', $orderType );
 
-            $this->template->assign( 'schema', $schema );
-            $this->template->assign( 'list', $list );
-            $this->template->assign( 'pager', $pager );
+            $this->view->assign( 'search', $search );
+            $this->view->assign( 'order', $order );
+            $this->view->assign( 'orderType', $orderType );
+
+            $this->view->assign( 'schema', $schema );
+            $this->view->assign( 'list', $list );
+            $this->view->assign( 'pager', $pager );
         }
         else Citrus::pageForbidden();
     }
@@ -93,10 +91,10 @@ class ObjectController extends Controller {
         }
         $form = Form::generateForm( $res );
 
-        $this->template->assign( 'res', $res );
-        $this->template->assign( 'form', $form );
-        $this->template->assign( 'schema', $schema );
-        $this->template->assign( 'layout', $this->layout );
+        $this->view->assign( 'res', $res );
+        $this->view->assign( 'form', $form );
+        $this->view->assign( 'schema', $schema );
+        $this->view->assign( 'layout', $this->layout );
     }
 
 
@@ -116,7 +114,6 @@ class ObjectController extends Controller {
                 Citrus::pageNotFound();
             }
         } else {
-            // vexp($_POST, true);exit;
             $type = $this->className;
 
             if ( class_exists( $type ) ) {
@@ -138,19 +135,18 @@ class ObjectController extends Controller {
                 $rec = $inst->save();
                 $inst->hydrateManyByFilters();
                 
-                // vexp($inst);exit();
                 if ( $request->isXHR ) {
-                    $this->template = new \core\Citrus\mvc\Template( 'json-response' );
-                    $this->layout = false;
+                    $this->view = new mvc\View( 'json-response' );
+                    $this->view->layout = false;
                     if ( $rec ) {
-                        $this->template->assign('status', "success");
+                        $this->view->assign('status', "success");
                         $response['status'] = "success";
                         $response['return_url'] = $cos->app->getControllerUrl();
                     } else {
                         $response['status'] = "error";
                     }
                     $cos->response->contentType = "application/json";
-                    $this->template->assign( 'response', $response );
+                    $this->view->assign( 'response', $response );
                 } else {
                     $loc = $cos->app->getControllerUrl();
                     http\Http::redirect( $loc );
@@ -209,13 +205,13 @@ class ObjectController extends Controller {
             }
         }
         if ( !$request->isXHR ) {
-            $this->template = null;
+            $this->view = null;
             $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
             http\Http::redirect( $loc );
         } else {
-            $this->template = new \core\Citrus\mvc\Template( 'json-response' );
+            $this->view = new mvc\View( 'json-response' );
             $this->layout = false;
-            $this->template->assign( 'response', Array( 
+            $this->view->assign( 'response', Array( 
                 "return_url" => $cos->app->getControllerUrl() 
             ) );
         }
