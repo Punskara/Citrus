@@ -46,7 +46,7 @@ class ObjectController extends Controller {
             $pager_min = 5;
             $pager = new \core\Citrus\data\Pager( $schema->className, $pager_min );
 
-            if ( $request->isXHR ) $this->layout = false;
+            if ( $request->isXHR ) $this->view->layout = false;
 
             $origin     = $request->param( 'origin', 'string' );
             $search     = $request->param( 'search', 'string' );
@@ -82,7 +82,7 @@ class ObjectController extends Controller {
 
     public function do_edit( $request ) {
         $schema = data\Model::getSchema( $this->className );
-        $this->layout = !$request->isXHR;
+        $this->view->layout = !$request->isXHR;
         $id = $request->param( 'id', 'int' );
         if ( $id ) {
             $res = \core\Citrus\data\Model::selectOne( $this->className, $id );
@@ -94,7 +94,7 @@ class ObjectController extends Controller {
         $this->view->assign( 'res', $res );
         $this->view->assign( 'form', $form );
         $this->view->assign( 'schema', $schema );
-        $this->view->assign( 'layout', $this->layout );
+        $this->view->assign( 'layout', $this->view->layout );
     }
 
 
@@ -104,7 +104,7 @@ class ObjectController extends Controller {
      * index of the module of the app. If used with AJAX, this will only display "ok".
      */
     public function do_save( $request ) {
-        $this->layout = !$request->isXHR;
+        $this->view->layout = !$request->isXHR;
         $report = Array();
         $cos = Citrus::getInstance();
         if ( $request->method != 'POST' ) {
@@ -210,7 +210,7 @@ class ObjectController extends Controller {
             http\Http::redirect( $loc );
         } else {
             $this->view = new mvc\View( 'json-response' );
-            $this->layout = false;
+            $this->view->layout = false;
             $this->view->assign( 'response', Array( 
                 "return_url" => $cos->app->getControllerUrl() 
             ) );
