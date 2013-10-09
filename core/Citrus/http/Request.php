@@ -58,6 +58,11 @@ class Request {
      * @var string
      */
     public $referer;
+
+    /**
+     * @var string
+     */
+    public $uri;
     
     /**
      * @var boolean  Determines whether the request is passed by AJAX or not.
@@ -71,6 +76,7 @@ class Request {
     public function __construct() {
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->queryString = $_SERVER['QUERY_STRING'];
+        $this->uri = $_SERVER['REQUEST_URI'];
         $this->referer = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null ;
         $this->isXHR = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
         if ( $this->method == 'POST' ) {

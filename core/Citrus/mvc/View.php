@@ -29,6 +29,7 @@
 namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
 use \core\Citrus\html;
+use \core\Citrus\sys;
 
 
 class View {
@@ -47,12 +48,12 @@ class View {
      * @var string
      */
     public $layout;
-    
+
     /**
-     * @var \core\Citrus\mvc\Template
+     * @var string
      */
-    public $template;
-    
+    public $layout_file;
+
     /**
      * @var array
      */
@@ -65,18 +66,23 @@ class View {
     
     
     /**
-     * @var \core\Citrus\mvc\App
+     * @var String
      */
-    public $app;
+    public $name;
     
-    
+    /**
+     * @var array
+     */
+    public $vars = array();
+
     /**
      * Constructor
      *
      * @param \core\Citrus\mvc\App $app The app which uses the view.
      */
-    public function __construct( $app ) {
-        $this->app = $app;
+    public function __construct( $name ) {
+        $this->name = $name;
+        $this->layout_file = "main";
     }
     
     /** 
@@ -137,7 +143,7 @@ class View {
                             CITRUS_PROJECT_URL . $src . 
                             '.css" />';
             if (is_file(CITRUS_WWW_PATH . $src . '.less')) 
-                $sheets[] = '<link rel="stylesheet" media="screen" type="text/less" href="' . 
+                $sheets[] = '<link rel="stylesheet/less" media="screen" type="text/css" href="' . 
                             CITRUS_PROJECT_URL . $src . 
                             '.less" />';
         }
@@ -161,9 +167,12 @@ class View {
                 if ( $media == 'print' ) $s = substr( $s, 1 );                
                 if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
                 else $href = CITRUS_PROJECT_URL . "css/$s";
+
+                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
+
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
-                        'rel' => 'stylesheet',
+                        'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
                         'type' => 'text/css',
                         'href' => $href,
@@ -181,9 +190,10 @@ class View {
                 if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
                 elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
                 else $href = CITRUS_PROJECT_URL . "css/$s";
+                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
-                        'rel' => 'stylesheet',
+                        'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
                         'type' => 'text/css',
                         'href' => $href,
@@ -198,9 +208,10 @@ class View {
         if ( $cos->app && $cos->app->controller ) {
             $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.css' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
+                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
                 $st = new html\Element( 'link', array(
                     'attributes' => array(
-                        'rel' => 'stylesheet',
+                        'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
                         'type' => 'text/css',
                         'href' => CITRUS_PROJECT_URL . $src,
@@ -318,7 +329,7 @@ class View {
         }
         if ( $cos->app && $cos->app->controller ) {
             $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
-            if (is_file(CITRUS_WWW_PATH . $src)) 
+            if ( is_file( CITRUS_WWW_PATH . $src ) ) 
                 $files[] = '<script type="text/javascript" src="' . CITRUS_PROJECT_URL . $src . '"></script>';
         }
         $jsFiles = implode( "\n\t", $files ) . "\n";
@@ -330,23 +341,57 @@ class View {
      *
      * @throws \Exception if the main template file is not found.
      */
-    public function displayLayout() {
+    public function display() {
         $cos = Citrus::getInstance();
-        $this->layout = $this->app->mainLayout;
-        if ( is_file( $this->layout ) ) {
-            include_once $this->layout;
-        } else {
-            throw new \Exception( "Missing main template '$this->layout'" );
+        $content = "";
+        $layout_path = CITRUS_APPS_PATH . $cos->app->name . '/templates/' . $this->layout_file . '.tpl.php';
+
+        extract( $this->vars, EXTR_OVERWRITE );
+        if ( $this->layout && is_file( $layout_path ) ) {
+            $config_path = CITRUS_APPS_PATH . $cos->app->name . '/config/view.php';
+            if ( file_exists( $config_path ) )
+                require_once $config_path;
+
+            ob_start();
+            include_once $layout_path;
+            $content = ob_get_contents();
+            ob_get_clean();
+        } else $content = $this->getSubview();
+        return $content;
+    }
+
+    public function getSubview() {
+        $cos = Citrus::getInstance();
+        $tplContent = false;
+        extract( $this->vars, EXTR_OVERWRITE );
+        $default_template = CITRUS_APPS_PATH . $cos->app->name . '/templates/' . $this->name . '.tpl.php';
+        $action_template = $cos->getController()->path . '/templates/' . $this->name . '.tpl.php';
+
+        if ( file_exists( $action_template ) )
+            $template = $action_template;
+        else if ( file_exists( $default_template ) ) 
+            $template = $default_template;
+        else {
+            throw new sys\Exception( "Unable to find template « $this->name »." );
+            return;
         }
+
+        ob_start();
+        include $template;
+        $tplContent = ob_get_contents();
+        ob_get_clean();
+    
+        return $tplContent;
     }
     
-    /**
-     * Returns the content of the action template
-     *
-     * @return string
-     */
-    public function displayTemplate() {
-        $cos = Citrus::getInstance();
-        return $cos->app->controller->displayTemplate( $cos->app->controller->path );
+    public function assign( $var, $val = null ) {
+        if ( is_array( $var ) || $var instanceof Traversable ) {
+            foreach ( $var as $k => $v ) {
+                $this->vars[$k] = $v;
+            }
+        } else {
+            $this->vars[ $var ] = $val;
+        }
+        return $val;
     }
 }

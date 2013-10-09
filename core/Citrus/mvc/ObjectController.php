@@ -31,65 +31,70 @@ use \core\Citrus\Citrus;
 use core\Citrus\http;
 use core\Citrus\sys;
 use core\Citrus\data;
+use \core\Citrus\html\form\Form;
 
 /**
  * Extends Controller to provide model-related actions
  * (e.g. list, edit, save, delete, etc…)
  */
 class ObjectController extends Controller {
-    public function do_index() {
+    public function do_index( $request ) {
+        // if ( $request->isXHR ) sleep(2);
         $schema = data\Model::getSchema( $this->className );
         $cos = Citrus::getInstance();
-
+        
         if ( $schema ) {
-            $pager_min = 15;
+            $pager_min = 5;
             $pager = new \core\Citrus\data\Pager( $schema->className, $pager_min );
 
-            if ( $this->request->isXHR ) {
-                $this->layout = false;
-                $search     = $this->request->param( 'search', 'string' );
-                $order      = $this->request->param( 'order', 'string' );
-                $orderType  = $this->request->param( 'orderType', 'string' );
-                
-                $where = array();
-                if ( $search ) {
-                    foreach ( $schema->linkColumns as $cols ) {
-                        $where[] = "$cols LIKE '%$search%'"; 
-                    }
+            if ( $request->isXHR ) $this->layout = false;
+
+            $origin     = $request->param( 'origin', 'string' );
+            $search     = $request->param( 'search', 'string' );
+            $order      = $request->param( 'order', 'string' );
+            $orderType  = $request->param( 'orderType', 'string' );
+            
+            $where = array();
+
+            if ( $search !== false ) {
+                if ( $origin == "search-form" ) {
+                    $this->template = new Template( '_index-list' );
                 }
-                $list = $pager->getCollection( 
-                    $where,
-                    isset( $order ) ? $order : false, 
-                    isset( $orderType ) ? $orderType : false
-                );
-                
-                $this->template = new Template( '_index-list' );
-                $this->template->assign( 'search', $search );
-                $this->template->assign( 'order', $order );
-                $this->template->assign( 'orderType', $orderType );
-            } else {
-                $list = $pager->getCollection( array(), $schema->orderColumn );
-                $cos->app->view->addJavascript( 'backend/listing.js' );
-                $this->loadActionTemplate( 'index' );
+                foreach ( $schema->linkColumns as $cols ) {
+                    $where[] = "$cols LIKE '%$search%'"; 
+                }
             }
+            $list = $pager->getCollection( 
+                $where,
+                isset( $order ) ? $order : false, 
+                isset( $orderType ) ? $orderType : false
+            );
+            
+            // $this->template = new Template( '_index-list' );
+            $this->template->assign( 'search', $search );
+            $this->template->assign( 'order', $order );
+            $this->template->assign( 'orderType', $orderType );
+
             $this->template->assign( 'schema', $schema );
             $this->template->assign( 'list', $list );
             $this->template->assign( 'pager', $pager );
         }
-        else Citrus\Citrus::pageForbidden();
+        else Citrus::pageForbidden();
     }
 
-    public function do_edit() {
+    public function do_edit( $request ) {
         $schema = data\Model::getSchema( $this->className );
-        $this->layout = !$this->request->isXHR;
-        $id = $this->request->param( 'id', 'int' );
+        $this->layout = !$request->isXHR;
+        $id = $request->param( 'id', 'int' );
         if ( $id ) {
             $res = \core\Citrus\data\Model::selectOne( $this->className, $id );
         } else {
             $res = new $this->className();
         }
-        $res->generateForm();
+        $form = Form::generateForm( $res );
+
         $this->template->assign( 'res', $res );
+        $this->template->assign( 'form', $form );
         $this->template->assign( 'schema', $schema );
         $this->template->assign( 'layout', $this->layout );
     }
@@ -100,29 +105,32 @@ class ObjectController extends Controller {
      * This function saves the object, upload the files if needed ans redirects to the
      * index of the module of the app. If used with AJAX, this will only display "ok".
      */
-    public function do_save() {
+    public function do_save( $request ) {
+        $this->layout = !$request->isXHR;
+        $report = Array();
         $cos = Citrus::getInstance();
-        if ( $this->request->method != 'POST' ) {
+        if ( $request->method != 'POST' ) {
             if ( $cos->debug ) {
-                throw new Exception( 'Bad method request' );
+                throw new sys\Exception( 'Bad method request' );
             } else {
                 Citrus::pageNotFound();
             }
         } else {
-            #vexp($_POST);
-            $type = $this->request->param( 'modelType', 'string' );
+            // vexp($_POST, true);exit;
+            $type = $this->className;
+
             if ( class_exists( $type ) ) {
                 $inst = new $type();
                 if ( isset( $_FILES ) ) {
                     foreach ( $_FILES as $name => $file ) {
                         if ( !empty( $file['name'] ) ) {
                             if ( $inst->$name ) {
-                                unlink( CITRUS_PATH . 'web/upload' . $inst->$name );
+                                unlink( CITRUS_PATH . 'www/upload' . $inst->$name );
                             }
                             $upld = new kos_http_Uploader( $file );
                             $upld->readFile();
-                            $up = $upld->moveFile( CITRUS_PATH . '/web/upload/' );
-                            $inst->args[$name] = $inst->$name = '/web/upload/' . $upld->fileName;
+                            $up = $upld->moveFile( CITRUS_PATH . '/www/upload/' );
+                            $inst->args[$name] = $inst->$name = '/www/upload/' . $upld->fileName;
                         }
                     }
                 }
@@ -130,18 +138,27 @@ class ObjectController extends Controller {
                 $rec = $inst->save();
                 $inst->hydrateManyByFilters();
                 
-                #vexp($rec);exit();
-                if ( $this->request->isXHR ) {
+                // vexp($inst);exit();
+                if ( $request->isXHR ) {
+                    $this->template = new \core\Citrus\mvc\Template( 'json-response' );
+                    $this->layout = false;
                     if ( $rec ) {
-                        echo "ok";
-                        exit;
+                        $this->template->assign('status', "success");
+                        $response['status'] = "success";
+                        $response['return_url'] = $cos->app->getControllerUrl();
+                    } else {
+                        $response['status'] = "error";
                     }
+                    $cos->response->contentType = "application/json";
+                    $this->template->assign( 'response', $response );
                 } else {
-                    $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
+                    $loc = $cos->app->getControllerUrl();
                     http\Http::redirect( $loc );
                 }
             } else throw new sys\Exception( "Unknown class '$type'" );
         }
+
+        return;
     }
     
     /**
@@ -155,11 +172,11 @@ class ObjectController extends Controller {
      * @todo Prevent this function to be executed if method is not POST
      * @todo Handle the case that the request is sent with AJAX.
      */
-    public function do_delete() {
+    public function do_delete( $request ) {
         $resourceType = $this->className;
         $cos = Citrus::getInstance();
         $module = $this->module->name;
-        $id = $this->request->param( 'id', 'int' );
+        $id = $request->param( 'id', 'int' );
         if ( $id ) {
             if ( class_exists( $resourceType ) ) {
                 data\Model::deleteOne( $resourceType, $id );
@@ -180,7 +197,7 @@ class ObjectController extends Controller {
      * @todo Prevent this function to be executed if method is not POST
      * @todo Handle the case that the request is sent with AJAX.
      */
-    public function do_deleteSeveral() {
+    public function do_deleteSeveral( $request ) {
         $resourceType = $this->className;
         $cos = Citrus::getInstance();
         if ( isset($_POST['delete'] ) ) {
@@ -191,8 +208,17 @@ class ObjectController extends Controller {
                 }
             }
         }
-        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
-        http\Http::redirect( $loc );
+        if ( !$request->isXHR ) {
+            $this->template = null;
+            $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$this->name}/";
+            http\Http::redirect( $loc );
+        } else {
+            $this->template = new \core\Citrus\mvc\Template( 'json-response' );
+            $this->layout = false;
+            $this->template->assign( 'response', Array( 
+                "return_url" => $cos->app->getControllerUrl() 
+            ) );
+        }
     }
 
 }

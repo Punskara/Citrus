@@ -40,8 +40,8 @@ class Debug {
     
     static $debug = false;
     
-    public function __construct() {
-        $this->request = new http\Request();
+    public function __construct( $request ) {
+        $this->request = $request;
     }
     
     public function getQueries() {
@@ -105,12 +105,11 @@ class Debug {
     }
     
     public static function handleException( $exception, $debug = false, $message = null ) {
-        #$cos = Citrus::getInstance();
+        $cos = Citrus::getInstance();
         $debug = self::$debug;
-        $response = new http\Response();
-        $response->code = '500';
-        $response->message = $debug ? strip_tags( $exception->getMessage() ) : 'An error occured.';
-        $response->sendHeaders();
+        $cos->response->code = '500';
+        $cos->response->message = $debug ? strip_tags( $exception->getMessage() ) : 'An error occured.';
+        $cos->response->sendHeaders();
         #$cos->logger->logEvent( $exception->getMessage() );
         if ( $debug ) {
             $exceptTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/exception.tpl' );
@@ -124,24 +123,22 @@ class Debug {
     
     public static function handleError( $number, $msg, $file, $line, $context ) {
         $cos = Citrus::getInstance();
-        $response = new http\Response();
-        $response->code = '500';
-        $response->message = $cos->debug ? strip_tags( $msg ) : 'An error occured.';
-        $response->sendHeaders();
+        $cos->response->code = '500';
+        $cos->response->message = $cos->debug ? strip_tags( $msg ) : 'An error occured.';
+        $cos->response->sendHeaders();
         $stack = debug_backtrace();
         $logger = new Logger( 'error' );
         $logger->logEvent( $msg . ' ' . $file . ' on line ' . $line );
         $logger->writeLog();
-
         // $err = new Error( $number, $msg, $file, $line, $context, $stack );
 
         if ( $cos->debug ) {
-
             // $msg = Error::renderHtml( $err );
             $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context );
             
         } else {
             $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
+
         }
         die( $errorTpl );
     }
