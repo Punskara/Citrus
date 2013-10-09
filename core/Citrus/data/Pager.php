@@ -126,7 +126,7 @@ class Pager {
                 $this->rowsPerPage = $rowsPerPage;
             }
             if ( $location ) $this->location = $location;
-            $currentPage = $cos->app->controller->request->param( 'page', 'int' );
+            $currentPage = $cos->request->param( 'page', 'int' );
             if ( $currentPage ) {
                 $this->currentPage = $currentPage;
                 $this->limitStart = ( $this->currentPage - 1 ) * $this->rowsPerPage;
@@ -171,20 +171,17 @@ class Pager {
      *
      * @return  string  $html  HTML for links
      */
-    public function displayPager( $clean_query = false ) {
+    public function displayPager() {
         $this->nbPages = ceil( $this->nbRows / $this->rowsPerPage );
         $html = '';
-        $url = parse_url( $_SERVER['REQUEST_URI'] );
         
+        $url = parse_url( $_SERVER['REQUEST_URI'] );
         if ( isset( $url['query'] ) ) {
-            $extParam = preg_replace( '/(\&?page=[0-9]+)/', '', $url['query'] );// . '&';
-        } else if ( $clean_query ) {
-            $extParam = preg_replace( '/(page\/[0-9]+)/', '', $url['path'] );
-            // $extParam = '';
+            $extParam = preg_replace( '/(\&?page=[0-9]+)/', '', $url['query'] ) . '&';
         } else $extParam='';
         
         if ( $this->nbPages > 1 ) {
-            $html = '<div class="CitrusPager">';
+            $html = '<ul class="CitrusPager pagination">';
             $html .= ' ';
             $start = 1;
             
@@ -207,7 +204,7 @@ class Pager {
             }
 
             if ( $start > $this->pagesBeforeStart + 1 ) {
-                 $html .= ' … ';
+                 $html .= '<li class="disabled"><a href="#">…</a></li>';
             }
 
             # the end of the list : 
@@ -221,7 +218,7 @@ class Pager {
 
 
             if ( $end < $this->nbPages - $this->pagesAfterEnd ) {
-                 $html .= ' … ';
+                 $html .= '<li class="disabled"><a href="#">…</a></li>';
             }
             
             # last pages
@@ -235,7 +232,7 @@ class Pager {
             
             $html .= $this->renderEndButtons( $extParam );
             
-            $html .= '</div>';
+            $html .= '</ul>';
         }
         return $html;
     }
@@ -249,19 +246,21 @@ class Pager {
     public function renderPagesLinks( $start, $end, $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->controller->request->param( 'search', 'string' );
-        $order = $cos->app->controller->request->param( 'order', 'string' );
-        $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
-        if ( !$this->location ) $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
-        else $loc = $this->location;
+        $search = $cos->request->param( 'search', 'string' );
+        $order = $cos->request->param( 'order', 'string' );
+        $orderType = $cos->request->param( 'orderType', 'string' );
+        $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         for ( $i = $start; $i <= $end; $i++ ) {
             if ( $i == $this->currentPage ) {
-                $html .= '<span class="currentPage">' . $i . '</span>';
+                $html .= '<li class="active"><a href="#">' . $i . '</a></li>';
             } else {
-                $html .= link_to( 
-                    $loc, 
-                    $i, array( 'extraParams' => 'page=' . $i . ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') )
-                 );
+                $html .= '<li>' . link_to( 
+                    $loc . '/page/' . $i .
+                        ( $search ? '/search/'.$search : '' ) .
+                        ( $order ? '/order/' . $order : '' ) . 
+                        ( $orderType ? '/orderType/'.$orderType : '' ),
+                    $i
+                 ) . '<li>';
             }
             $html .= ' ';
         }
@@ -277,25 +276,29 @@ class Pager {
     public function renderStartButtons( $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->controller->request->param( 'search', 'string' );
-        $order = $cos->app->controller->request->param( 'order', 'string' );
-        $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
+        $search = $cos->request->param( 'search', 'string' );
+        $order = $cos->request->param( 'order', 'string' );
+        $orderType = $cos->request->param( 'orderType', 'string' );
         $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         
         if ( $this->currentPage != 1 ) {
-            $html .= link_to( 
-                $loc, 
-                '‹‹', 
-                array( 'extraParams' => $extParam . 'page=1'. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
-            );
+            $html .= '<li>' . link_to( 
+                $loc . '/page/1' .
+                    ( $search ? '/search/'.$search : '' ) .
+                    ( $order ? '/order/' . $order : '' ) . 
+                    ( $orderType ? '/orderType/'.$orderType : '' ),
+                '‹‹'
+            ) . '</li>';
             $prev = $this->currentPage - 1;
-            $html .= link_to( 
-                $loc, 
-                '‹', 
-                array( 'extraParams' => $extParam . 'page=' . $prev. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
-            );
+            $html .= '<li>' . link_to( 
+                $loc . '/page/' . $prev . 
+                    ( $search ? '/search/'.$search : '' ) .
+                    ( $order ? '/order/' . $order : '' ) . 
+                    ( $orderType ? '/orderType/'.$orderType : '' ),
+                '‹'
+            ) . '</li>';
         }
-        return $html;
+        return "$html";
     }
     
     
@@ -307,24 +310,29 @@ class Pager {
     public function renderEndButtons( $extParam ) {
         $html = '';
         $cos = Citrus::getInstance();
-        $search = $cos->app->controller->request->param( 'search', 'string' );
-        $order = $cos->app->controller->request->param( 'order', 'string' );
-        $orderType = $cos->app->controller->request->param( 'orderType', 'string' );
+        $search = $cos->request->param( 'search', 'string' );
+        $order = $cos->request->param( 'order', 'string' );
+        $orderType = $cos->request->param( 'orderType', 'string' );
         $loc = CITRUS_PROJECT_URL . "{$cos->app->name}/{$cos->app->controller->name}/{$cos->app->controller->action}";
         
         if ( $this->currentPage != $this->nbPages ) {
             $next = $this->currentPage + 1;
-            $html .= link_to( 
-                $loc, 
-                '›', 
-                array( 'extraParams' => $extParam . 'page=' . $next. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
-            );
+            // $html = '<li>'
+            $html .= '<li>' . link_to( 
+                $loc . '/page/' . $next . 
+                    ( $search ? '/search/'.$search : '' ) .
+                    ( $order ? '/order/' . $order : '' ) . 
+                    ( $orderType ? '/orderType/'.$orderType : '' ),
+                '›' 
+            ) . '</li>';
     
-            $html .= link_to( 
-                $loc, 
-                '››', 
-                array( 'extraParams' => $extParam . 'page=' . $this->nbPages. ( $search ? '&search='.$search : '') . ( $order ? '&order='.$order : '') . ( $orderType ? '&orderType='.$orderType : '') ) 
-            );
+            $html .= '<li>' . link_to( 
+                $loc . '/page/' . $this->nbPages . 
+                    ( $search ? '/search/'.$search : '' ) .
+                    ( $order ? '/order/' . $order : '' ) . 
+                    ( $orderType ? '/orderType/'.$orderType : '' ), 
+                '››'
+            ) . '</li>';
         }
         return $html;
     }
