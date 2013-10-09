@@ -231,6 +231,7 @@ body > div span.selb {
 }
 
 body > div button {
+    cursor:                                 pointer;
 	border:									none;
 	clear:									both;
 	float:									left;

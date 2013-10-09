@@ -45,7 +45,7 @@ $(document).ready(function () {
     
     // fonctions d'initialisation de chaques pages
     var init = {
-            'installation.html' : function () {
+            'installation' : function () {
                 // reaffichage des données existantes
                 $('#f_install').setArray( config );
 
@@ -73,7 +73,7 @@ $(document).ready(function () {
                 if (just_generated && first_generated) infoload($('div#generated'));
                 first_generated = false;
             },
-            'configuration.html' : function () {
+            'configuration' : function () {
                 if (!config.hosts) config.hosts = Array();
                 
                 // reaffichage des hosts existants
@@ -137,7 +137,8 @@ $(document).ready(function () {
                 if (generated) $('form#f_addHosts button').hide();
 
             },
-            'apps.html' : function () {
+            'apps' : function () {
+                console.log("in apps");
                 if (!config.apps) config.apps = $.extend(true, {}, appList);
                 // reaffichage des apps existantes
                 for (var k in config.apps) setApps( k );
@@ -169,6 +170,7 @@ $(document).ready(function () {
                 });
                 // apparition du formulaire de creation d'apps
                 $('button#bt_addApps').bind('click', function () {
+                    console.log("tamere");
                     $(this).hide();
                     $('form#f_addApps').show();
                 });
@@ -249,7 +251,7 @@ $(document).ready(function () {
                     return false;
                 });
             },
-            'model.html' : function () {
+            'model' : function () {
                 $('form#shbuild').bind('submit', function (e) {
                     $.get(this.action, function () {
                         infoload($('div#model_build'));
@@ -295,7 +297,7 @@ $(document).ready(function () {
         generate = function () {
             $.ajax({
                 type: 'POST',
-                url: 'generate.html',
+                url: 'generate',
                 data: { config : JSON.stringify(config) },
                 success: function () {
                     formTraitement( true );
