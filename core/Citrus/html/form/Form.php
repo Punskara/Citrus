@@ -56,15 +56,18 @@ class Form {
         if ( $elt instanceof InputHidden ) {
             $str = (string)$elt;
         } elseif ( $elt instanceof RichText ) {
-            $str = "<div class=\"form-group $classes\">\n";
-            if ( $elt->label ) $str .= "<label for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
-            $str .= (string)$elt . "\n</div>\n";
-        } else {
-            $str = "<div class=\"form-group $classes\">\n";
-            if ( $elt->label ) {
-                $str .= "<label class=\"col-lg-2 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
-            }
+            $str = "<div class=\"form-group row clearfix $classes\">\n";
+            if ( $elt->label ) $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
             $str .= '<div class="col-lg-10">' . "\n\t";
+            $str .= (string)$elt;
+            $str .= "\n</div>\n";
+            $str .= "\n</div>\n";
+        } else {
+            $str = "<div class=\"form-group row clearfix $classes\">\n";
+            if ( $elt->label ) {
+                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
+            }
+            $str .= '<div class="col-lg-10 col-xs-12">' . "\n\t";
             $str .= (string)$elt;
             $str .= "\n</div>\n";
             $str .= "\n</div>\n";
@@ -84,5 +87,77 @@ class Form {
             }
         }
         return $str;
+    }
+
+    /**
+     * Generates an HTML form from the schema of the object
+     */
+    static public function generateForm( $res ) {
+        $form = new Form();
+        $props = $res->schema->properties;
+        $form->elements['modelType'] = new InputHidden( 
+            'modelType', '', 'modelType', array(), $value = $res->schema->className
+        );
+        foreach ( $props as $propName => $propAttr ) {
+            if ( isset( $propAttr['inputType'] ) ) {
+                if ( class_exists( '\core\Citrus\html\form\\' . $propAttr['inputType'] ) ) {
+                    $element = '\core\Citrus\html\form\\' . $propAttr['inputType'];
+                    $classes = ( isset( $propAttr['null'] ) && $propAttr['null'] == false ) ? array( 'required' ) : array();
+                    if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
+                    $form->elements[$propName] = new $element( 
+                        $propName, 
+                        isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
+                        $propName,
+                        $classes,
+                        $res->$propName
+                    );
+                    if ( $element == '\core\Citrus\html\form\SelectOne' ) {
+                        if ( isset( $propAttr['modelType'] ) ) {
+                            $form->elements[$propName]->makeOptions( 
+                                $propAttr['modelType'],
+                                isset( $propAttr['firstBlank'] )
+                            );
+                        } elseif ( isset( $propAttr['options'] ) ) {
+                            $form->elements[$propName]->options = $propAttr['options'];
+                        }
+                    }
+                }
+            }
+        }
+        $manyProps = $res->schema->manyProperties;
+        foreach ( $manyProps as $propName => $propAttr ) {
+            if ( isset( $propAttr['inputType'] ) ) {
+                $inputType = $propAttr['inputType'];
+                $element = '\core\Citrus\html\form\\' . $inputType;
+            } else {
+                $element = '\core\Citrus\html\form\SelectMany';
+            }
+            if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
+            $form->elements[$propName] = new $element( 
+                $propName, 
+                isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
+                $propName,
+                $classes,
+                $res->$propName
+            );
+            $where = false;
+            if ( isset( $propAttr['conditions'] ) && is_array( $propAttr['conditions'] ) ) {
+                $where = $propAttr['conditions'];
+            }
+            $form->elements[$propName]->makeOptions( $propAttr['modelType'], true, $where );
+        }
+        
+        return $form;
+    }
+    
+    /**
+     * Displays generated HTML form
+     */
+    public function render() {
+        $render = '';
+        foreach ( $this->elements as $elt ) {
+            $render .= $this->renderElement( $elt->name );
+        }
+        return $render;
     }
 }

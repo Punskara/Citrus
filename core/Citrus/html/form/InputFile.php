@@ -30,37 +30,13 @@
 namespace core\Citrus\html\form;
 
 class InputFile extends FormElement {
-	public function __toString() {
-	    #$this->classes[] = 'text';
-	    
-		$attrs = array();
-		$attrs[] = 'type="file"';
-		if ( $this->id ) $attrs[] = 'id="' . $this->id . '"';
-		if ( $this->name ) $attrs[] = 'name="' . $this->name . '"';
-		$attrs[] = 'value="' . $this->value . '"';
-		
-		# affiche le thumbnail si le media est une image
-		$ext = substr( $this->value, strrpos( $this->value, '.' ) + 1, strlen( $this->value ) );
-		$image = '';
-		$hidden = '';
-
-		if ( in_array( $ext, \core\Citrus\Media::$ImageExtensions ) ) {
-		    try {
-                /*$thumb = PhpThumbFactory::create( CITRUS_PATH . $this->value );
-                $thumb->cropFromCenter( 200, 100 );*/
-                $image = '<img src="' . CITRUS_PROJECT_URL . $this->value . '" style="width:120px;" alt="" />';
-                $hidden = '<input type="hidden" value="' . $this->value . '" name="' . $this->name . '"';
-                if ( in_array('required', $this->classes ) ) {
-                    $hidden .= 'class="required"';
-                }
-                $hidden .= '/>';
-            } catch( \Exception $e ) {
-                echo $e->getMessage();
-            }
-		}
-		$attrs = implode( ' ', $attrs );
+    public function __toString() {
+        #$this->classes[] = 'text';
         
-		$classes = $this->classesString();
-		return "$image$hidden<input " . $attrs . " " . $classes . " />";
-	}
+        $hidden = '<input type="hidden" value="' . $this->value . '" name="' . $this->name . '" ' . $this->classesString() . ' />';
+        $view = '';
+        if ($this->value) $view = '<img src="' . CITRUS_PROJECT_URL . 'upload/' . $this->value . '" title="'.$this->value .'"/>';
+        
+        return "$hidden<div class=\"televersement\"></div>";
+    }
 }
