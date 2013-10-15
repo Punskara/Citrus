@@ -68,6 +68,11 @@ class Schema {
     /**
      * @var array
      */
+    public $manyProperties = array();
+    
+    /**
+     * @var array
+     */
     public $adminColumns;
     
     /**
@@ -79,6 +84,9 @@ class Schema {
      * @var string
      */
     public $orderSort;
+
+    public $orderColumnDefined;
+    public $linkColumns = Array();
     
     
     /**
@@ -121,6 +129,15 @@ class Schema {
         	if ( isset( $schema['adminColumns'] ) ) {
         	    $this->adminColumns = $schema['adminColumns'];
         	}
+            if ( isset( $schema['orderColumnDefined'] ) ) {
+                $this->orderColumnDefined = $schema['orderColumnDefined'];
+            }
+            if ( isset( $schema['linkColumns'] ) ) {
+                $this->linkColumns = $schema['linkColumns'];
+            }
+            if ( isset( $schema['manyProperties'] ) ) {
+                $this->manyProperties = $schema['manyProperties'];
+            }
         }
     }
     
