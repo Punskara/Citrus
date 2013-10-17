@@ -51,8 +51,8 @@ $title->addHtml( $siteName );
 
 
 // CSS & JS
-$head->addChildren( $this->getStylesheetsAsElements() );
-$head->addChildren( $this->getJavascriptAsElements() );
+$head->addChildren( $this->getCSSAsElements() );
+$head->addChildren( $this->getJSAsElements() );
 
 $scpt1 = $head->addChild( 'script', array(
     'attributes' => array(
@@ -66,7 +66,7 @@ $scpt1->addHtml( "var rootUrl = '" . $cos->host->baseUrl . "';" );
 $body = $html->addChild( 'body' );
 
 // main content
-$body->addHtml( $this->getSubview() );
+$body->addHtml( $this->getContent() );
 
 // debug
 if ( $cos->debug ) {

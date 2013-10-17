@@ -47,7 +47,7 @@ class View {
     /**
      * @var string
      */
-    public $layout;
+    public $layout = true;
 
     /**
      * @var string
@@ -75,14 +75,17 @@ class View {
      */
     public $vars = array();
 
+    public $path;
+
     /**
      * Constructor
      *
      * @param \core\Citrus\mvc\App $app The app which uses the view.
      */
-    public function __construct( $name ) {
+    public function __construct( $name, $path = false ) {
         $this->name = $name;
-        $this->layout_file = "main";
+        $this->path = $path;
+        // if ( $path != '' ) $this->view_path = $path;
     }
     
     /** 
@@ -90,7 +93,7 @@ class View {
      *
      * @param array $stylesheets The stylesheets to add
      */
-    public function setStyleSheets( $styleSheets ) {
+    public function setCSS( $styleSheets ) {
         $this->styleSheets = $styleSheets;
     }
     
@@ -99,56 +102,23 @@ class View {
      *
      * @param array $stylesheets The stylesheets to add
      */
-    public function addStyleSheet( $path ) {
+    public function addCSS( $path ) {
         $this->addedStyleSheets[] = $path;
     }
     
-    
+
     /**
-     * Generates the <link> html tags to call the stylesheets in the html document
+     * Generates the <link> html tags to add the CSS
      *
-     * @return string $cssFiles The html tags.
-     * @deprecated To be replaced by getStylesheetsAsElements
+     * @return string $html The html tags.
      */
-    public function displayStyleSheets() {
-        $cos = Citrus::getInstance();
-        
-        $sheets = array();
-        if ( $this->styleSheets ) {
-            $sheets = array();
-            foreach ( $this->styleSheets as $s ) {
-                $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
-                if ( $media == 'print' ) $s = substr( $s, 1 );                
-                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
-                else $href = CITRUS_PROJECT_URL . "css/$s";
-                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
-                $sheets[] = '<link rel="stylesheet' . $rel_less . '" media="screen" type="text/css" href="' . $href . '" />';
-            }
-            if ( count( $this->addedStyleSheets ) ) {
-                foreach ( $this->addedStyleSheets as $s ) {
-                    $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
-                    if ( $media == 'print' ) $s = substr( $s, 1 );
-                    if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
-                    elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
-                    else $href = CITRUS_PROJECT_URL . "css/$s";
-                    $css_type = strpos( $s, '.less' ) !== false ? 'text/less' : 'text/css';
-                    $sheets[] = '<link rel="stylesheet" media="screen" type="' . $css_type . '" href="' . $href . '" />';
-                }
-            }
+    public function renderCSS( $close_tags = false ) {
+        $html = '';
+        foreach ( $this->getCSSAsElements() as $e ) {
+            $e->closeTag = $close_tags;
+            $html .= $e->renderHTML();
         }
-        if ( $cos->app && $cos->app->controller ) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name ;
-            if ( is_file( CITRUS_WWW_PATH . $src . '.css') ) 
-                $sheets[] = '<link rel="stylesheet" media="screen" type="text/css" href="' . 
-                            CITRUS_PROJECT_URL . $src . 
-                            '.css" />';
-            if (is_file(CITRUS_WWW_PATH . $src . '.less')) 
-                $sheets[] = '<link rel="stylesheet/less" media="screen" type="text/css" href="' . 
-                            CITRUS_PROJECT_URL . $src . 
-                            '.less" />';
-        }
-        
-        return implode( "\n\t", $sheets ) . "\n";
+        return $html;
     }
     
     /**
@@ -156,7 +126,7 @@ class View {
      *
      * @return array $sheets An array containing the Element objects.
      */
-    public function getStylesheetsAsElements() {
+    public function getCSSAsElements() {
         $cos = Citrus::getInstance();
         
         $cssFiles = '';
@@ -165,7 +135,7 @@ class View {
             foreach ( $this->styleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );                
-                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                if ( substr( $s, 0, 4 ) == "http" ) $href = $s;             
                 else $href = CITRUS_PROJECT_URL . "css/$s";
 
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
@@ -187,7 +157,7 @@ class View {
             foreach ( $this->addedStyleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );
-                if ( substr( $s, 0, 7 ) == "http://" ) $href = $s;             
+                if ( substr( $s, 0, 4 ) == "http" ) $href = $s;             
                 elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
                 else $href = CITRUS_PROJECT_URL . "css/$s";
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
@@ -230,7 +200,7 @@ class View {
      *
      * @param array $javascriptFiles The files to add
      */
-    public function setJavascriptFiles( $files ) {
+    public function setJS( $files ) {
         $this->javascriptFiles = $files;
     }
     
@@ -239,7 +209,7 @@ class View {
      *
      * @param string  $path  Path to the file.
      */
-    public function addJavascript( $path ) {
+    public function addJS( $path ) {
         $this->addedJavascripts[] = $path;
     }
     
@@ -249,13 +219,13 @@ class View {
      *
      * @return array $elements An array containing the Element objects.
      */
-    public function getJavascriptAsElements() {
+    public function getJSAsElements( $show_type_attr = false ) {
         $cos = Citrus::getInstance();
         $elements = array();
         if ( $this->javascriptFiles ) {
             $files = array();
             foreach ( $this->javascriptFiles as $s ) {
-                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                if ( substr( $s, 0, 4 ) == "http" ) $src = $s;             
                 else $src = CITRUS_PROJECT_URL . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
@@ -270,7 +240,7 @@ class View {
         
         if ( count( $this->addedJavascripts ) ) {
             foreach ( $this->addedJavascripts as $s ) {
-                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
+                if ( substr( $s, 0, 4 ) == "http" ) $src = $s;             
                 elseif ( substr( $s, 0, 1 ) === '/' )  $src = $s;
                 else $src = CITRUS_PROJECT_URL . "js/$s";
                 $elt = new html\Element( 'script', array(
@@ -303,37 +273,17 @@ class View {
     }
     
     /**
-     * Generates the <script> html tags to call the stylesheets in the html document
+     * Generates the <script> html tags to add JS files
      *
-     * @return string $jsFiles The html tags.
-     * @deprecated To be replaced by getJavascriptAsElements
+     * @return string $html The html tags.
      */
-    public function displayJavascriptFiles() {
-        $cos = Citrus::getInstance();
-        $files = array();
-        if ( $this->javascriptFiles ) {
-            $files = array();
-            foreach ( $this->javascriptFiles as $s ) {
-                if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
-                else $src = CITRUS_PROJECT_URL . "js/$s";
-                $files[] = '<script type="text/javascript" src="' . $src . '"></script>';
-            }
-            if ( count( $this->addedJavascripts ) ) {
-                foreach ( $this->addedJavascripts as $s ) {
-                    if ( substr( $s, 0, 7 ) == "http://" ) $src = $s;             
-                    elseif ( substr( $s, 0, 1 ) === '/' )  $src = $s;
-                    else $src = CITRUS_PROJECT_URL . "js/$s";
-                    $files[] = '<script type="text/javascript" src="' . $src . '"></script>';
-                }
-            }
+    public function renderJS( $show_type_attr = false ) {
+        $html = '';
+        foreach ( $this->getJSAsElements() as $e ) {
+            unset( $e->attributes['type'] );
+            $html .= $e->renderHTML();
         }
-        if ( $cos->app && $cos->app->controller ) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
-            if ( is_file( CITRUS_WWW_PATH . $src ) ) 
-                $files[] = '<script type="text/javascript" src="' . CITRUS_PROJECT_URL . $src . '"></script>';
-        }
-        $jsFiles = implode( "\n\t", $files ) . "\n";
-        return $jsFiles;
+        return $html;
     }
     
     /**
@@ -341,32 +291,29 @@ class View {
      *
      * @throws \Exception if the main template file is not found.
      */
-    public function display() {
+    public function render() {
         $cos = Citrus::getInstance();
         $content = "";
-        $layout_path = CITRUS_APPS_PATH . $cos->app->name . '/templates/' . $this->layout_file . '.tpl.php';
-
         extract( $this->vars, EXTR_OVERWRITE );
-        if ( $this->layout && is_file( $layout_path ) ) {
-            $config_path = CITRUS_APPS_PATH . $cos->app->name . '/config/view.php';
-            if ( file_exists( $config_path ) )
-                require_once $config_path;
-
+        if ( $this->layout && is_file( $this->layout_file ) ) {
             ob_start();
-            include_once $layout_path;
+            include_once $this->layout_file;
             $content = ob_get_contents();
             ob_get_clean();
-        } else $content = $this->getSubview();
+        } else $content = $this->getContent();
         return $content;
     }
 
-    public function getSubview() {
+    public function getContent() {
         $cos = Citrus::getInstance();
         $tplContent = false;
         extract( $this->vars, EXTR_OVERWRITE );
         $default_template = CITRUS_APPS_PATH . $cos->app->name . '/templates/' . $this->name . '.tpl.php';
         $action_template = $cos->getController()->path . '/templates/' . $this->name . '.tpl.php';
 
+        if ( $this->path )
+            $action_template = $this->path . $this->name . '.tpl.php';
+        
         if ( file_exists( $action_template ) )
             $template = $action_template;
         else if ( file_exists( $default_template ) ) 
@@ -393,5 +340,10 @@ class View {
             $this->vars[ $var ] = $val;
         }
         return $val;
+    }
+
+    public function getAppConfig( $app ) {
+        $config_path = CITRUS_APPS_PATH . $app->name . '/config/view.php';
+        if ( file_exists( $config_path ) ) require_once $config_path;
     }
 }

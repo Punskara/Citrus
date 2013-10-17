@@ -1,10 +1,12 @@
 <?php
 
-$this->setStyleSheets( array(
+$this->layout_file = CITRUS_APPS_PATH . 'install/templates/main.tpl.php';
+
+$this->setCSS( array(
     'install.css',
 ) );
 
-$this->setJavascriptFiles( array(
+$this->setJS( array(
     'lib/jquery-1.10.2.min.js',
     'lib/jquery.json-2.4.min.js',
     'install.js'
@@ -12,7 +14,7 @@ $this->setJavascriptFiles( array(
 
 if ( !isset( $cos ) ) $cos = \core\Citrus\Citrus::getInstance();
 if ( $cos->debug ) {
-    $this->addStyleSheet( '/citrus-debug/css/citrus.min.css' );
-    $this->addStyleSheet( '/citrus-debug/css/font-awesome.min.css' );
-    $this->addJavascript( '/citrus-debug/js/debug.min.js' );
+    $this->addCSS( '/citrus-debug/css/citrus.min.css' );
+    $this->addCSS( '/citrus-debug/css/font-awesome.min.css' );
+    $this->addJS( '/citrus-debug/js/debug.min.js' );
 }
