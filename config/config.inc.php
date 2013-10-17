@@ -1,7 +1,7 @@
 <?php
 return $config = array (
-  'siteName' => 'Toto',
-  'projectName' => 'Toto',
+  'siteName' => 'Votre projet Citrus',
+  'projectName' => 'your_project',
   'defaultApp' => 'install',
   'db' => true,
   'db_doctrine' => false,
