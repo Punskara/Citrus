@@ -149,19 +149,6 @@ function prr( $var, $pre = false ) {
     echo $st;
 }
 
-function tr( $s ) {
-    $cos = Citrus::getInstance();
-    if ( $cos->lang != 'fr' ) {
-        $dictionnary = include CITRUS_PATH . '/include/dictionnary.php';
-    
-        if ( is_array( $dictionnary ) && array_key_exists( $s, $dictionnary ) ) {
-            $s = $dictionnary[$s][$cos->lang];
-        }
-    }
-    return $s;
-}
-
-
 function read_folder($dir = "root_dir/dir", $grep=false, $listDir = array())
 {
     if($handler = opendir($dir)) {

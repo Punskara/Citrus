@@ -57,7 +57,10 @@ class Form {
             $str = (string)$elt;
         } elseif ( $elt instanceof RichText ) {
             $str = "<div class=\"form-group row clearfix $classes\">\n";
-            if ( $elt->label ) $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
+            if ( $elt->label ) 
+                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . 
+                            $elt->label . 
+                        ":</label>\n";
             $str .= '<div class="col-lg-10">' . "\n\t";
             $str .= (string)$elt;
             $str .= "\n</div>\n";
@@ -65,7 +68,9 @@ class Form {
         } else {
             $str = "<div class=\"form-group row clearfix $classes\">\n";
             if ( $elt->label ) {
-                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
+                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . 
+                            $elt->label . 
+                        ":</label>\n";
             }
             $str .= '<div class="col-lg-10 col-xs-12">' . "\n\t";
             $str .= (string)$elt;

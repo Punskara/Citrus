@@ -44,7 +44,7 @@ class SelectMany extends FormElement {
                 $elt .= "\t<option value=\"$value\"$selected>$text</option>\n";
             }
         } else {
-            $elt .= "\t<option value=\"\">" . tr( 'Choose' ) . "</option>\n";
+            $elt .= "\t<option value=\"\">" . ' -- ' . "</option>\n";
         }
         $elt .= "</select>\n";
         $res_id = array();
