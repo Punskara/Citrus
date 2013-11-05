@@ -118,19 +118,7 @@ class ObjectController extends Controller {
 
             if ( class_exists( $type ) ) {
                 $inst = new $type();
-                if ( isset( $_FILES ) ) {
-                    foreach ( $_FILES as $name => $file ) {
-                        if ( !empty( $file['name'] ) ) {
-                            if ( $inst->$name ) {
-                                unlink( CITRUS_PATH . 'www/upload' . $inst->$name );
-                            }
-                            $upld = new kos_http_Uploader( $file );
-                            $upld->readFile();
-                            $up = $upld->moveFile( CITRUS_PATH . '/www/upload/' );
-                            $inst->args[$name] = $inst->$name = '/www/upload/' . $upld->fileName;
-                        }
-                    }
-                }
+                
                 $inst->hydrateByFilters();
                 $rec = $inst->save();
                 $inst->hydrateManyByFilters();
