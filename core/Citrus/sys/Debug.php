@@ -52,12 +52,12 @@ class Debug {
         $this->timer->stop();
         $queryString = htmlentities( $this->request->queryString );
         $s = "<div id=\"CitrusDebugBar\">\n";
-            $s .= '<a href="#" id="showDebugBar" class="icon-bug">&nbsp;</a>' . "\n";
+            $s .= '<a href="#" id="showDebugBar" class="fa fa-bug">&nbsp;</a>' . "\n";
             $s .= "<div class=\"content\">\n";
-                $s .= '<a href="#request" id="tamere"><i class="icon-exchange"></i>Request</a> ';
-                $s .= '<a href="#sql"><i class="icon-tasks"></i>SQL (' . count( $this->queries ) . ')</a> ';
-                $s .= '<a href="#timer"><i class="icon-time"></i>Time (' . $this->timer->getExecTime() . ' ms)</a> ';
-                $s .= '<a href="#close"><i class="icon-remove"></i>Remove</a> ';
+                $s .= '<a href="#request" id="tamere"><i class="fa fa-exchange"></i>Request</a> ';
+                $s .= '<a href="#sql"><i class="fa fa-tasks"></i>SQL (' . count( $this->queries ) . ')</a> ';
+                $s .= '<a href="#timer"><i class="fa fa-clock-o"></i>Time (' . $this->timer->getExecTime() . ' ms)</a> ';
+                $s .= '<a href="#close"><i class="fa fa-times"></i>Remove</a> ';
             $s .= "</div>\n";
         
             $s .= "\t<div id=\"citrusDebugQString\" class=\"citrusDebugPane\">\n";
@@ -130,16 +130,11 @@ class Debug {
         $logger = new Logger( 'error' );
         $logger->logEvent( $msg . ' ' . $file . ' on line ' . $line );
         $logger->writeLog();
-        // $err = new Error( $number, $msg, $file, $line, $context, $stack );
 
-        if ( $cos->debug ) {
-            // $msg = Error::renderHtml( $err );
-            $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context );
-            
-        } else {
+        $cos->debug ?
+            $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context ) :
             $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
-
-        }
+        
         die( $errorTpl );
     }
     
