@@ -69,7 +69,6 @@ class Request {
      */
     public $isXHR;
     
-    
     /**
      * Constructor
      */
@@ -166,5 +165,10 @@ class Request {
             return $cos->host->httpHost == $referer['host'];
         }
         return false;
+    }
+
+    public function getFiles() {
+        if ( isset( $_FILES ) ) return $_FILES;
+        return Array();
     }
 }
