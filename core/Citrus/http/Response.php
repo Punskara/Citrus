@@ -40,102 +40,49 @@ class Response {
     /**
      * @var string
      */
-	public $message = '';
-	
-	/**
-     * @var string
-     */
-	public $location = null;
-	
-	/**
-     * @var boolean
-     */
-	public $enableRedirections = true;
+    public $message = '';
 
     /**
      * @var string
      */
-	public $contentType = 'text/html';
-	
-	/**
+    public $contentType = 'text/html';
+    
+    /**
      * @var string
      */
-	public $contentCharset = 'utf-8';
+    public $contentCharset = 'utf-8';
 
-
-    /**
-     * Sends an HTTP request
-     * 
-     * @param integer  $code  HTTP response code
-     * @param string  $message  Response message
-     * @param string  $location  Response location
-     * 
-     * @static
-     */
-	static function sent( $code = 200, $message = '', $location = null ) {
-		$inst = new self( $code, $message, $location );
-		$inst->sendHeaders();
-		return $inst;
-	}
-
-    /**
-     * Constructor
-     * 
-     * @param integer  $code  HTTP response code
-     * @param string  $message  Response message
-     * @param string  $location  Response location
-     */
-	function __construct( $code = 200, $message = '', $location = null ) {
-		$this->code = $code;
-		$this->message = $message;
-		$this->location = $location;
-		$this->contentType = 'text/html';
-
-		#$this->enableRedirections = $xos->useRedirections;
-		header( 'Content-type: ' . $this->contentType . ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ), true );
-
-		if ( isset( $_REQUEST['cos_redirect'] ) && empty( $_REQUEST['cos_redirect'] ) ) {
-			$this->enableRedirections = false;
-		}
-	}
-
+    public $headers = Array();
 
     /**
      * Sends http headers
      * 
      * @return boolean|integer whether the headers are already sent or not.
      */
-	public function sendHeaders() {
-		if ( headers_sent() ) {
-			return false;
-		}
-		header( 'Content-type: ' . $this->contentType . ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ), true );
+    public function sendHeaders() {
+        if ( headers_sent() ) {
+            return false;
+        }
 
-		$this->message = str_replace( array( "\r", "\n" ), '', $this->message );
-		if ( empty( $this->location ) ) {
-			header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message, true, $this->code );
-		    return $this->code;
-		}
-	    if ( preg_match( "/[\\0-\\31]|about:|script:/i", $this->location ) ) {
-			$this->location = '/';
-		} elseif ( !strpos( $this->location, '://' ) ) {
-		    $this->location = $xos->url( 'www' . $this->location );
-		}
-		if ( $this->enableRedirections ) {
-		    if ( isset( $_SESSION ) ) {
-				$_SESSION['response']['redirect_info'] = array(
-					'STATUS' => $this->code,
-					'ERROR_NOTES' => $this->message,
-					'URL' => $_SERVER['REQUEST_URI'],
-					'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
-				);
-		    }
-			header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message );
-			header( 'Location: ' . $this->location, true, $this->code );
-			echo "<body><a href='$this->location'>Page redirected. Status: $this->code, $this->message.</a></body>";
-			exit();
-		}
-		return $this->code;
-	}
+        $this->addHeader( 
+            'Content-Type', 
+            $this->contentType . 
+                ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ) 
+        );
+        if ( count( $this->headers ) ) 
+            foreach ( $this->headers as $k => $v )
+                header( $k . ': ' . $v, true );
+        
+        $this->message = str_replace( array( "\r", "\n" ), '', $this->message );
+        header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message, true, $this->code );
+        return $this->code;
+    } 
 
+    public function addHeader( $name, $value ) {
+        $this->headers[$name] = $value;
+    }
+
+    public function removeHeader( $name ) {
+        if ( isset( $this->headers[$name] ) ) unset( $this->headers[$name] );
+    }
 }
