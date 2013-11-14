@@ -139,10 +139,10 @@ class App {
         $args['action'] = $action;
         $args['path'] = $this->path . '/modules/' . $ctrlName;
         $ctrlFile = $args['path'] . '/Controller.php';
+        $ctrlPath = str_replace( CITRUS_PATH, '', $args['path'] );
+        $ctrlPath = str_replace( '/', '\\', $ctrlPath ) . '\Controller';
         // $args['moduleName'] = $ctrlName;
-        if ( file_exists( $ctrlFile ) ) {
-            $ctrlPath = str_replace( CITRUS_PATH, '', $args['path'] );
-            $ctrlPath = str_replace( '/', '\\', $ctrlPath ) . '\Controller';
+        if ( file_exists( $ctrlFile ) && class_exists( $ctrlPath ) ) {
             try { 
                 $r = new \ReflectionClass( $ctrlPath ); 
                 $inst = $r->newInstanceArgs( $args ? $args : array() );
@@ -158,6 +158,7 @@ class App {
                 prr($e, true);
             }
         } else {
+            throw new sys\Exception( "Unable to find controller '$ctrlName'" );
             return false;
         }
     }
