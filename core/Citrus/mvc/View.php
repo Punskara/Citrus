@@ -85,7 +85,9 @@ class View {
     public function __construct( $name, $path = false ) {
         $this->name = $name;
         $this->path = $path;
-        // if ( $path != '' ) $this->view_path = $path;
+
+        // no layout if XMLHTTPRequest
+        $this->layout = !Citrus::getInstance()->request->isXHR;
     }
     
     /** 
