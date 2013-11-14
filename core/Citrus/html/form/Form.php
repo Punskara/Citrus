@@ -57,10 +57,7 @@ class Form {
             $str = (string)$elt;
         } elseif ( $elt instanceof RichText ) {
             $str = "<div class=\"form-group row clearfix $classes\">\n";
-            if ( $elt->label ) 
-                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . 
-                            $elt->label . 
-                        ":</label>\n";
+            if ( $elt->label ) $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
             $str .= '<div class="col-lg-10">' . "\n\t";
             $str .= (string)$elt;
             $str .= "\n</div>\n";
@@ -68,9 +65,7 @@ class Form {
         } else {
             $str = "<div class=\"form-group row clearfix $classes\">\n";
             if ( $elt->label ) {
-                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . 
-                            $elt->label . 
-                        ":</label>\n";
+                $str .= "<label class=\"col-lg-2 col-xs-12 control-label\" for=\"$elt->id\">" . tr( $elt->label ) . ":</label>\n";
             }
             $str .= '<div class="col-lg-10 col-xs-12">' . "\n\t";
             $str .= (string)$elt;
@@ -134,22 +129,24 @@ class Form {
             if ( isset( $propAttr['inputType'] ) ) {
                 $inputType = $propAttr['inputType'];
                 $element = '\core\Citrus\html\form\\' . $inputType;
-            } else {
-                $element = '\core\Citrus\html\form\SelectMany';
+                
+                if ( isset( $propAttr['inputFilter'] ) ) 
+                    $classes[] = $propAttr['inputFilter'];
+
+                $form->elements[$propName] = new $element( 
+                    $propName, 
+                    isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
+                    $propName,
+                    $classes,
+                    $res->$propName
+                );
+                $where = false;
+                
+                if ( isset( $propAttr['conditions'] ) && is_array( $propAttr['conditions'] ) )
+                    $where = $propAttr['conditions'];
+
+                $form->elements[$propName]->makeOptions( $propAttr['modelType'], true, $where );
             }
-            if ( isset( $propAttr['inputFilter'] ) ) $classes[] = $propAttr['inputFilter'];
-            $form->elements[$propName] = new $element( 
-                $propName, 
-                isset( $propAttr['formLabel'] ) ? $propAttr['formLabel'] : '', 
-                $propName,
-                $classes,
-                $res->$propName
-            );
-            $where = false;
-            if ( isset( $propAttr['conditions'] ) && is_array( $propAttr['conditions'] ) ) {
-                $where = $propAttr['conditions'];
-            }
-            $form->elements[$propName]->makeOptions( $propAttr['modelType'], true, $where );
         }
         
         return $form;
