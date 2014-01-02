@@ -99,11 +99,11 @@ class User extends data\Model {
 	}
 	
 	private function fetchUser( $login, $password ) {
-	    $cos = Citrus::getInstance();
+	    $db = Citrus::getInstance()->getDatabase();
 	    
-	    $password = md5( $password );
+	    $password = sha1( $password );
 	    
-	    $exists = $cos->db->execute( 
+	    $exists = $db->execute( 
 	        "SELECT * FROM " . self::TABLENAME . "
 	        WHERE login = '$login' 
 	        AND password = '$password'"

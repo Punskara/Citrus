@@ -220,9 +220,9 @@ class Model {
     }
 
     public function delete() {
-        $cos = \core\Citrus\Citrus::getInstance();
+        $db = \core\Citrus\Citrus::getInstance()->getDatabase();
         $tableName = $this->tableName ? $this->tableName : $this->schema->tableName;
-        $del = $cos->db->execute(
+        $del = $db->execute(
             "DELETE FROM $tableName WHERE id = $this->id"
         );
         return $del;
@@ -583,10 +583,10 @@ class Model {
      */
     static public function deleteOne( $targetClass, $id ) {
         if ( class_exists( $targetClass ) ) {
-            $cos = \core\Citrus\Citrus::getInstance();
+            $db = \core\Citrus\Citrus::getInstance()->getDatabase();
             $schema = self::getSchema( $targetClass );
             if ( $schema->tableName && is_int( $id ) ) {
-                return $cos->db->execute( "DELETE FROM `$schema->tableName` WHERE `id` = $id" );
+                return $db->execute( "DELETE FROM `$schema->tableName` WHERE `id` = $id" );
             }
         }
         return false;
@@ -603,10 +603,10 @@ class Model {
      * @static
      */
     static public function deleteSeveral( $targetClass, $ids ) {
-        $cos = \core\Citrus\Citrus::getInstance();
+        $db = \core\Citrus\Citrus::getInstance()->getDatabase();
         $schema = self::getSchema( $targetClass );
         $ids = implode( ',', $ids );
-        return $cos->db->execute( "DELETE FROM `$schema->tableName` WHERE `id` IN ($ids)" );
+        return $db->execute( "DELETE FROM `$schema->tableName` WHERE `id` IN ($ids)" );
     }
 
 

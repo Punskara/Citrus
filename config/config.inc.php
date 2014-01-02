@@ -30,7 +30,7 @@ return $config = array (
           'active' => true,
           'connection' => 
           array (
-            'mysql:dbname=caramia_tracker;host=localhost',
+            'mysql:dbname=siemens_landing;host=localhost',
             'root',
             'labaz2donnees',
           ),
