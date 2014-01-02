@@ -77,7 +77,7 @@ class Controller {
     /**
      * @var Array
      */
-    public $security_exceptions = Array( 'static' );
+    public $security_exceptions = Array();
 
     /**
      * Contructor
