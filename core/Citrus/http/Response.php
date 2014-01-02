@@ -85,4 +85,28 @@ class Response {
     public function removeHeader( $name ) {
         if ( isset( $this->headers[$name] ) ) unset( $this->headers[$name] );
     }
+
+    public function setCacheHeaders( $file_path ) {
+        $lastModified = filemtime( $file_path );
+        $etagFile = md5_file( $file_path );
+        $ifModifiedSince = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false );
+        $etagHeader = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) : false );
+
+        $this->addHeader( "Last-Modified", gmdate( "D, d M Y H:i:s", $lastModified ) . " GMT" );
+        $this->addHeader( "Etag", $etagFile );
+        $this->addHeader( "Cache-Control", "public" );
+
+        $now = new \core\Citrus\Date();
+        $exp = $now->add( \DateInterval::createFromDateString( '1 week' ) );
+        $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) );
+
+        if ( $ifModifiedSince && @strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) == $lastModified || $etagHeader == $etagFile ) {
+            $this->code = 304;
+            $this->message = "Not Modified";
+            // $cos->response->sendHeaders();
+            // exit;
+        }
+
+        $this->sendHeaders();
+    }
 }

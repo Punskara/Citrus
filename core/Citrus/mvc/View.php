@@ -77,6 +77,8 @@ class View {
 
     public $path;
 
+    public $static_path = CITRUS_PROJECT_URL;
+
     /**
      * Constructor
      *
@@ -85,7 +87,6 @@ class View {
     public function __construct( $name, $path = false ) {
         $this->name = $name;
         $this->path = $path;
-
         // no layout if XMLHTTPRequest
         $this->layout = !Citrus::getInstance()->request->isXHR;
     }
@@ -116,7 +117,8 @@ class View {
      */
     public function renderCSS( $close_tags = false ) {
         $html = '';
-        foreach ( $this->getCSSAsElements() as $e ) {
+        $files = $this->getCSSAsElements();
+        foreach ( $files as $e ) {
             $e->closeTag = $close_tags;
             $html .= $e->renderHTML();
         }
@@ -136,9 +138,13 @@ class View {
         if ( $this->styleSheets ) {
             foreach ( $this->styleSheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
-                if ( $media == 'print' ) $s = substr( $s, 1 );                
-                if ( substr( $s, 0, 4 ) == "http" ) $href = $s;             
-                else $href = CITRUS_PROJECT_URL . "css/$s";
+                if ( $media == 'print' ) $s = substr( $s, 1 );
+
+                $is_absolute = substr( $s, 0, 1 ) == "/";
+                $is_remote = substr( $s, 0, 4 ) == "http";
+
+                if ( $is_absolute || $is_remote ) $href = $s;
+                else $href = $this->static_path . "css/$s";
 
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
 
@@ -227,8 +233,10 @@ class View {
         if ( $this->javascriptFiles ) {
             $files = array();
             foreach ( $this->javascriptFiles as $s ) {
-                if ( substr( $s, 0, 4 ) == "http" ) $src = $s;             
-                else $src = CITRUS_PROJECT_URL . "js/$s";
+                $is_absolute = substr( $s, 0, 1 ) == "/";
+                $is_remote = substr( $s, 0, 4 ) == "http";
+                if ( $is_absolute || $is_remote ) $src = $s;
+                else $src = $this->static_path . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
@@ -242,9 +250,10 @@ class View {
         
         if ( count( $this->addedJavascripts ) ) {
             foreach ( $this->addedJavascripts as $s ) {
-                if ( substr( $s, 0, 4 ) == "http" ) $src = $s;             
-                elseif ( substr( $s, 0, 1 ) === '/' )  $src = $s;
-                else $src = CITRUS_PROJECT_URL . "js/$s";
+                $is_absolute = substr( $s, 0, 1 ) == "/";
+                $is_remote = substr( $s, 0, 4 ) == "http";
+                if ( $is_absolute || $is_remote ) $src = $s;
+                else $src = $this->static_path . "js/$s";
                 $elt = new html\Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
@@ -281,7 +290,8 @@ class View {
      */
     public function renderJS( $show_type_attr = false ) {
         $html = '';
-        foreach ( $this->getJSAsElements() as $e ) {
+        $files = $this->getJSAsElements();
+        foreach ( $files as $e ) {
             unset( $e->attributes['type'] );
             $html .= $e->renderHTML();
         }

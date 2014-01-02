@@ -30,6 +30,7 @@ namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
 use core\Citrus\http;
 use core\Citrus\sys;
+use core\Citrus\utils;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -76,7 +77,7 @@ class Controller {
     /**
      * @var Array
      */
-    public $security_exceptions = Array();
+    public $security_exceptions = Array( 'static' );
 
     /**
      * Contructor
@@ -206,4 +207,39 @@ class Controller {
         return dirname( __FILE__ );
     }
 
+    public function do_static( $request ) {
+        $cos = Citrus::getInstance();
+        $this->view = false;
+        $uri = $_SERVER['REQUEST_URI']; 
+        $file_ext = $request->param( 'ext' ); 
+        $file_type = $request->param( 'type' ); 
+        $file_name = $request->param( 'file' ); 
+        $file_path = $cos->app->path . "/static/$file_type/$file_name$file_ext";
+        $content = "";
+        if ( !file_exists( $file_path ) ) 
+            $file_path = CITRUS_WWW_PATH . substr( $uri, 1 );
+
+        if ( file_exists( $file_path ) ) {
+            switch ( $file_type ) {
+                case 'js':
+                    $cos->response->contentType = 'application/javascript';
+                    if ( $cos->debug ) {
+                        $content = file_get_contents( $file_path );
+                    } else {
+                        $content = \core\lib\JShrink\Minifier::minify( file_get_contents( $file_path ) );
+                    }
+                    break;
+                case 'css':
+                    $cos->response->contentType = 'text/css';
+                    $content = file_get_contents( $file_path );
+                    break;
+                default:
+                    $cos->response->contentType = utils\File::getType( $file_path );
+                    $content = file_get_contents( $file_path );
+                    break;
+            }            
+        } else Citrus::pageNotFound();
+        $cos->response->setCacheHeaders( $file_path );
+        if ( $cos->response->code == '200' ) echo $content;
+    }
 }
