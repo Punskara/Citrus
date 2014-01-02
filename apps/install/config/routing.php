@@ -14,6 +14,6 @@ return array(
         array(
             'url'    => '/install/main/getconfig.json', 
             'target' => array( 'app'=>'install', 'controller' => 'main', 'action'=>'getconfig' )
-        )
+        ),
     ),
 );

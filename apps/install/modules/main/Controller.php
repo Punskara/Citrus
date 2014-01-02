@@ -30,6 +30,7 @@ use \core\Citrus\Citrus;
 use \core\Citrus\mvc;
 use \core\Citrus\http;
 use \core\Citrus\db\InsertQuery;
+use \apps\install\Installer;  
 
 class Controller extends mvc\Controller {
     
@@ -47,8 +48,8 @@ class Controller extends mvc\Controller {
 
     public function do_apps() { 
         $this->view->layout = false; 
-        $cos = Citrus::getInstance();
-        foreach ( $cos->getAppsList() as $app ) $res[ $app ] =  $cos->getModulesList( $app );
+        $installer = new Installer();
+        foreach ( $installer->getAppsList() as $app ) $res[ $app ] =  $installer->getModulesList( $app );
         $this->view->assign( 'appsJson', json_encode($res) );
     }
     
@@ -81,7 +82,7 @@ class Controller extends mvc\Controller {
             }
             
             // $cos = Citrus::getInstance();
-            $installer = new \apps\install\Installer();
+            $installer = new Installer();
             foreach ( $installer->getAppsList() as $app ) $res[ $app ] =  $installer->getModulesList( $app );
             
             $json['apps'] = $res;
@@ -139,7 +140,7 @@ class Controller extends mvc\Controller {
         fclose($fp);
         
         // création des apps et modules
-        $installer = new \apps\install\Installer();
+        $installer = new Installer();
         $exist = $installer->getAppsList();
         foreach ( $installer->getAppsList() as $app ) $exist[ $app ] =  $installer->getModulesList( $app );
 
@@ -161,7 +162,7 @@ class Controller extends mvc\Controller {
     
     public function do_buildSchema() {
         $this->view->layout = false;
-        $installer = new \apps\install\Installer();
+        $installer = new Installer();
         if ( $installer->buildSQLSchema() ) {
             echo 'ok';
         }
@@ -169,8 +170,8 @@ class Controller extends mvc\Controller {
 
     public function do_execSchema() {
         $this->view->layout = false;
-        $cos = Citrus::getInstance();
-        $cos->db->execute( file_get_contents( CITRUS_PATH . '/include/schema.sql' ) );
+        $db = Citrus::getInstance()->getDatabase();
+        $db->execute( file_get_contents( CITRUS_PATH . '/include/schema.sql' ) );
     }
     
     public function do_dlSchema() {

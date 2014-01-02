@@ -1,11 +1,11 @@
 
 @font-face {
     font-family: 'modernaRegular';
-    src: url('../images/install/moderna-webfont.eot');
-    src: url('../images/install/moderna-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../images/install/moderna-webfont.woff') format('woff'),
-         url('../images/install/moderna-webfont.ttf') format('truetype'),
-         url('../images/install/moderna-webfont.svg#modernaRegular') format('svg');
+    src: url('../font/moderna-webfont.eot');
+    src: url('../font/moderna-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../font/moderna-webfont.woff') format('woff'),
+         url('../font/moderna-webfont.ttf') format('truetype'),
+         url('../font/moderna-webfont.svg#modernaRegular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
@@ -29,7 +29,7 @@ body > * {
 body > header {
 	width:									889px;
 	height:									124px;
-	background:								transparent url('../images/install/head.png') no-repeat top left;
+	background:								transparent url('../img/head.png') no-repeat top left;
 	position:								relative;
 }
 
@@ -197,7 +197,7 @@ body > div span.checkb {
 	width:									30px;
 	height:									28px;
 	position:								absolute;
-	background:								transparent url('../images/install/checkbox.png') no-repeat top left;
+	background:								transparent url('../img/checkbox.png') no-repeat top left;
 	cursor:									pointer;
 }
 
@@ -218,7 +218,7 @@ body > div select {
 body > div span.selb {
 	display:								block;
 	position:								absolute;
-	background:								transparent url('../images/install/select.png') no-repeat top right;
+	background:								transparent url('../img/select.png') no-repeat top right;
 	cursor:									pointer;
 	border:									1px solid #e1edbc;
 	border-radius:							5px;
