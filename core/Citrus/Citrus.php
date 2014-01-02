@@ -426,6 +426,7 @@ class Citrus {
                     if ( $this->debug ) {
                         $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
                     }
+                    return $this->db;
                 } catch ( \PDOException $e ) {
                     sys\Debug::handleException( $e, $this->debug );
                 }
