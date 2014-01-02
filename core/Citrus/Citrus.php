@@ -391,7 +391,7 @@ class Citrus {
      */
     public function startServices() {
         $services = $this->host->services;
-        if ($services['debug']['active']) {
+        if ( $services['debug']['active'] ) {
             sys\Debug::$debug = true;
             $this->debug = new sys\Debug( $this->request );
             $this->debug->timer = new sys\Timer( "total" );
@@ -403,16 +403,25 @@ class Citrus {
             $this->logger = new sys\Logger( $this->host->httpHost );
             $this->logger->logEvent( 'Logging service started.' );
         }
-        if ( isset( $services['db'] ) && $services['db']['active'] == true ) {
-            if ( isset( $services['db']['connection'] ) ) {
+    }
+
+    /**
+     * Initiates a database connection
+     * according to project configuration
+     */
+    public function getDatabase() {
+        if ( $this->db ) return $this->db;
+        $config = $this->host->services;
+        if ( isset( $config['db'] ) && $config['db']['active'] == true ) {
+            if ( isset( $config['db']['connection'] ) ) {
                 try {
-                    list ( $dsn, $username, $password ) = $services['db']['connection'];
+                    list ( $dsn, $username, $password ) = $config['db']['connection'];
                     $this->db = new db\Connection( $dsn, $username, $password );
                     
                     // orm configuration
                     $paths = array( CITRUS_CLASS_PATH . $this->projectName . '/' );
                     $isDevMode = $this->debug;
-                    $this->orm = db\Orm::getInstance( $services['db']['connection'], $paths, $isDevMode );
+                    $this->orm = db\Orm::getInstance( $config['db']['connection'], $paths, $isDevMode );
                     
                     if ( $this->debug ) {
                         $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
@@ -423,7 +432,7 @@ class Citrus {
             }
         }
     }
-    
+
     /**
      * executed when Citrus stops (properly or not) 
      */

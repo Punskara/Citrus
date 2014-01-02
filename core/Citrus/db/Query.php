@@ -27,6 +27,7 @@
 
 
 namespace core\Citrus\db;
+use \core\Citrus\Citrus;
 
 /**
  * This class builds an SQL Query
@@ -65,8 +66,7 @@ abstract class Query {
      * @param \core\Citrus\db\Connection  $db  an Citrus connection to the database
      */
 	public function __construct( $db = null ) {
-		$cos = \core\Citrus\Citrus::getInstance();
-		$this->database = $db ? $db : $cos->db;
+		$this->database = $db ? $db : Citrus::getInstance()->getDatabase();
 	}
 	public function __toString() {
 		return $this->RenderSql();
