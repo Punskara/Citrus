@@ -96,7 +96,7 @@ class Request {
      * 
      * @return mixed|boolean  Whether the parameter is found or not.
      */
-    public function param( $name, $filter ) {
+    public function param( $name, $filter = "string" ) {
         if ( isset( $this->params[$name] ) ) {
             return \core\Citrus\Filter::filterVar( $name, $filter, $this->method, $this->params );
         }
