@@ -179,8 +179,10 @@ class App {
 
     public function output() {
         Citrus::getInstance()->response->sendHeaders();
-        $this->controller->view->getAppConfig( $this );
-        echo $this->controller->view->render();
+        if ( $this->controller->view ) {
+            $this->controller->view->getAppConfig( $this );
+            echo $this->controller->view->render();
+        }
     }
 
     public function isAccessAllowed() {
