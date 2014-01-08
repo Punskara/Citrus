@@ -68,7 +68,7 @@ class Request {
      * @var boolean  Determines whether the request is passed by AJAX or not.
      */
     public $isXHR;
-    
+
     /**
      * Constructor
      */
@@ -81,6 +81,7 @@ class Request {
         if ( $this->method == 'POST' ) {
             $this->inputMethod = INPUT_POST;
             $this->params = $_POST;
+            $this->files = $_FILES;
         } else {
             $this->inputMethod = INPUT_GET;
             $this->params = $_GET;
@@ -170,5 +171,10 @@ class Request {
     public function getFiles() {
         if ( isset( $_FILES ) ) return $_FILES;
         return Array();
+    }
+
+    public function getFile( $name ) {
+        if ( isset( $_FILES[$name] ) ) return $_FILES[$name];
+        return false;
     }
 }
