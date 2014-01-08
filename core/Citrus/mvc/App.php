@@ -143,20 +143,15 @@ class App {
         $ctrlPath = str_replace( '/', '\\', $ctrlPath ) . '\Controller';
         // $args['moduleName'] = $ctrlName;
         if ( file_exists( $ctrlFile ) && class_exists( $ctrlPath ) ) {
-            try { 
-                $r = new \ReflectionClass( $ctrlPath ); 
-                $inst = $r->newInstanceArgs( $args ? $args : array() );
-
-                $this->controller = Citrus::apply( $inst, Array( 
-                    'name' => $ctrlName, 
-                ) );
-                if ( $this->controller->is_protected == null ) {
-                    $this->controller->is_protected = $this->is_protected;
-                }
-                return $this->controller;
-            } catch ( \Exception $e ) {
-                prr($e, true);
+            $r = new \ReflectionClass( $ctrlPath ); 
+            $inst = $r->newInstanceArgs( $args ? $args : array() );
+            $this->controller = Citrus::apply( $inst, Array( 
+                'name' => $ctrlName, 
+            ) );
+            if ( $this->controller->is_protected == null ) {
+                $this->controller->is_protected = $this->is_protected;
             }
+            return $this->controller;
         } else {
             throw new sys\Exception( "Unable to find controller '$ctrlName'" );
             return false;
