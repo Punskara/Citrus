@@ -166,59 +166,6 @@ class Model {
         } 
     }
     
-    /**
-     * @deprecated Any use of $args will be removed
-     */
-    public function hydrateWithArgs() {
-        if ( is_array( $this->args ) ) {
-            $args = $this->args;
-            foreach ( $args as $name => $value ) {
-                $this->$name = $value;
-                if ( strpos( $name, 'date' ) !== false ) {
-                    $this->$name = new \core\Citrus\Date( $this->$name );
-                }
-            }
-        }
-    }
-    
-    
-    /**
-     * Hydrates an object with filtered vars in _POST
-     */
-    public function hydrateByFilters() {
-        $props = $this->schema->properties;
-        $this->args = array();
-        foreach ( $props as $propName => $details ) {
-            if ( isset( $_POST[$propName] ) ) {
-                if ( isset( $details['inputType'] ) && $details['inputType'] != 'InputFile' ) {
-                    $value = \core\Citrus\Filter::filterVar( $propName, $details['type'], 'POST', $_POST );
-                    if ( $value !== false ) {
-                        $this->$propName = $value;
-                    } else {
-                        if ( isset( $details['foreignReference'] ) && isset( $details['foreignTable'] ) ) {
-                            $value = null;
-                        } else {
-                            $value = "";
-                        }
-                        $this->$propName = $value;
-                    }
-                }
-            }
-        }
-    }
-    
-    public function hydrateManyByFilters() {
-        $props = $this->schema->manyProperties;
-        $this->args = array();
-        foreach ( $props as $propName => $details ) {
-            if ( isset( $_POST[$propName] ) ) {
-                $value = \core\Citrus\Filter::filterVar( $propName, 'string', 'POST', $_POST );
-                if ( $value !== false ) $this->$propName = $value;
-                else $this->$propName = '';
-            }
-        }
-    }
-
     public function delete() {
         $db = \core\Citrus\Citrus::getInstance()->getDatabase();
         $tableName = $this->tableName ? $this->tableName : $this->schema->tableName;
