@@ -28,9 +28,9 @@
 
 namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
-use core\Citrus\http;
-use core\Citrus\sys;
-use core\Citrus\utils;
+use \core\Citrus\http;
+use \core\Citrus\sys;
+use \core\Citrus\utils;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -49,11 +49,6 @@ class Controller {
     public $name;
     
     /**
-     * @var \core\Citrus\http\Request
-     */
-    public $request;
-    
-    /**
      * @var \core\Citrus\mvc\View
      */
     public $view;
@@ -62,11 +57,6 @@ class Controller {
      * @var string
      */
     public $path;
-    
-    /**
-     * @var string
-     */
-    public $moduleName;
     
     /**
      * @var Boolean
@@ -214,13 +204,15 @@ class Controller {
         $file_ext = $request->param( 'ext' ); 
         $file_type = $request->param( 'type' ); 
         $file_name = $request->param( 'file' ); 
+
         $file_path = $cos->app->path . "/static/$file_type/$file_name$file_ext";
         $content = "";
+        $file_ext = substr( $file_ext, 1 );
         if ( !file_exists( $file_path ) ) 
             $file_path = CITRUS_WWW_PATH . substr( $uri, 1 );
 
         if ( file_exists( $file_path ) ) {
-            switch ( $file_type ) {
+            switch ( $file_ext ) {
                 case 'js':
                     $cos->response->contentType = 'application/javascript';
                     if ( $cos->debug ) {
