@@ -27,10 +27,13 @@
 
 
 namespace core\Citrus\utils;
+use \core\Citrus\sys\Exception;
 
 class File {
+    public $path;
     public $resource;
     public $mode;
+    public $finfo;
     
     const MODE_ROS = 'r';
     const MODE_ROE = 'r+';
@@ -39,12 +42,12 @@ class File {
     const MODE_WOE = 'a';
     const MODE_RWE = 'a+';
     
-    public function __construct( $resource, $mode ) {
-        $this->resource = $this->open( $resource, $mode );
+    public function __construct( $path ) {
+        $this->path = $path;
     }
     
-    public function open( $resource, $mode ) {
-        return fopen( $resource, $mode );
+    public function open( $mode ) {
+        $this->resource = fopen( $this->path, $mode );
     }
     public function write( $str ) {
         if ( $this->resource ) {
@@ -56,5 +59,34 @@ class File {
         if ( $this->resource ) {
             fclose( $this->resource );
         }
+    }
+
+    static public function delete( $path ) {
+        if ( file_exists( $path ) ) @unlink( $path );
+    }
+
+    public function exists() {
+        return file_exists( $this->path );
+    }
+
+    static public function getType( $path ) {
+        if ( file_exists( $path ) ) {
+            $finfo = new \finfo( \FILEINFO_MIME );
+            return $finfo->file( $path );
+        }
+        throw new Exception( "Cannot get file type : file not found" );
+        
+    }
+
+    public function getContent() {
+        if ( $this->exists() ) {
+            return file_get_contents( $this->path );
+        }
+        throw new Exception( "Unable to get file content : file not found." );
+        return false;
+    }
+
+    static public function getSize( $file, $precision = 2 ) {
+
     }
 }
