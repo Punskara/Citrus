@@ -58,7 +58,7 @@ class Exception extends \Exception {
         if ( $message ) {
             $s .= '<pre class="message">' . $message . '</pre>';
         }
-        $s .= '<pre class="message">' . $exception->getMessage() . '</pre>'
+        $s .= '<pre class="message">' . get_class( $exception ) . ': ' . $exception->getMessage() . '</pre>'
            . '<p>'
            . '<code>' . $exception->getFile() . '</code>, line ' . $exception->getLine() . '.'
            . '</p>'
@@ -67,10 +67,13 @@ class Exception extends \Exception {
         foreach ( $exception->getTrace() as $tr ) {
             $s .= '<li><code>';
             if ( isset( $tr['class'] ) ) $s .= $tr['class'];
-            if ( isset( $tr['type'] ) ) $s .= $tr['type'];
-            $s .= $tr['function'] . '</code> '
-                . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
-                . '</li>';
+            if ( isset( $tr['type'] ) )  $s .= $tr['type'];
+            $s .= $tr['function'] . '</code> ';
+
+            if ( isset( $tr['file'] ) ) $s .= '<i>' . $tr['file'] . '</i> ';
+            if ( isset( $tr['line'] ) ) $s .= 'line ' . $tr['line'];
+
+            $s .= '</li>';
         }
         $s .= '</ol>';
  
