@@ -1,11 +1,11 @@
 
 @font-face {
     font-family: 'modernaRegular';
-    src: url('../font/moderna-webfont.eot');
-    src: url('../font/moderna-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../font/moderna-webfont.woff') format('woff'),
-         url('../font/moderna-webfont.ttf') format('truetype'),
-         url('../font/moderna-webfont.svg#modernaRegular') format('svg');
+    src: url('../fonts/moderna-webfont.eot');
+    src: url('../fonts/moderna-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/moderna-webfont.woff') format('woff'),
+         url('../fonts/moderna-webfont.ttf') format('truetype'),
+         url('../fonts/moderna-webfont.svg#modernaRegular') format('svg');
     font-weight: normal;
     font-style: normal;
 }
