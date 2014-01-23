@@ -14,10 +14,6 @@ include_once CITRUS_PATH . '/include/functions.php';
 include_once CITRUS_CLASS_PATH . '/Citrus/Citrus.php';
 
 session_start();
-require CITRUS_CLASS_PATH . 'doctrine-orm/Doctrine/ORM/Tools/Setup.php';
-
-$lib = CITRUS_CLASS_PATH . "doctrine-orm/";
-Doctrine\ORM\Tools\Setup::registerAutoloadDirectory( $lib );
 
 try {
     $cos = core\Citrus\Citrus::getInstance( !isset( $_SERVER['HTTP_HOST'] ) );

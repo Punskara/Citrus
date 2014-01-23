@@ -331,11 +331,6 @@ class Citrus {
                     list ( $dsn, $username, $password ) = $config['db']['connection'];
                     $this->db = new db\Connection( $dsn, $username, $password );
                     
-                    // orm configuration
-                    $paths = array( CITRUS_CLASS_PATH . $this->projectName . '/' );
-                    $isDevMode = $this->debug;
-                    $this->orm = db\Orm::getInstance( $config['db']['connection'], $paths, $isDevMode );
-                    
                     if ( $this->debug ) {
                         $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
                     }
