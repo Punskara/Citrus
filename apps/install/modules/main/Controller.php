@@ -69,6 +69,7 @@ class Controller extends AController {
                 $host['path'] = $h['baseUrl'];
                 $host['log'] = $h['services']['logger']['active'] ? 1 : 0;
                 $host['debug'] = $h['services']['debug']['active'] ? 1 : 0;
+                $host['bdd'] = $h['services']['db']['active'] ? 1 : 0;
                 $host['database'] = substr($bdd_lnk[0],13) ? substr($bdd_lnk[0],13) : '';
                 $host['bddhost'] = substr($bdd_lnk[1],5) ? substr($bdd_lnk[1],5) : '' ;
                 $host['login'] = $h['services']['db']['connection'][1];

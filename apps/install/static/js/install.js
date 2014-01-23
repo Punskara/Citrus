@@ -70,10 +70,7 @@ $(document).ready(function () {
                 
                 // reaffichage des hosts existants
                 for (var k = 0; k< config.hosts.length; k++) setHost( config.hosts[k] , k+1 , true );
-                
-                // gestion bdd si necessaire
-                if ( !config.bdd || config.bdd === '0' ) $('#bloc_bdd').hide();
-                else $('#bloc_bdd').show();
+                $('#bloc_bdd').hide();
 
                 // formulaire d'ajout / modification de host
                 $('#f_addHost').bind('submit', function ( e ) {
@@ -328,6 +325,10 @@ $(document).ready(function () {
         getHost = function ( id ) {
             var host = config.hosts[ id - 1 ];
             host.inst = id - 1;
+
+            // gestion bdd si necessaire
+            if ( !host.bdd || host.bdd === '0' ) $('#bloc_bdd').hide();
+            else $('#bloc_bdd').show();
             $('#f_addHost').setArray( host );
             $('button[type=reset][disabled]').removeAttr('disabled');
             $('button[type=submit]').html('Modifier');
