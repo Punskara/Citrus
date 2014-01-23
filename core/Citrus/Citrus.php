@@ -305,21 +305,16 @@ class Citrus {
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        if ( !isset( $this->config['defaultApp'] ) ) {
-            throw new sys\Exception( "Unable to find defaults routing settings. Please check config file." );
-        } else {
-            $app = $this->config['defaultApp'];
-            $this->router = new routing\Router( $app, $this->host->baseUrl );
-            try {
-                $this->router->loadRoutes();
-            } catch ( sys\Exception $e ) {
-                sys\Debug::handleException( $e, $this->debug );
-            }
-
-            $this->router->defaultRoutes();
-            $this->router->execute();
+        $this->router = new routing\Router( $this->host->baseUrl );
+        try {
+            $this->router->loadRoutes();
+        } catch ( sys\Exception $e ) {
+            sys\Debug::handleException( $e, $this->debug );
         }
-    }
+
+        $this->router->defaultRoutes();
+        $this->router->execute();
+}
     
     /**
      * Mass assign an object properties

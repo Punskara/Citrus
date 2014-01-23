@@ -6,7 +6,6 @@ return $config = array(
     'projectName' => 'citrus',
     
     # routing defaults
-    'defaultApp' => 'install',
     
     # hosts
     'hosts' => array(

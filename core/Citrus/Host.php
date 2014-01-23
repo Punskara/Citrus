@@ -47,11 +47,6 @@ class Host {
     public $debug;
     
     /**
-     * @var boolean
-     */
-    public $hasRewriteEngine;
-    
-    /**
      * @var array
      */
     public $services = array();
