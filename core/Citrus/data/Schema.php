@@ -253,111 +253,13 @@ class Schema {
         }
         return $props;
     }
-    
-    /**
-	 * Builds SQL schema and writes it in a .sql file.
-	 *
-	 * @return boolean
-	 */
-    static public function buildSQLSchema() {
-        $cos = Citrus::getInstance();
-	    $dir = CITRUS_CLASS_PATH . $cos->projectName . '/schemas/';
-	    $mainSchema = array();
-	    if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( preg_match( '/\.schema.php/', $file ) ) {
-                            $schem = include $dir . $file;
-                            if ( is_array( $schem ) && count( $schem ) ) {
-                                $mainSchema[] = $schem;
-                            }
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        if ( count( $mainSchema ) ) {
-            $query = "SET FOREIGN_KEY_CHECKS = 0;\n\n";
-            foreach ( $mainSchema as $item ) {
-                $query .= "#------------ " . $item['tableName'] . " ------------\n";
-                $query .= 'DROP TABLE IF EXISTS `' . $item['tableName'] . "`;\n";
-                $query .= 'CREATE TABLE `' . $item['tableName'] . "` (\n";
-                if ( isset( $item['properties'] ) ) {
-                    $i = 0;
-                    $queryProps = array();
-                    $indexes = '';
-                    $engine = '';
-                    foreach ( $item['properties'] as $propName => $keys ) {
-                        $queryProps[$i] = "  `$propName` ";
-                        if ( isset( $keys['primaryKey'] ) && $keys['type'] == 'int' ) {
-                            $queryProps[$i] .= 'BIGINT NOT NULL AUTO_INCREMENT';
-                        } else {
-                            if ( $keys['type'] == 'string' ) {
-                                $queryProps[$i] .= 'VARCHAR(';
-                                $queryProps[$i] .= isset( $keys['length'] ) ? $keys['length'] : '255';
-                                $queryProps[$i] .= ')';
-                            } elseif ( $keys['type'] == 'text' ) {
-                                $queryProps[$i] .= 'LONGTEXT';
-                            } elseif ( $keys['type'] == 'boolean' ) {
-                                $queryProps[$i] .= 'BOOLEAN';
-                            } elseif ( $keys['type'] == 'datetime' ) {
-                                $queryProps[$i] .= 'DATETIME';
-                            } elseif ( $keys['type'] == 'int' && isset( $keys['foreignTable'] ) ) {
-                                $queryProps[$i] .= 'BIGINT';
-                            } elseif ( $keys['type'] == 'int' ) {
-                                $queryProps[$i] .= 'INT';
-                            } elseif ( $keys['type'] == 'float' ) {
-                                $queryProps[$i] .= 'FLOAT';
-                            }
-                            if ( isset( $keys['null'] ) && $keys['null'] === false ) {
-                                $queryProps[$i] .= ' NOT';
-                            }
-                            $queryProps[$i] .= ' NULL';
-                        }
-                        if ( isset( $keys['primaryKey'] ) && $keys['type'] == 'int' ) {
-                            $indexes[] .= "  PRIMARY KEY(`$propName`)";
-                        }
-                        $i++;
 
-                        if ( array_key_exists( 'foreignTable', $keys ) && array_key_exists( 'foreignReference', $keys ) ) {
-                            $fk = "  FOREIGN KEY (`" . $propName . "`) REFERENCES "
-                                       . "`" . $keys['foreignTable'] . "` (`" . $keys['foreignReference'] . "`) ";
-                            if ( isset( $keys['onDelete'] ) ) {
-                                $fk .= " ON DELETE " . $keys['onDelete'];
-                            } elseif ( $keys['null'] === true ) {
-                                $fk .= " ON DELETE SET NULL";
-                            }
-                            if ( isset( $keys['onUpdate'] ) ) {
-                                $fk .= " ON UPDATE " . $keys['onUpdate'];
-                            } else {
-                                $fk .= " ON UPDATE CASCADE";
-                            }
-                            $indexes[] = $fk;
-                        }
-                    }
-                    if ( $indexes != '' ) {
-                        $queryProps[] .= implode( ",\n", $indexes );
-                    }
-                    $query .= implode( ",\n", $queryProps );
-                    $query .= "\n)";
-                    $query .= " ENGINE = InnoDB";
-                    $query .= ";\n\n";
-                }
-            }
-            $query .= "# Restores the foreign key checks, as we unset them at the begining\n";
-            $query .= "SET FOREIGN_KEY_CHECKS = 1;\n\n";
-            $query .= User::createTable();
-            $query .= User::insertFirstUser();
-            $file = fopen( CITRUS_PATH . '/include/schema.sql', 'w' );
-            $write = fwrite( $file, $query );
-            fclose( $file );
-            return $write;
-        }
+    public function getProperty( $name ) {
+        if ( isset( $this->properties[$name] ) )
+            return $this->properties[$name];
         return false;
-	}
-	
+    }
+    
 	/**
 	 * Creates class files from php schemas
 	 * @return void
