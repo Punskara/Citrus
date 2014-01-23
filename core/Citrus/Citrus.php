@@ -36,15 +36,9 @@ class Citrus {
     
     /**
      * @access public
-     * @var string
-     */
-    public $baseUrl;
-    
-    /**
-     * @access public
      * @var boolean
      */
-    public $debug = true;
+    public $debug;
 
     /**
      * @access public
@@ -54,52 +48,10 @@ class Citrus {
     
     /**
      * @access public
-     * @var string
-     */
-    public $webDir = '';
-    
-    /**
-     * @access public
-     * @var \core\Citrus\User
-     */
-    public $user;
-    
-    /**
-     * @access public
-     * @var \core\crr\User
-     */
-    public $extranetUser;
-    
-    /**
-     * @access public
      * @var \core\Citrus\Host
      */
     public $host;
-    
-    /**
-     * @access public
-     * @var boolean
-     */
-    public $hasRewriteEngine;
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public $lang;
 
-    /**
-     * @access public
-     * @var string
-     */
-    public $siteName;
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public $projectName;
-    
     /**
      * @access public
      * @var array
@@ -118,27 +70,23 @@ class Citrus {
      */
     public $router;
     
-    
     /**
      * @access public
      * @var array
      */
     public $services = array();
     
-    #public $defaults = array( 'app' => 'frontend' );
+    /**
+     * @access public
+     * @var string
+     */
+    public static $config_file = '/config/config.inc.php';
     
     /**
      * @access public
      * @var string
      */
-    public static $configFile = '/config/config.inc.php';
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public static $configFileInstall = '/config/config.inc.default.php';
-    
+    public static $default_config_file = '/config/config.inc.default.php';
     
     /**
      * @access public
@@ -151,19 +99,6 @@ class Citrus {
      * @var \core\Citrus\sys\Cache
      */
     public $cache;
-
-    /**
-     * @access public
-     * @var \core\led\client\Client
-     */
-    public $client;
-
-
-    /**
-     * @access public
-     * @var lib/caddie
-     */
-    public $cart;
     
     public $done = false;
 
@@ -208,7 +143,6 @@ class Citrus {
         $this->Boot();
         #if ( $this->host instanceof core\Citrus\Host ) {
         if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
-            $this->hasRewriteEngine = $this->host->services['hasRewriteEngine'];
             if ( $this->debug ) {
                 ini_set( 'display_errors', 0 );
                 error_reporting( E_ALL );
@@ -238,10 +172,7 @@ class Citrus {
         $this->cache = new \core\Citrus\sys\Cache();
         
         if ( $this->config ) {
-            date_default_timezone_set( $this->config['cos_Timezone'] );
-            
-            $this->siteName = $this->config['siteName'];
-            $this->projectName = $this->config['projectName'];
+            date_default_timezone_set( $this->config['default_timezone'] );
             
             # loading hosts
             $CitrusHosts = $this->config['hosts'];
@@ -288,10 +219,10 @@ class Citrus {
      */
     public function loadConfiguration() {
         if ( !$this->config ) {
-            if ( file_exists( CITRUS_PATH . self::$configFile ) ) {
-                $this->config = include_once CITRUS_PATH . self::$configFile;
-            } else if ( file_exists( CITRUS_PATH . self::$configFileInstall ) ) {
-                $this->config = include_once CITRUS_PATH . self::$configFileInstall;
+            if ( file_exists( CITRUS_PATH . self::$config_file ) ) {
+                $this->config = include_once CITRUS_PATH . self::$config_file;
+            } elseif ( file_exists( CITRUS_PATH . self::$default_config_file ) ) {
+                $this->config = include_once CITRUS_PATH . self::$config_file;
             } else {
                 throw new sys\Exception( "Unable to find configuration file." );
             }
@@ -342,7 +273,6 @@ class Citrus {
     
     public static function pageNotFound( $message = null ) {
         $cos = Citrus::getInstance();
-        // $response = new http\Response();
         $cos->response->code = '404';
         $cos->response->message = $message;
         $cos->response->sendHeaders();
@@ -366,19 +296,7 @@ class Citrus {
         echo $tpl;
         exit;
     }
-    public static function internalServerError( $message = null ) {
-        $cos = Citrus::getInstance();
-        $cos->response->code = '500';
-        $cos->response->message = $message;
-        // $cos->response->sendHeaders();
-        /*ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;*/
-        exit;
-    }
-    
+
     
     /**
      * Starts all enabled services.
