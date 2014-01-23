@@ -87,24 +87,24 @@ class Response {
     }
 
     public function setCacheHeaders( $file_path ) {
-        $lastModified = filemtime( $file_path );
-        $etagFile = md5_file( $file_path );
-        $ifModifiedSince = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false );
-        $etagHeader = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) : false );
+        $last_modified = filemtime( $file_path );
+        $etag_file = md5_file( $file_path );
+        $modified_since = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false );
+        $etag_header = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) : false );
+        $file_size = filesize( $file_path );
 
-        $this->addHeader( "Last-Modified", gmdate( "D, d M Y H:i:s", $lastModified ) . " GMT" );
-        $this->addHeader( "Etag", $etagFile );
+        $this->addHeader( "Last-Modified", gmdate( "D, d M Y H:i:s", $last_modified ) . " GMT" );
+        $this->addHeader( "Etag", $etag_header );
         $this->addHeader( "Cache-Control", "public" );
 
         $now = new \core\Citrus\Date();
         $exp = $now->add( \DateInterval::createFromDateString( '1 week' ) );
         $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) );
+        $this->addHeader( 'Content-Length', $file_size );
 
-        if ( $ifModifiedSince && @strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) == $lastModified || $etagHeader == $etagFile ) {
+        if ( $modified_since && @strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) == $last_modified || $etag_header == $etag_file ) {
             $this->code = 304;
             $this->message = "Not Modified";
-            // $cos->response->sendHeaders();
-            // exit;
         }
 
         $this->sendHeaders();
