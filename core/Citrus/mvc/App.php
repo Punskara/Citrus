@@ -138,6 +138,8 @@ abstract class App {
                 return false;
             }
         }
+        return $this->controller;
+
     }
     
     
