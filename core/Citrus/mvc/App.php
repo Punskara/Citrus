@@ -31,22 +31,12 @@ use core\Citrus\http\Request;
 use core\Citrus\Citrus;
 use core\Citrus\sys;
 
-class App {
+abstract class App {
     
     /**
      * @var string
      */
     public $name;
-    
-    /**
-     * @var \core\Citrus\User
-     */
-    public $user;
-    
-    /**
-     * @var string
-     */
-    public $titleTag;
     
     /**
      * @var \core\Citrus\mvc\Controller
@@ -72,6 +62,10 @@ class App {
      * @var Closure
      */
     public $onActionProtected;
+    
+
+    abstract public function setViewSettings();
+
 
     /**
      * Constructor.
@@ -81,27 +75,11 @@ class App {
      * @throws \core\Citrus\sys\Exception if the name is not referenced.
      */
     public function __construct( $name ) {
-        if ( is_dir( CITRUS_APPS_PATH . $name ) ) {
-            $this->name = $name;
-            $this->path = CITRUS_APPS_PATH . $name;
-            $this->readConfig();
-        } else {
-            throw new sys\Exception( "Unkown app $name" );
-        }
+        $this->name = $name;
     }
 
     public function __toString() {
         return $this->name;
-    }
-    
-    /**
-     * Reads app config and view files
-     * 
-     */
-    public function readConfig() {
-        if ( file_exists( $this->path . '/config/config.php' ) ) {
-            require_once $this->path . '/config/config.php';
-        }
     }
     
     /**
@@ -141,20 +119,24 @@ class App {
         $ctrlFile = $args['path'] . '/Controller.php';
         $ctrlPath = str_replace( CITRUS_PATH, '', $args['path'] );
         $ctrlPath = str_replace( '/', '\\', $ctrlPath ) . '\Controller';
-        // $args['moduleName'] = $ctrlName;
-        if ( file_exists( $ctrlFile ) && class_exists( $ctrlPath ) ) {
-            $r = new \ReflectionClass( $ctrlPath ); 
-            $inst = $r->newInstanceArgs( $args ? $args : array() );
-            $this->controller = Citrus::apply( $inst, Array( 
-                'name' => $ctrlName, 
-            ) );
-            if ( $this->controller->is_protected == null ) {
-                $this->controller->is_protected = $this->is_protected;
-            }
-            return $this->controller;
+
+        if ( !$ctrlName ) {
+            $this->controller = new Controller( $action );
         } else {
-            throw new sys\Exception( "Unable to find controller '$ctrlName'" );
-            return false;
+            if ( file_exists( $ctrlFile ) && class_exists( $ctrlPath ) ) {
+                $r = new \ReflectionClass( $ctrlPath ); 
+                $inst = $r->newInstanceArgs( $args ? $args : array() );
+                $this->controller = Citrus::apply( $inst, Array( 
+                    'name' => $ctrlName, 
+                ) );
+                if ( $this->controller->is_protected == null ) {
+                    $this->controller->is_protected = $this->is_protected;
+                }
+                return $this->controller;
+            } else {
+                throw new sys\Exception( "Unable to find controller '$ctrlName'" );
+                return false;
+            }
         }
     }
     
@@ -164,9 +146,7 @@ class App {
      */
     public function executeCtrlAction( $force_external_post = false ) {
         $cos = Citrus::getInstance();
-        if ( !$this->isAccessAllowed() ) {
-            $this->onActionProtected();
-        } elseif ( $this->controller->actionExists() ) {
+        if ( $this->controller->actionExists() ) {
             $act = $this->controller->executeAction( $cos->request, $force_external_post );
             if ( $act !== false ) $this->output();
         } else $this->onActionNotFound();
@@ -175,24 +155,9 @@ class App {
     public function output() {
         Citrus::getInstance()->response->sendHeaders();
         if ( $this->controller->view ) {
-            $this->controller->view->getAppConfig( $this );
+            $this->setViewSettings();
             echo $this->controller->view->render();
         }
-    }
-
-    public function isAccessAllowed() {
-        $allowed = $this->is_protected;
-        $closure = $this->isAccessAllowed;
-        if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
-            $self = $this;
-            $allowed = $closure();
-        } else {
-            if ( $this->controller->isActionProtected() ) $allowed = false;
-            else $allowed = true;
-            if ( $this->controller->isActionProtected() ) $allowed = false;
-            else $allowed = true;
-        }
-        return $allowed;
     }
 
     /**
@@ -201,12 +166,7 @@ class App {
      */
 
     public function onActionProtected() {
-        $closure = $this->onActionProtected;
-        if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
-            $closure();
-        } else {
-            $this->controller->onActionProtected();
-        }
+        $this->controller->onActionProtected();
     }
 
     /**
@@ -215,17 +175,24 @@ class App {
      */
 
     public function onActionNotFound() {
-        if ( method_exists( $this->controller, "onActionNotFound" ) ) {
-            $this->controller->onActionNotFound();
-        } else {
-            $closure = $this->onActionNotFound;
-            if ( is_object( $closure ) && get_class( $closure ) == "Closure" ) {
-                $closure();
-            }
-        }
+        $this->controller->onActionNotFound();
     }
 
     public function getControllerUrl() {
         return CITRUS_PROJECT_URL . $this->name . '/' . $this->controller->name . '/';
+    }
+
+    static public function load( $name ) {
+        $app_path = $name;
+        $class_name = str_replace( '/', '\\', '/apps/' . $app_path . '/' . ucfirst( $name ) . 'App' );
+        if ( class_exists( $class_name ) ) {
+            $r = new \ReflectionClass( $class_name ); 
+            $app = $r->newInstanceArgs( array( $name ) );            
+            $app->path = CITRUS_APPS_PATH . $app_path;
+            return $app;
+        } else {
+            throw new sys\Exception( "Unable to find app '$name'" );
+            return false;
+        }
     }
 }
