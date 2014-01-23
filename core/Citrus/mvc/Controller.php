@@ -91,11 +91,6 @@ class Controller {
      */
     public function executeAction( $request, $force_external_post = false ) {
         $cos = Citrus::getInstance();
-        if ( $request->method == 'POST' && !$request->refererIsInternal() && !$force_external_post ) {
-            $this->do_PageNotFound();
-            return true;
-        }
-
         $action = "do_$this->action";
         try {
             if ( $cos->logger )
@@ -204,7 +199,6 @@ class Controller {
         $file_ext = $request->param( 'ext' ); 
         $file_type = $request->param( 'type' ); 
         $file_name = $request->param( 'file' ); 
-
         $file_path = $cos->app->path . "/static/$file_type/$file_name$file_ext";
         $content = "";
         $file_ext = substr( $file_ext, 1 );
