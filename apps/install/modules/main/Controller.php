@@ -27,12 +27,12 @@
 
 namespace apps\install\modules\main;
 use \core\Citrus\Citrus;
-use \core\Citrus\mvc;
+use \core\Citrus\mvc\Controller as AController;
 use \core\Citrus\http;
 use \core\Citrus\db\InsertQuery;
 use \apps\install\Installer;  
 
-class Controller extends mvc\Controller {
+class Controller extends AController {
     
     public $pageTitle = 'Installation';
     
@@ -58,11 +58,7 @@ class Controller extends mvc\Controller {
         
         if ( is_file( CITRUS_PATH . '/config/config.inc.php' ) ) {
             $config = include CITRUS_PATH . '/config/config.inc.php';
-            $json['projectname'] = $config['projectName'];
-            $json['sitename'] = $config['siteName'];
-            $json['defaultApp'] = $config['defaultApp'];
-            $json['bdd'] = $config['db'] ? 1 : 0;
-            $json['doctrine'] = $config['db_doctrine'] ? 1 : 0;
+            $json['site_name'] = $config['site_name'];
             
             foreach ( $config['hosts'] as $k=>$h ) {
                 $host = Array();
@@ -102,7 +98,6 @@ class Controller extends mvc\Controller {
                 'httpHost'          => $host->hostname,
                 'baseUrl'           => $host->path,
                 'services'          => array(
-                    'hasRewriteEngine' => array( 'active' => true ),
                     'logger' => array( 'active' => $host->log ? true : false ),
                     'debug'  => array( 'active' => $host->debug ? true : false ),
                     'db'     => array( 'active' => $config->bdd ? true : false ,
@@ -118,17 +113,16 @@ class Controller extends mvc\Controller {
         }
         
         $config_generate = array(
-            'siteName'      => $config->sitename,
-            'projectName'   => $config->projectname,
-            'defaultApp'    => $config->defaultApp,
-            'db'            => $config->bdd ? true : false,
-            'db_doctrine'   => $config->doctrine ? true : false,
-            'hosts' => $hosts_generate ,
-            'cos_Timezone' => 'Europe/Paris',
+            'site_name'         => $config->site_name,
+            'hosts'             => $hosts_generate ,
+            'default_timezone'  => 'Europe/Paris',
         );
         
         
-        $config_str = preg_replace("/[0-9]+ => ([^\n])/", "$1", var_export($config_generate, true));
+        $config_str = preg_replace(
+            "/[0-9]+ => ([^\n])/", "$1", 
+            var_export( $config_generate, true ) 
+        );
         
         $config_file = '<?php' . chr(10) . 'return $config = ' . $config_str .';';
         // sauvegarde de l'ancien fichier de configuration
@@ -154,40 +148,4 @@ class Controller extends mvc\Controller {
         http\Http::redirect( CITRUS_PROJECT_URL );
         
     }
-
-    public function do_model() { 
-        $this->view->layout = false; 
-        $this->view->assign( 'shema', is_file( CITRUS_PATH . '/include/schema.sql' ));
-    }
-    
-    public function do_buildSchema() {
-        $this->view->layout = false;
-        $installer = new Installer();
-        if ( $installer->buildSQLSchema() ) {
-            echo 'ok';
-        }
-    }
-
-    public function do_execSchema() {
-        $this->view->layout = false;
-        $db = Citrus::getInstance()->getDatabase();
-        $db->execute( file_get_contents( CITRUS_PATH . '/include/schema.sql' ) );
-    }
-    
-    public function do_dlSchema() {
-        $this->view->layout = false;
-        if ( is_file( CITRUS_PATH . '/include/schema.sql' ) ) {
-            header( "Pragma: public" );
-            header( "Expires: 0" );
-            header( "Cache-Control: must-revalidate, post-check=0, pre-check=0" );
-            header( "Content-Transfer-Encoding: binary" );
-            header( "Content-Description: File Transfer" );
-            header( "Content-Type: text/sql" );
-            header( "Content-Disposition: attachment; filename=\"schema.sql\"" );
-            include CITRUS_PATH . '/include/schema.sql';
-        }
-    }
-
-
-    
 }

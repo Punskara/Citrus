@@ -2,20 +2,20 @@
 <p>
 	Création des schémas sql à partir des entités crées et référencées par Citrus.
 </p>
-<form action="buildSchema.html" id="shbuild">
+<form action="<?php url_to( 'install/main/buildSchema' ) ?>" id="shbuild">
 	<button>Générer les schémas SQL</button>
 </form>
-<hr class="cb" />
+<hr class="cb">
 <p>
 	Insertion du schéma sql dans la base de donnée de l'host utilisé
 </p>
-<form action="execSchema.html" id="shexec">
+<form action="<?php url_to( 'install/main/execSchema' ) ?>" id="shexec">
 	<button <?php if (!$shema) echo 'disabled="disabled"'; ?>>Injecter directement dans la base de données</button>
 </form>
-<hr class="cb" />
+<hr class="cb">
 <p>
 	Export du schéma sql
 </p>
-<form action="dlSchema.html" id="shdl">
+<form action="<?php url_to( 'install/main/dlSchema' ) ?>" id="shdl">
 	<button <?php if (!$shema) echo 'disabled="disabled"'; ?>>Télécharger les schémas</button>
 </form>

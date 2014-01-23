@@ -49,16 +49,8 @@ $(document).ready(function () {
                 // reaffichage des données existantes
                 $('#f_install').setArray( config );
 
-                if(config.bdd == 1) $("#bloc_doctrine").show();
-                else $("#bloc_doctrine").hide();
-                
-                if (generated && config.sitename) $('h1').html( config.sitename );
+                if (generated && config.site_name) $('h1').html( config.site_name );
 
-                //affichage option doctrine
-                $('input[name=bdd]').bind('change', function () {
-                    if (this.value === '1') $("#bloc_doctrine").show();
-                    else $("#bloc_doctrine").hide();
-                });
                 
                 // gestion submit du formulaire
                 $('#f_install').bind('submit', function ( e ) {
@@ -138,7 +130,6 @@ $(document).ready(function () {
 
             },
             'apps' : function () {
-                console.log("in apps");
                 if (!config.apps) config.apps = $.extend(true, {}, appList);
                 // reaffichage des apps existantes
                 for (var k in config.apps) setApps( k );
@@ -170,7 +161,6 @@ $(document).ready(function () {
                 });
                 // apparition du formulaire de creation d'apps
                 $('button#bt_addApps').bind('click', function () {
-                    console.log("tamere");
                     $(this).hide();
                     $('form#f_addApps').show();
                 });
@@ -297,7 +287,7 @@ $(document).ready(function () {
         generate = function () {
             $.ajax({
                 type: 'POST',
-                url: 'generate',
+                url: rootUrl + 'install/main/generate',
                 data: { config : JSON.stringify(config) },
                 success: function () {
                     formTraitement( true );
@@ -391,7 +381,7 @@ $(document).ready(function () {
 
     // gestion du menu
         menuTraitement = function (e) {
-            var lnk = this.href.replace( /.*\//, '' );
+            var lnk = this.href; //.replace( /.*\//, '' );
             if (!$(this).hasClass('disabled')) {
                 $('body > header > nav a.activ').removeClass('activ');
                 $(this).addClass('activ');
@@ -399,6 +389,7 @@ $(document).ready(function () {
                     radioTraitement();
                     selectTraitement();
                     $('.container').append('<div class="cb"></div>');
+                    lnk = lnk.replace( /.*\//, '' );
                     if ( init[ lnk ] && typeof init[ lnk ] == "function") init[ lnk ].call();
                 });
             }

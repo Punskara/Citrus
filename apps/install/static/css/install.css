@@ -420,7 +420,7 @@ body > div.msgboxLight > div p {
 
 
 body > div.msgboxLight {
-	position:								absolute;
+	position:								fixed;
 	top:									150px;
 	width:									100%;
 	background:								transparent;
