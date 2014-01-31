@@ -7,9 +7,9 @@ return $config = array(
     # hosts
     'hosts' => array(
         'dev' => array(
-            'httpHost'          => $_SERVER['HTTP_HOST'],
-            'baseUrl'           => dirname( $_SERVER['SCRIPT_NAME'] ),
-            'services'          => array(
+            'domain'    => $_SERVER['HTTP_HOST'],
+            'root_path' => dirname( $_SERVER['SCRIPT_NAME'] ),
+            'services'  => array(
                 'logger' => array( 'active' => true ),
                 'debug'  => array( 'active' => false ),
                 'db'     => array( 'active' => false,

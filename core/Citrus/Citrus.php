@@ -141,15 +141,12 @@ class Citrus {
             return;
         }
         $this->Boot();
-        #if ( $this->host instanceof core\Citrus\Host ) {
         if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
             if ( $this->debug ) {
                 ini_set( 'display_errors', 0 );
                 error_reporting( E_ALL );
             }
-            
-            define( 'CITRUS_PROJECT_URL', $this->host->baseUrl );
-            define( 'CITRUS_WEB_DIR', CITRUS_PROJECT_URL . 'web/');
+            define( 'CITRUS_PROJECT_URL', $this->host->root_path );
         } else {
             throw new sys\Exception( "No valid Citrus Host found." );
             exit;
@@ -180,7 +177,7 @@ class Citrus {
 
             if ( count( $CitrusHosts ) ) {
                 foreach ( $CitrusHosts as $host => $args ) {
-                    if ( strpos( $_SERVER['HTTP_HOST'], $args['httpHost'] ) !== false ) {
+                    if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
                         $r = new \ReflectionClass( '\core\Citrus\Host' );
                         $inst = $r->newInstanceArgs( $args ? $args : array() );
                         if ( $inst ) {
@@ -236,7 +233,7 @@ class Citrus {
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        $this->router = new routing\Router( $this->host->baseUrl );
+        $this->router = new routing\Router( $this->host->root_path );
         try {
             $this->router->loadRoutes();
         } catch ( sys\Exception $e ) {
@@ -313,7 +310,7 @@ class Citrus {
         else $this->debug = false;
 
         if ( isset( $services['logger'] ) && $services['logger']['active'] == true ) {
-            $this->logger = new sys\Logger( $this->host->httpHost );
+            $this->logger = new sys\Logger( $this->host->domain );
             $this->logger->logEvent( 'Logging service started.' );
         }
     }

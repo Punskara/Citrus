@@ -34,12 +34,17 @@ class Host {
     /**
      * @var string
      */
-    public $httpHost;
+    public $domain;
     
     /**
      * @var string
      */
-    public $baseUrl;
+    public $root_path;
+
+    /**
+     * @var string
+     */
+    public $scheme;
     
     /**
      * @var boolean
@@ -54,17 +59,21 @@ class Host {
     /**
      * Constructor
      * 
-     * @param string  $httpHost  a http host.
-     * @param string  $baseUrl  the path from the document root to the citrus index.php main file.
+     * @param string  $domain  a http host.
+     * @param string  $root_path  the path from the document root to the citrus index.php main file.
      * @param array   $services  an array of citrus services.
      */
-    public function __construct( $httpHost, $baseUrl, $services ) {
-        $this->httpHost = $httpHost;
-        $this->baseUrl = $baseUrl;
+    public function __construct( $domain, $root_path, $services ) {
+        $this->domain = $domain;
+        $this->root_path = $root_path;
         $this->services = $services;
     }
     
     public function __toString() {
-        return $this->httpHost;
+        return $this->domain;
+    }
+
+    public function getUrl() {
+        return CITRUS_SCHEME . $this->domain . CITRUS_PROJECT_URL;
     }
 }
