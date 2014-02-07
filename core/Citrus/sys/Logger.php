@@ -23,26 +23,29 @@ namespace core\Citrus\sys;
 use \core\Citrus\utils\File;
 
 class Logger {
-    private $_dir = '';
-    private $_file;
-    private $_fileName;
-    private $_linePrefix = '';
-    public $events;
+    private $dir = '';
+    private $file;
+    private $file_name;
+    private $linePrefix = '';
+    private $events = Array();
 
     public function __construct( $name ) {
-        $this->_linePrefix = date( '[Y-m-d H:i:s]' ) . " ";
-        $this->_fileName = CTS_LOG_PATH . $name . '-' . date( 'Ym') . '.log';
+        $this->linePrefix = date( '[Y-m-d H:i:s]' ) . " ";
+        $this->file_name = CTS_LOG_PATH . $name . '-' . date( 'Ym') . '.log';
     }
     
     public function logEvent( $str ) {
-        $this->events[] = $this->_linePrefix . $str;
+        $this->events[] = $this->linePrefix . $str;
+        $this->writeLog();
     }
     
     public function writeLog() {
         if ( count( $this->events ) ) {
-            $this->_file = new File( $this->_fileName, File::MODE_WOE );
-            $this->_file->write( implode( "\n", $this->events ) . "\n" );
-            $this->_file->close();
+            $this->file = new File( $this->file_name, File::MODE_WOE );
+            $this->file->open( File::MODE_WOE );
+            $this->file->write( implode( "\n", $this->events ) . "\n" );
+            $this->file->close();
+            $this->events = Array();
         }
     }
 }

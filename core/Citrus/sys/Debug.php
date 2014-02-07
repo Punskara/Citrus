@@ -132,15 +132,16 @@ class Debug {
         $cos->response->message = $cos->debug ? strip_tags( $msg ) : 'An error occured.';
         $cos->response->sendHeaders();
         $stack = debug_backtrace();
-        $logger = new Logger( 'error' );
-        $logger->logEvent( $msg . ' ' . $file . ' on line ' . $line );
-        $logger->writeLog();
+        $cos->getLogger( 'error' )->logEvent( 
+            '[error] [client ' . $cos->request->address . '] ' . 
+            $msg . ' in ' . $file . ' on line ' . $line 
+        );
 
         $cos->debug ?
             $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context ) :
             $errorTpl = file_get_contents( CTS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
         
-        die( $errorTpl );
+        if ( $cos->debug ) die( $errorTpl );
     }
     
 

@@ -62,9 +62,9 @@ class Citrus {
     
     /**
      * @access public
-     * @var \core\Citrus\sys\logger
+     * @var Array of \core\Citrus\sys\Logger objects
      */
-    public $logger;
+    public $loggers;
     
     /**
      * @access public
@@ -296,13 +296,27 @@ class Citrus {
             $this->debug = new Debug( $this->request );
             $this->debug->timer = new Timer( "total" );
             $this->debug->timer->start();
+            $this->addLogger( 'debug' );
         }
         else $this->debug = false;
 
         if ( isset( $services['logger'] ) && $services['logger']['active'] == true ) {
-            $this->logger = new Logger( $this->host->domain );
-            $this->logger->logEvent( 'Logging service started.' );
+            $this->addLogger( 'error' );
         }
+    }
+
+    private function addLogger( $id ) {
+        $this->loggers[$id] = new Logger( $this->host->domain . '.' . $id );
+        return $this->loggers[$id];
+    }
+
+    public function getLogger( $id ) {
+        if ( isset( $this->loggers[$id] ) ) return $this->loggers[$id];
+        return $this->addLogger( $id );
+    }
+
+    function logError( $content ) {
+        $this->getLogger( 'error' )->logEvent( $content );
     }
 
     /**
@@ -344,11 +358,7 @@ class Citrus {
         } else {
             $msg = 'Shutting down…';
         }
-
-        if ( $cos->logger ) {
-            $cos->logger->logEvent( $msg );
-            $cos->logger->writeLog();
-        }
+        if ( $cos->debug ) $cos->getLogger( 'debug' )->logEvent( $msg );
         unset( $cos );
     }   
     

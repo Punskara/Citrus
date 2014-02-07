@@ -80,20 +80,24 @@ class Controller {
     public function executeAction( $request ) {
         $cos = Citrus::getInstance();
         $action = "do_$this->action";
-            if ( $cos->logger )
-                $cos->logger->logEvent( 'Launching action ' . $action . ' on module ' . $this->name );
-            if ( $cos->debug )
-                $cos->debug->startNewTimer( "action " . $action );
 
-            $tpl_name = strtolower( $this->getPrefix() ) . '/' . $this->action;
-            $this->view = new View( $tpl_name );
+        if ( $cos->debug ) {
+            $cos->getLogger( 'debug' )
+                ->logEvent( 
+                    'Launching action ' . $action . ' on module ' . $this->name 
+                );
+            $cos->debug->startNewTimer( "action " . $action );
+        }
 
-            $this->view->layout = !$request->isXHR;
-            $this->$action( $request );
+        $tpl_name = strtolower( $this->getPrefix() ) . '/' . $this->action;
+        $this->view = new View( $tpl_name );
 
-            if ( $cos->debug ) $cos->debug->stopLastTimer();
+        $this->view->layout = !$request->isXHR;
+        $this->$action( $request );
 
-            return true;
+        if ( $cos->debug ) $cos->debug->stopLastTimer();
+
+        return true;
     }
 
     /** 
