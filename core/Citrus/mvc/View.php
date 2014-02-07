@@ -77,9 +77,8 @@ class View {
      */
     public function __construct( $tpl_name ) {
         $cos = Citrus::getInstance();
-        $this->tpl_file = CITRUS_APPS_PATH . $cos->app->name . 
-                          '/modules/' . $cos->app->controller->name . 
-                          '/templates/' . $tpl_name . self::TPL_EXT;
+
+        $this->tpl_file = $cos->app->tpl_dir . $tpl_name . self::TPL_EXT;
 
         // automaticly disabling layout if XMLHTTPRequest
         $this->layout = !$cos->request->isXHR;
@@ -316,9 +315,10 @@ class View {
         if ( !file_exists( $this->tpl_file ) )
             $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
                               '/templates/' . basename( $this->tpl_file );
-        if ( !file_exists( $this->tpl_file ) )
+        if ( !file_exists( $this->tpl_file ) ) {
             throw new Exception( "Template file not found: $this->tpl_file." );
-        
+            return;
+        }
         $tplContent = false;
         extract( $this->vars, EXTR_OVERWRITE );
         ob_start();

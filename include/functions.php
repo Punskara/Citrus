@@ -24,37 +24,12 @@
  */
 
 function include_slice( $partial, $vars = null ) {
-    $cos = core\Citrus\Citrus::getInstance();
-    if ( $cos->debug ) {
-        $cos->debug->startNewTimer( "partial " . $partial );
-    }
-    if ( is_array( $vars ) ) {
-        extract( $vars, EXTR_OVERWRITE );
-    }
-    $file = $cos->app->controller->path . "/templates/_$partial.tpl.php";
-    if ( file_exists( $file ) ) {
-        include $file;
-    }
-    if ( $cos->debug ) {
-        $cos->debug->stopLastTimer();
-    }
-}
-
-function include_slice_global( $partial, $vars = null ) {
-    $cos = core\Citrus\Citrus::getInstance();
-    if ( $cos->debug ) {
-        $cos->debug->startNewTimer( "partial " . $partial );
-    }
-    if ( is_array( $vars ) ) {
-        extract( $vars, EXTR_OVERWRITE );
-    }
-    $file = $cos->app->path . "/templates/_$partial.tpl.php";
-    if ( file_exists( $file ) ) {
-        include $file;
-    }
-    if ( $cos->debug ) {
-        $cos->debug->stopLastTimer();
-    }
+    $cos = \core\Citrus\Citrus::getInstance();
+    if ( $cos->debug ) $cos->debug->startNewTimer( "partial " . $partial );
+    if ( is_array( $vars ) ) extract( $vars, EXTR_OVERWRITE );
+    $file = $cos->app->path . "/templates/$partial" . \core\Citrus\mvc\View::TPL_EXT;
+    if ( file_exists( $file ) ) include $file;
+    if ( $cos->debug ) $cos->debug->stopLastTimer();
 }
 
 function vexp( $var, $pre = false ) {
@@ -74,7 +49,7 @@ function prr( $var, $pre = false ) {
 }
 
 function url_to( $route, $ret = false ) {
-    $url = CITRUS_PROJECT_URL . $route;
+    $url = CTS_PROJECT_URL . $route;
     if ( $ret ) return $url;
     echo $url;
 }

@@ -65,6 +65,13 @@ class Controller {
     public function __construct( $action ) {
         $this->action = $action;
     }
+
+    public function getPrefix() {
+        if ( preg_match( '@\\\\([\w]+)$@', get_class( $this ), $matches ) ) {
+            $s = String::splitCamelCase( $matches[1] );
+            return $s[0];
+        } return "";
+    }
     
     /**
      * Executes the action given by request. 
@@ -78,7 +85,7 @@ class Controller {
             if ( $cos->debug )
                 $cos->debug->startNewTimer( "action " . $action );
 
-            $tpl_name = $this->action;
+            $tpl_name = strtolower( $this->getPrefix() ) . '/' . $this->action;
             $this->view = new View( $tpl_name );
 
             $this->view->layout = !$request->isXHR;
