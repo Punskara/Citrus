@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -27,6 +27,8 @@
 
 
 namespace core\Citrus\http;
+use \core\Citrus\Date;
+
 
 /**
  * Handles the http header response.
@@ -97,7 +99,7 @@ class Response {
         $this->addHeader( "Etag", $etag_header );
         $this->addHeader( "Cache-Control", "public" );
 
-        $now = new \core\Citrus\Date();
+        $now = new Date();
         $exp = $now->add( \DateInterval::createFromDateString( '1 week' ) );
         $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) );
         $this->addHeader( 'Content-Length', $file_size );

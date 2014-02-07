@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -53,7 +53,7 @@ class ModelCollection {
         if ( class_exists( $targetClass ) ) {   
             $this->targetClass = $targetClass;
             $schema = Model::getSchema( $this->targetClass );
-            $cos = \core\Citrus\Citrus::getInstance();
+            $cos = Citrus::getInstance();
             if ( $cos->cache->hasSchemaOfClass( $targetClass ) ) {
                 $schema = $cos->cache->getSchemaOfClass( $targetClass );
             } else {

@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -124,7 +124,7 @@ class Date extends \DateTime {
         return $this->format( 'd/m/Y' );
     }
     
-    public static function getMonth( $month, $lang ) {
+    static public function getMonth( $month, $lang ) {
         $months = array(
             'fr'    => array(
                 '01' => 'Janvier',

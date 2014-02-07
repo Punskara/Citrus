@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -41,20 +41,21 @@ class Filter {
      * @param string  $value  Value to check
      * @param string  $type  the type that value must be.
      */    
-    public static function filterVar( $var_name, $type, $method = "GET", $params = Array() ) {
+    static public function filterVar( $var_name, $type, $method = "GET", $params = Array() ) {
         $typesCorresp = array(
             'int'       => FILTER_VALIDATE_INT,
             'float'     => FILTER_VALIDATE_FLOAT,
             'string'    => FILTER_SANITIZE_STRING,
             'text'      => FILTER_SANITIZE_SPECIAL_CHARS,
             'boolean'   => FILTER_VALIDATE_BOOLEAN,
+            'email'     => FILTER_VALIDATE_EMAIL,
             'datetime'  => FILTER_VALIDATE_REGEXP,
             'array'     => array(
                 'filter' => FILTER_VALIDATE_INT,
                 'flags'  => FILTER_FORCE_ARRAY,
             ),
         );
-        // $method_int = INPUT_GET;
+        $method_int = INPUT_GET;
         $args = $params;
 
         /*if ( $method == "POST" ) { 

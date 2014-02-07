@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -184,7 +184,7 @@ class Schema {
      * 
      * @return array  $assoc  array of associations
      */
-    public static function getModelAssociations( $modelType ) {
+    static public function getModelAssociations( $modelType ) {
         $modelType = str_replace( '\\', '/', $modelType );
         $schemaFile = CITRUS_PATH . str_replace( 
             '_', 
@@ -239,7 +239,7 @@ class Schema {
      * 
      * @return array  $props  array of schema properties
      */
-    public static function getProperties( $modelType ) {
+    static public function getProperties( $modelType ) {
         $schemaFile = CITRUS_CLASS_PATH . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 

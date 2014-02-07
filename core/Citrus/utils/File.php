@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -68,7 +68,7 @@ class File {
     public function exists() {
         return file_exists( $this->path );
     }
-
+    
     static public function getType( $path ) {
         if ( file_exists( $path ) ) {
             $finfo = new \finfo( \FILEINFO_MIME );
@@ -86,7 +86,6 @@ class File {
         return false;
     }
 
-    static public function getSize( $file, $precision = 2 ) {
+    static public function getSize( $file, $precision = 2 ) {}
 
-    }
 }

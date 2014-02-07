@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -44,7 +44,7 @@ class Error {
         $this->stack = $stack;
     }
     
-    public static function renderHtml( $err, $message = null, $trace = false ) {
+    static public function renderHtml( $err, $message = null, $trace = false ) {
         $s = '';
         if ( $message ) {
             $s .= '<p class="message">' . $message . '</p>';

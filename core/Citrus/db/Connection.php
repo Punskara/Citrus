@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -27,7 +27,8 @@
 
 namespace core\Citrus\db;
 use \core\Citrus\Citrus;
-use \core\Citrus\sys;
+use \core\Citrus\sys\Debug;
+use \core\Citrus\sys\Exception;
 
 class Connection extends \PDO {
     private $dispMsg = true;
@@ -39,7 +40,7 @@ class Connection extends \PDO {
     }
     
     public function execute( $sql, $params = null ) {
-        $cos = \core\Citrus\Citrus::getInstance();
+        $cos = Citrus::getInstance();
         $stmt = $this->prepare( $sql );
         if ( $cos->debug ) { 
             $cos->debug->queries[] = $stmt->queryString; #$stmt->errorInfo(); 
@@ -47,7 +48,7 @@ class Connection extends \PDO {
         try {
             $stmt->execute( $params );
         } catch ( \PDOException $e ) {
-            sys\Debug::handleException( $e, true, 'SQL: ' . $stmt->queryString );
+            Debug::handleException( $e, true, 'SQL: ' . $stmt->queryString );
         }
         return $stmt;
     }
@@ -105,7 +106,7 @@ class Connection extends \PDO {
         }
         if ( !$s ) {
             $err = $stmt->errorInfo();
-            throw new sys\Exception( 'SQL Error (' . $err[0] . ') (' . $err[1] . ') : ' . $err[2] );
+            throw new Exception( 'SQL Error (' . $err[0] . ') (' . $err[1] . ') : ' . $err[2] );
         }
         return $s;
     }
@@ -136,7 +137,7 @@ class Connection extends \PDO {
         }
         if ( !$s ) {
             $err = $stmt->errorInfo();
-            throw new sys\Exception( 'SQL Error (' . $err[0] . ') (' . $err[1] . ') : ' . $err[2] );
+            throw new Exception( 'SQL Error (' . $err[0] . ') (' . $err[1] . ') : ' . $err[2] );
         }
         return $s;
     }

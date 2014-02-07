@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -26,14 +26,15 @@
 
 
 namespace core\Citrus\data;
-use \core\Citrus as Citrus;
+use \core\Citrus\Citrus;
 use \core\Citrus\data;
+use \core\Citrus\db\SelectQuery;
 
 /**
  * This class generates an SQL query and hydrates objects with results
  */
 
-class HydratableQuery extends \core\Citrus\db\SelectQuery {
+class HydratableQuery extends SelectQuery {
     /**
      * type of object obtained
      * @var string

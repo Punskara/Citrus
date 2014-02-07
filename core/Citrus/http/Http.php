@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -44,7 +44,7 @@ class Http {
      * @todo Improve the use of $args, and get rid of this old 'extraParams' array to
      * get something cleaner. 
      */
-    public static function redirect( $url, $message = null, $args = null ) {
+    static public function redirect( $url, $message = null, $args = null ) {
         $extraParams = '';
         if ( isset( $args['extraParams'] ) ) {
             $extraParams .= '?' . $args['extraParams'];
