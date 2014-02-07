@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -28,9 +28,10 @@
 
 namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
-use \core\Citrus\http;
-use \core\Citrus\sys;
-use \core\Citrus\utils;
+use \core\Citrus\sys\Debug;
+use \core\Citrus\sys\Exception;
+use \core\Citrus\utils\File;
+use \core\Citrus\String;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -54,11 +55,6 @@ class Controller {
     public $view;
     
     /**
-     * @var string
-     */
-    public $path;
-    
-    /**
      * @var Boolean
      */
     public $is_protected;
@@ -74,29 +70,24 @@ class Controller {
      * 
      * @param string  $action  Name of the action we want to execute.
      */ 
-    public function __construct( $action, $path = '' ) {    
+    public function __construct( $action ) {
         $this->action = $action;
-        $this->view = new View( $action );
-        $this->path = $path;
     }
-    
     
     /**
      * Executes the action given by request. 
-     * Stops if the request method is POST and referer is external.
-     * Creates the http response and executes do_PageNotFound if action
-     * doesn't exist.
      * 
-     * @see do_PageNotFound
      */
-    public function executeAction( $request, $force_external_post = false ) {
+    public function executeAction( $request ) {
         $cos = Citrus::getInstance();
         $action = "do_$this->action";
-        try {
             if ( $cos->logger )
                 $cos->logger->logEvent( 'Launching action ' . $action . ' on module ' . $this->name );
             if ( $cos->debug )
                 $cos->debug->startNewTimer( "action " . $action );
+
+            $tpl_name = $this->action;
+            $this->view = new View( $tpl_name );
 
             $this->view->layout = !$request->isXHR;
             $this->$action( $request );
@@ -104,13 +95,6 @@ class Controller {
             if ( $cos->debug ) $cos->debug->stopLastTimer();
 
             return true;
-        } catch ( \core\Citrus\sys\Exception $e ) {
-            $this->do_Exception( $e );
-            return false;
-        } catch ( \PDOException $e ) {
-            $this->do_Exception( $e );
-            return false;
-        }
     }
 
     /** 
@@ -122,21 +106,6 @@ class Controller {
         return $this->is_protected ? $inException ? false : true : $inException ? true : false;
     }
 
-
-    /**
-     * Triggered when action is protected
-     */
-    public function onActionProtected() {
-        $this->do_PageForbidden();
-    }
-
-    /**
-     * Triggered when action is not found
-     */
-    public function onActionNotFound() {
-        $this->do_PageNotFound();
-    }
-    
     /**
      * Exception action : action that is executed if the system catches an exception.
      *
@@ -144,9 +113,10 @@ class Controller {
      */
     public function do_Exception( $e ) {
         $cos = Citrus::getInstance();
-        sys\Debug::handleException( $e, $cos->debug );
+        Debug::handleException( $e, $cos->debug );
     }
     
+
     /**
      * Shows up the default "Page not found" template
      * Is executed if the action doesn't exist.
@@ -204,9 +174,6 @@ class Controller {
         return $this->view->display();
     }
     
-    public function getPath() {
-        return dirname( __FILE__ );
-    }
 
     public function do_static( $request ) {
         $cos = Citrus::getInstance();
@@ -222,22 +189,16 @@ class Controller {
             $file_path = CITRUS_WWW_PATH . substr( $uri, 1 );
 
         if ( file_exists( $file_path ) ) {
+            $content = file_get_contents( $file_path );
             switch ( $file_ext ) {
                 case 'js':
                     $cos->response->contentType = 'application/javascript';
-                    if ( $cos->debug ) {
-                        $content = file_get_contents( $file_path );
-                    } else {
-                        $content = \core\lib\JShrink\Minifier::minify( file_get_contents( $file_path ) );
-                    }
                     break;
                 case 'css':
                     $cos->response->contentType = 'text/css';
-                    $content = file_get_contents( $file_path );
                     break;
                 default:
-                    $cos->response->contentType = utils\File::getType( $file_path );
-                    $content = file_get_contents( $file_path );
+                    $cos->response->contentType = File::getType( $file_path );
                     break;
             }            
         } else self::pageNotFound();

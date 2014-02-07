@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -28,8 +28,8 @@
 
 namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
-use \core\Citrus\html;
-use \core\Citrus\sys;
+use \core\Citrus\html\Element;
+use \core\Citrus\sys\Exception;
 
 
 class View {
@@ -37,12 +37,12 @@ class View {
     /**
      * @var array
      */
-    public $styleSheets = array();
+    private $styleSheets = array();
     
     /**
      * @var array
      */
-    public $javascriptFiles = array();
+    private $javascriptFiles = array();
     
     /**
      * @var string
@@ -57,38 +57,40 @@ class View {
     /**
      * @var array
      */
-    public $addedStyleSheets = array();
+    private $addedStyleSheets = array();
     
     /**
      * @var array
      */
-    public $addedJavascripts = array();
-    
+    private $addedJavascripts = array();
     
     /**
      * @var String
      */
-    public $name;
+    private $tpl_file;
     
     /**
      * @var array
      */
-    public $vars = array();
-
-    public $path;
+    private $vars = array();
 
     public $static_path = CITRUS_PROJECT_URL;
+
+    const TPL_EXT = ".tpl.php";
 
     /**
      * Constructor
      *
      * @param \core\Citrus\mvc\App $app The app which uses the view.
      */
-    public function __construct( $name, $path = false ) {
-        $this->name = $name;
-        $this->path = $path;
-        // no layout if XMLHTTPRequest
-        $this->layout = !Citrus::getInstance()->request->isXHR;
+    public function __construct( $tpl_name ) {
+        $cos = Citrus::getInstance();
+        $this->tpl_file = CITRUS_APPS_PATH . $cos->app->name . 
+                          '/modules/' . $cos->app->controller->name . 
+                          '/templates/' . $tpl_name . self::TPL_EXT;
+
+        // automaticly disabling layout if XMLHTTPRequest
+        $this->layout = !$cos->request->isXHR;
     }
     
     /** 
@@ -148,7 +150,7 @@ class View {
 
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
 
-                $st = new html\Element( 'link', array(
+                $st = new Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
@@ -169,7 +171,7 @@ class View {
                 elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
                 else $href = CITRUS_PROJECT_URL . "css/$s";
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
-                $st = new html\Element( 'link', array(
+                $st = new Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
@@ -187,7 +189,7 @@ class View {
             $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.css' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
-                $st = new html\Element( 'link', array(
+                $st = new Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
@@ -237,7 +239,7 @@ class View {
                 $is_remote = substr( $s, 0, 4 ) == "http";
                 if ( $is_absolute || $is_remote ) $src = $s;
                 else $src = $this->static_path . "js/$s";
-                $elt = new html\Element( 'script', array(
+                $elt = new Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
                         'src' => $src,
@@ -254,7 +256,7 @@ class View {
                 $is_remote = substr( $s, 0, 4 ) == "http";
                 if ( $is_absolute || $is_remote ) $src = $s;
                 else $src = $this->static_path . "js/$s";
-                $elt = new html\Element( 'script', array(
+                $elt = new Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
                         'src' => $src,
@@ -268,7 +270,7 @@ class View {
         if ( $cos->app && $cos->app->controller ) {
             $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
             if (is_file(CITRUS_WWW_PATH . $src)) {
-                $elt = new html\Element( 'script', array(
+                $elt = new Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
                         'src' => CITRUS_PROJECT_URL . $src,
@@ -318,28 +320,19 @@ class View {
 
     public function getContent() {
         $cos = Citrus::getInstance();
+
+        if ( !file_exists( $this->tpl_file ) )
+            $this->tpl_file = CITRUS_APPS_PATH . $cos->app->name . 
+                              '/templates/' . basename( $this->tpl_file );
+        if ( !file_exists( $this->tpl_file ) )
+            throw new Exception( "Template file not found: $this->tpl_file." );
+        
         $tplContent = false;
         extract( $this->vars, EXTR_OVERWRITE );
-        $default_template = CITRUS_APPS_PATH . $cos->app->name . '/templates/' . $this->name . '.tpl.php';
-        $action_template = $cos->getController()->path . '/templates/' . $this->name . '.tpl.php';
-
-        if ( $this->path )
-            $action_template = $this->path . $this->name . '.tpl.php';
-        
-        if ( file_exists( $action_template ) )
-            $template = $action_template;
-        else if ( file_exists( $default_template ) ) 
-            $template = $default_template;
-        else {
-            throw new sys\Exception( "Unable to find template « $this->name »." );
-            return;
-        }
-
         ob_start();
-        include $template;
+        include $this->tpl_file;
         $tplContent = ob_get_contents();
         ob_get_clean();
-    
         return $tplContent;
     }
     
