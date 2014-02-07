@@ -1,0 +1,453 @@
+
+@font-face {
+    font-family: 'modernaRegular';
+    src: url('../fonts/moderna-webfont.eot');
+    src: url('../fonts/moderna-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/moderna-webfont.woff') format('woff'),
+         url('../fonts/moderna-webfont.ttf') format('truetype'),
+         url('../fonts/moderna-webfont.svg#modernaRegular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+	background-color:   					#000000;
+	margin:									0;
+	padding:								60px 0 0 0;
+	font-family:							Arial, verdana, sans-serif;
+}
+
+body > * {
+	background:#fff;
+	margin:									auto;
+}
+
+/* 
+* HEADER ET MENU
+*/
+
+body > header {
+	width:									889px;
+	height:									124px;
+	background:								transparent url('../img/head.png') no-repeat top left;
+	position:								relative;
+}
+
+body > header > nav {
+	position:								absolute;
+	bottom:									0px;
+	left:									50px;
+}
+
+body > header > nav a {
+	display:								block;
+	float:									left;
+	text-decoration:						none;
+	text-transform:							uppercase;
+	background:								#fff;
+	opacity:								.6;
+	color:									#7f7f7f;
+	border-top-left-radius: 				5px 5px;
+	border-top-right-radius:				5px 5px;
+	padding:								7px 25px 3px 25px;
+	font-size:								12px;
+	margin-right:							1px;
+}
+
+body > header > nav a:hover {
+	opacity:								.8;
+}
+
+body > header > nav a.activ, nav a.activ:hover {
+	opacity:								1;
+	cursor:									default;
+}
+
+body > header > nav a.disabled, nav a.activ:disabled {
+	opacity:								.3;
+	cursor:									default;
+}
+
+/* 
+* TEXTE
+*/
+
+body > div {
+	width:									789px;
+	padding:								20px 50px 50px 50px;
+}
+
+body > div > h1 {
+	font-family:							modernaRegular;
+	color:									#bedc60;
+	margin-bottom:							0px;
+}
+
+body h2 {
+	color:									#7f7f7f;
+	margin-bottom:							0px;
+	font-size:								14px;
+	font-weight:							bold;
+}
+
+body > div > p, body > div > ul, body > div > li {
+	color:									#7f7f7f;
+	font-size:								12px;
+	line-height:							20px;
+	margin : 								0;
+	padding:								0;
+}
+
+ul {
+	margin:									0;
+	padding:								0;
+}
+li {
+	list-style:								none;
+
+	text-ident:								0;
+}
+
+body > div hr {
+	border:									none;
+	background:								transparent;
+	color:									transparent;
+	border-bottom:							1px solid #ccc;
+}
+
+/* 
+* FORMULAIRE
+*/
+
+body > div label, body > div div.label {
+	color:									#9fc627;
+	display:								block;
+	padding:								5px;
+	position:								relative;
+	min-height:								30px;
+}
+
+body > div div.label label, body > div div.label div.label {
+	float:									left;
+	display:								block;
+	padding:								0px 5px;
+	font-size:								14px;
+
+}
+
+body > div div.label div.label {
+	color:									#7f7f7f;
+	border-left:							1px solid #ccc;
+}
+
+body > div label > span, body > div div.label > span {
+	display:								block;
+	padding:								0px 5px;
+}
+
+body > div div.label > div.label > span {
+	display:								inline-block;
+	float:									left;
+	font-size:								12px;
+	font-weight:							bold;
+	padding-top:							7px;
+}
+
+body > div div.label > span.mb10 {
+	margin-bottom:							10px;
+}
+
+body > div .cb {
+	clear:									both;
+}
+
+body > div label > span.fl {
+    display:								inline-block;
+    margin-bottom: 							10px;
+    padding-top: 							5px;
+    vertical-align: 						top;
+}
+
+body > div label > span > small, body > div div.label > span > small {
+	font-style:								italic;
+}
+
+body > div input[type=text] {
+	border:									1px solid #e1edbc;
+	border-radius:							5px;
+	padding:								5px;
+	color:									#9fc627;
+	box-shadow: 							0px 0px 5px #e9f2cd;
+	margin:									5px 5px 15px 5px;
+}
+
+body > div input[type=text].big {
+	font-size:								14px;
+}
+
+body > div input[type=radio] {
+	width:									30px;
+	height:									30px;
+	opacity:								0;
+	cursor:									pointer;
+}
+
+body > div span.checkb {
+	display:								block;
+	width:									30px;
+	height:									28px;
+	position:								absolute;
+	background:								transparent url('../img/checkbox.png') no-repeat top left;
+	cursor:									pointer;
+}
+
+body > div select, body > div select option {
+	border-radius:							5px;
+	padding:								5px;
+	color:									#9fc627;
+	margin:									3px;
+	cursor:									pointer;
+}
+
+body > div select {
+	height:									23px;
+	opacity:								0;
+	margin:									5px 5px 10px 5px;
+}
+
+body > div span.selb {
+	display:								block;
+	position:								absolute;
+	background:								transparent url('../img/select.png') no-repeat top right;
+	cursor:									pointer;
+	border:									1px solid #e1edbc;
+	border-radius:							5px;
+	padding:								5px;
+	height:									11px;
+	color:									#9fc627;
+	box-shadow: 							0px 0px 5px #e9f2cd;
+	margin:									5px 5px 15px 5px;
+	font-size:								12px;
+}
+
+body > div button {
+    cursor:                                 pointer;
+	border:									none;
+	clear:									both;
+	float:									left;
+	border-radius:							5px;
+	padding:								5px 25px;
+	color:									#ffffff;
+	background-color:						#5e8519;
+	font-size:								14px;
+	background: 							-webkit-gradient(linear, 0% 0%, 0% 100%, from(#aad027), to(#5e8519));
+	background: 							-webkit-linear-gradient(top, #aad027, #5e8519);
+	background: 							-moz-linear-gradient(top, #aad027, #5e8519);
+	background: 							-ms-linear-gradient(top, #aad027, #5e8519);
+	background: 							-o-linear-gradient(top, #aad027, #5e8519);
+	text-transform:							uppercase;
+	margin:									5px 5px 10px 0px;
+}
+
+body > div button[type=reset] {
+	background-color:						#b9140c;
+	clear:									none;
+	float:									left;
+	background: 							-webkit-gradient(linear, 0% 0%, 0% 100%, from(#cb554f), to(#b9140c));
+	background: 							-webkit-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-moz-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-ms-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-o-linear-gradient(top, #cb554f, #b9140c);
+}
+
+body > div button[disabled] {
+	background-color:						#bbbbbb;
+	background: 							-webkit-gradient(linear, 0% 0%, 0% 100%, from(#cccccc), to(#bbbbbb));
+	background: 							-webkit-linear-gradient(top, #cccccc, #bbbbbb);
+	background: 							-moz-linear-gradient(top, #cccccc, #bbbbbb);
+	background: 							-ms-linear-gradient(top, #cccccc, #bbbbbb);
+	background: 							-o-linear-gradient(top, #cccccc, #bbbbbb);
+}
+
+/* placement configuration */
+
+body > div label > span.base, body > div div.label > span.base {
+	display:								inline-block;
+	width:									50px;
+	float:									left;
+	padding-top:							7px;
+}
+
+body > div label > span.inline, body > div div.label > span.inline {
+	display:								inline-block;
+	width:									auto;
+	float:									left;
+	padding-top:							7px;
+}
+
+body > div div.gauche, body > div div.droite {
+	float:									left;
+}
+body > div div.droite {
+	border-left:							1px solid #ccc;
+}
+
+body > div table {
+	width:									100%;
+	font-size:								12px;
+}
+
+body > div table thead th {
+	border-top:								1px solid #ccc;
+	border-bottom:							1px solid #ccc;
+	color:									#7f7f7f;
+	padding:								3px 10px;
+}
+
+body > div table thead th:first-of-type {
+	text-align:								left;
+	font-size:								14px;
+}
+
+body > div table tbody tr td {
+	padding:								5px;
+	color:									#a3b075;
+	text-align:								center;
+}
+
+body > div table tbody tr td a {
+	display:								inline-block;
+	width:									15px;
+	height:									15px;
+	text-align:								center;
+	vertical-align:							middle;
+	font-weight:							bold;
+	background-color:						#b9140c;
+	text-decoration:						none;
+	color:									#fff;
+	border-radius:							5px;
+	background: 							-webkit-gradient(linear, 0% 0%, 0% 100%, from(#cb554f), to(#b9140c));
+	background: 							-webkit-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-moz-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-ms-linear-gradient(top, #cb554f, #b9140c);
+	background: 							-o-linear-gradient(top, #cb554f, #b9140c);
+	
+}
+
+body > div table tbody tr td:first-of-type {
+	text-align:								left;
+}
+
+body > div table tbody tr:nth-child(odd) {
+	background-color:						#f7fbe9;
+}
+
+body > div table tbody tr:nth-child(even) {
+	background-color:						#e6f2be;
+}
+
+body > div table tbody tr.selected {
+	background-color:						#5e8519;
+}
+
+body > div table tbody tr.selected td {
+	color:									#ffffff;
+}
+
+body > div table tbody tr.vide {
+	background:								none;
+}
+
+body > div table tbody tr.vide td {
+	text-align:								center;
+	color:									#ccc;
+}
+
+
+/* gestion des apps */
+
+body > div form#f_addApps, body > div div.bloc_module, body > div form#f_addModule {
+	display:								none;
+}
+
+body > div table tbody tr.app {
+	cursor:									pointer;
+}
+
+body > div table.t_modules {
+	clear:									both;
+}
+
+/* 
+* FOOTER
+*/
+
+body > footer {
+	width:									889px;
+	height:									10px;
+	border-bottom-left-radius: 				5px 5px;
+	border-bottom-right-radius: 			5px 5px;
+}
+
+/*
+ * Gestion des boxs d'erreur 
+ */
+
+body > header > div.msgbox {
+	position:absolute;
+	top:									5px;
+	right:									5px;
+	background:								rgba(0,0,0,.7);
+	padding:								5px;
+	border-radius:							5px;
+	width:									530px;
+	margin-left:							350px;
+	display:								none;
+	color:									#fff;
+}
+
+body > header > div.msgbox h2 {
+	color:									#bedc60;
+}
+
+body > header > div.msgbox p {
+	font-size:								12px;
+}
+
+body > div.msgboxLight > div p {
+	margin:									0px;
+}
+
+
+body > div.msgboxLight {
+	position:								fixed;
+	top:									150px;
+	width:									100%;
+	background:								transparent;
+	padding:								0px;
+	top:									-150px;
+}
+
+body > div.msgboxLight > div {
+	margin:									auto;
+	text-align:								center;
+	background-color:						#000;
+	background: 							-webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#222));
+	background: 							-webkit-linear-gradient(top, #555, #222);
+	background: 							-moz-linear-gradient(top, #555, #222);
+	background: 							-ms-linear-gradient(top, #555, #222);
+	background: 							-o-linear-gradient(top, #555, #222);
+	color:									#fff;
+	font-size:								12px;
+	border-radius:							5px;
+	padding:								3px 5px;
+	box-shadow: 							0px 0px 5px #555;
+	width:									769px;
+	min-height:								35px;
+}
+
+body > div.msgboxLight button {
+	float:									right;
+	margin:									3px;
+	margin-left:							15px;
+}

@@ -21,21 +21,21 @@ $head->addChild( 'meta', array(
         'inline' => true,
     ) );
 
-if ( $cos->app->controller->metadesc ) { 
+if ( isset( $metadesc ) && $metadesc ) { 
     $head->addChild( 'meta', '', array(
         'attributes' => array(
             'name' => 'description',
-            'content' => $cos->app->controller->metadesc,
+            'content' => $metadesc,
         ),
         'inline' => true,
     ) );
 } 
-if ( $cos->app->controller->metakey ) {    
+if ( isset( $metakey ) && $metakey ) {    
     $head->addChild( 'meta', array(
         'classes' => array(),
         'attributes' => array(
             'name' => 'keywords',
-            'content' => $cos->app->controller->metakey,
+            'content' => $metakey,
         ),
         'inline' => true,
         'closeTag' => false,
@@ -51,8 +51,8 @@ $title->addHtml( $siteName );
 
 
 // CSS & JS
-$head->addChildren( $this->getStylesheetsAsElements() );
-$head->addChildren( $this->getJavascriptAsElements() );
+$head->addChildren( $this->getCSSAsElements() );
+$head->addChildren( $this->getJSAsElements() );
 
 $scpt1 = $head->addChild( 'script', array(
     'attributes' => array(
@@ -60,13 +60,13 @@ $scpt1 = $head->addChild( 'script', array(
     ),
     'inline' => false,
 ) );
-$scpt1->addHtml( "var rootUrl = '" . $cos->host->baseUrl . "';" );
+$scpt1->addHtml( "var rootUrl = '" . $cos->host->root_path . "';" );
 
 // body
 $body = $html->addChild( 'body' );
 
 // main content
-$body->addHtml( $this->displayTemplate() );
+$body->addHtml( $this->getContent() );
 
 // debug
 if ( $cos->debug ) {

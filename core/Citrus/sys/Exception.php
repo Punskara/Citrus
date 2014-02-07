@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -34,31 +34,16 @@ class Exception extends \Exception {
     }
     
     public function __toString() {
-        /*$s = '<p class="message">' . $this->getMessage() . '</p>'
-           . '<p>'
-           . '<code>' . $this->getFile() . '</code>, line ' . $this->getLine() . '.'
-           . '</p>'
-           . '<p>Trace :</p>'
-           . '<ol>';
-        foreach ( $this->getTrace() as $tr ) {
-            $s .= '<li><code>';
-            if ( isset( $tr['class'] ) ) $s .= $tr['class'];
-            if ( isset( $tr['type'] ) ) $s .= $tr['type'];
-            $s .= $tr['function'] . '</code> '
-                . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
-                . '</li>';
-        }
-        $s .= '</ol>';*/
         $s = 'Exception';
         return $s;
     }
     
-    public static function renderHtml( $exception, $message = null ) {
+    static public function renderHtml( $exception, $message = null ) {
         $s = '';
         if ( $message ) {
             $s .= '<pre class="message">' . $message . '</pre>';
         }
-        $s .= '<pre class="message">' . $exception->getMessage() . '</pre>'
+        $s .= '<pre class="message">' . get_class( $exception ) . ': ' . $exception->getMessage() . '</pre>'
            . '<p>'
            . '<code>' . $exception->getFile() . '</code>, line ' . $exception->getLine() . '.'
            . '</p>'
@@ -67,10 +52,13 @@ class Exception extends \Exception {
         foreach ( $exception->getTrace() as $tr ) {
             $s .= '<li><code>';
             if ( isset( $tr['class'] ) ) $s .= $tr['class'];
-            if ( isset( $tr['type'] ) ) $s .= $tr['type'];
-            $s .= $tr['function'] . '</code> '
-                . '<i>' . $tr['file'] . '</i> line ' . $tr['line']
-                . '</li>';
+            if ( isset( $tr['type'] ) )  $s .= $tr['type'];
+            $s .= $tr['function'] . '</code> ';
+
+            if ( isset( $tr['file'] ) ) $s .= '<i>' . $tr['file'] . '</i> ';
+            if ( isset( $tr['line'] ) ) $s .= 'line ' . $tr['line'];
+
+            $s .= '</li>';
         }
         $s .= '</ol>';
  

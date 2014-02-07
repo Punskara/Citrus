@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -27,6 +27,8 @@
 
 
 namespace core\Citrus\http;
+use \core\Citrus\Date;
+
 
 /**
  * Handles the http header response.
@@ -40,102 +42,73 @@ class Response {
     /**
      * @var string
      */
-	public $message = '';
-	
-	/**
-     * @var string
-     */
-	public $location = null;
-	
-	/**
-     * @var boolean
-     */
-	public $enableRedirections = true;
+    public $message = '';
 
     /**
      * @var string
      */
-	public $contentType = 'text/html';
-	
-	/**
+    public $contentType = 'text/html';
+    
+    /**
      * @var string
      */
-	public $contentCharset = 'utf-8';
+    public $contentCharset = 'utf-8';
 
-
-    /**
-     * Sends an HTTP request
-     * 
-     * @param integer  $code  HTTP response code
-     * @param string  $message  Response message
-     * @param string  $location  Response location
-     * 
-     * @static
-     */
-	static function sent( $code = 200, $message = '', $location = null ) {
-		$inst = new self( $code, $message, $location );
-		$inst->sendHeaders();
-		return $inst;
-	}
-
-    /**
-     * Constructor
-     * 
-     * @param integer  $code  HTTP response code
-     * @param string  $message  Response message
-     * @param string  $location  Response location
-     */
-	function __construct( $code = 200, $message = '', $location = null ) {
-		$this->code = $code;
-		$this->message = $message;
-		$this->location = $location;
-		$this->contentType = 'text/html';
-
-		#$this->enableRedirections = $xos->useRedirections;
-		header( 'Content-type: ' . $this->contentType . ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ), true );
-
-		if ( isset( $_REQUEST['cos_redirect'] ) && empty( $_REQUEST['cos_redirect'] ) ) {
-			$this->enableRedirections = false;
-		}
-	}
-
+    public $headers = Array();
 
     /**
      * Sends http headers
      * 
      * @return boolean|integer whether the headers are already sent or not.
      */
-	public function sendHeaders() {
-		if ( headers_sent() ) {
-			return false;
-		}
-		header( 'Content-type: ' . $this->contentType . ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ), true );
+    public function sendHeaders() {
+        if ( headers_sent() ) {
+            return false;
+        }
 
-		$this->message = str_replace( array( "\r", "\n" ), '', $this->message );
-		if ( empty( $this->location ) ) {
-			header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message, true, $this->code );
-		    return $this->code;
-		}
-	    if ( preg_match( "/[\\0-\\31]|about:|script:/i", $this->location ) ) {
-			$this->location = '/';
-		} elseif ( !strpos( $this->location, '://' ) ) {
-		    $this->location = $xos->url( 'www' . $this->location );
-		}
-		if ( $this->enableRedirections ) {
-		    if ( isset( $_SESSION ) ) {
-				$_SESSION['response']['redirect_info'] = array(
-					'STATUS' => $this->code,
-					'ERROR_NOTES' => $this->message,
-					'URL' => $_SERVER['REQUEST_URI'],
-					'REQUEST_METHOD' => $_SERVER['REQUEST_METHOD'],
-				);
-		    }
-			header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message );
-			header( 'Location: ' . $this->location, true, $this->code );
-			echo "<body><a href='$this->location'>Page redirected. Status: $this->code, $this->message.</a></body>";
-			exit();
-		}
-		return $this->code;
-	}
+        $this->addHeader( 
+            'Content-Type', 
+            $this->contentType . 
+                ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ) 
+        );
+        if ( count( $this->headers ) ) 
+            foreach ( $this->headers as $k => $v )
+                header( $k . ': ' . $v, true );
+        
+        $this->message = str_replace( array( "\r", "\n" ), '', $this->message );
+        header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message, true, $this->code );
+        return $this->code;
+    } 
 
+    public function addHeader( $name, $value ) {
+        $this->headers[$name] = $value;
+    }
+
+    public function removeHeader( $name ) {
+        if ( isset( $this->headers[$name] ) ) unset( $this->headers[$name] );
+    }
+
+    public function setCacheHeaders( $file_path ) {
+        $last_modified = filemtime( $file_path );
+        $etag_file = md5_file( $file_path );
+        $modified_since = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false );
+        $etag_header = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) : false );
+        $file_size = filesize( $file_path );
+
+        $this->addHeader( "Last-Modified", gmdate( "D, d M Y H:i:s", $last_modified ) . " GMT" );
+        $this->addHeader( "Etag", $etag_header );
+        $this->addHeader( "Cache-Control", "public" );
+
+        $now = new Date();
+        $exp = $now->add( \DateInterval::createFromDateString( '1 week' ) );
+        $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) );
+        $this->addHeader( 'Content-Length', $file_size );
+
+        if ( $modified_since && @strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) == $last_modified || $etag_header == $etag_file ) {
+            $this->code = 304;
+            $this->message = "Not Modified";
+        }
+
+        $this->sendHeaders();
+    }
 }

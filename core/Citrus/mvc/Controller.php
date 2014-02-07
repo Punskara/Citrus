@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -28,8 +28,10 @@
 
 namespace core\Citrus\mvc;
 use \core\Citrus\Citrus;
-use core\Citrus\http;
-use core\Citrus\sys;
+use \core\Citrus\sys\Debug;
+use \core\Citrus\sys\Exception;
+use \core\Citrus\utils\File;
+use \core\Citrus\String;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -48,49 +50,14 @@ class Controller {
     public $name;
     
     /**
-     * @var \core\Citrus\http\Request
+     * @var \core\Citrus\mvc\View
      */
-    public $request;
-    
-    /**
-     * @var \core\Citrus\mvc\Template
-     */
-    public $template;
-    
-    /**
-     * @var string
-     */
-    public $pageTitle;
-    
-    /**
-     * @var boolean
-     */
-    public $layout = true;
-    
-    /**
-     * @var string
-     */
-    public $metadesc;
-    
-    /**
-     * @var string
-     */
-    public $metakey;
-    
-    /**
-     * @var string
-     */
-    public $path;
-    
-    /**
-     * @var string
-     */
-    public $moduleName;
+    public $view;
     
     /**
      * @var Boolean
      */
-    public $is_protected = false;
+    public $is_protected;
 
 
     /**
@@ -103,57 +70,31 @@ class Controller {
      * 
      * @param string  $action  Name of the action we want to execute.
      */ 
-    public function __construct( $action, $path = '' ) {    
+    public function __construct( $action ) {
         $this->action = $action;
-        $this->request = new http\Request();
-        $this->template = new Template( $action );
-        $this->path = $path;
     }
-    
     
     /**
      * Executes the action given by request. 
-     * Stops if the request method is POST and referer is external.
-     * Creates the http response and executes do_PageNotFound if action
-     * doesn't exist.
      * 
-     * @see do_PageNotFound
      */
-    public function executeAction( $force_external_post = false ) {
-        if ( $this->request->method == 'POST' && !$this->request->refererIsInternal() && !$force_external_post ) {
-            $this->do_PageNotFound();
-            return true;
-        }
+    public function executeAction( $request ) {
         $cos = Citrus::getInstance();
-        $response = new http\Response();
-
         $action = "do_$this->action";
-        $response = new http\Response();
-        try {
-            if ( $cos->logger ) {
+            if ( $cos->logger )
                 $cos->logger->logEvent( 'Launching action ' . $action . ' on module ' . $this->name );
-            }
-            if ( $cos->debug ) {
+            if ( $cos->debug )
                 $cos->debug->startNewTimer( "action " . $action );
-            }
-            
-            $this->$action();
-            
-            $response = new http\Response();
-            $response->code = '200';
-            $response->sendHeaders();
-            
-            if ( $cos->debug ) {
-                $cos->debug->stopLastTimer();
-            }
+
+            $tpl_name = $this->action;
+            $this->view = new View( $tpl_name );
+
+            $this->view->layout = !$request->isXHR;
+            $this->$action( $request );
+
+            if ( $cos->debug ) $cos->debug->stopLastTimer();
+
             return true;
-        } catch ( Exception $e ) {
-            $this->do_Exception( $e );
-            return false;
-        } catch ( \PDOException $e ) {
-            $this->do_Exception( $e );
-            return false;
-        }
     }
 
     /** 
@@ -165,21 +106,6 @@ class Controller {
         return $this->is_protected ? $inException ? false : true : $inException ? true : false;
     }
 
-
-    /**
-     * Triggered when action is protected
-     */
-    public function onActionProtected() {
-        $this->do_PageForbidden();
-    }
-
-    /**
-     * Triggered when action is not found
-     */
-    public function onActionNotFound() {
-        $this->do_PageNotFound();
-    }
-    
     /**
      * Exception action : action that is executed if the system catches an exception.
      *
@@ -187,29 +113,46 @@ class Controller {
      */
     public function do_Exception( $e ) {
         $cos = Citrus::getInstance();
-        sys\Debug::handleException( $e, $cos->debug );
+        Debug::handleException( $e, $cos->debug );
     }
     
+
     /**
      * Shows up the default "Page not found" template
      * Is executed if the action doesn't exist.
      *
      * @param string  $message  A message to display in the 404 page.
-     * @see \core\Citrus\Citrus::pageNotFound()
      */
-    public function do_PageNotFound( $message = null ) {
-        Citrus::pageNotFound( $message );
+    static public function pageNotFound( $message = null ) {
+        $cos = Citrus::getInstance();
+        $cos->response->code = '404';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
-
+    
     /**
      * Shows up the default "Page forbidden" template
      * Can be executed when the action is not allowed.
      *
      * @param string  $message  A message to display in the 404 page.
-     * @see \core\Citrus\Citrus::pageNotFound()
      */
-    public function do_PageForbidden( $message = null ) {
-        Citrus::pageForbidden( $message );
+    static public function pageForbidden( $message = null ) {
+        $cos = Citrus::getInstance();
+        $cos->response->code = '403';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
     
     /**
@@ -228,23 +171,38 @@ class Controller {
      * @return  string  The content of the template.
      */
     public function displayTemplate() {
-        return $this->template->display( $this->path );
+        return $this->view->display();
     }
     
-    /**
-     * Loads the template of another action than the action given.
-     * 
-     * @param  string  $action  the action which we want to load the template
-     */
-    public function loadActionTemplate( $action ) {
-        $tplFile = $this->path . '/templates/' . $action . '.tpl.php';
-        if ( file_exists( $tplFile ) ) {
-            $this->app->view->template = $tplFile;
-            $this->template->name = $action;
-        }
-    }
 
-    public function getPath() {
-        return dirname( __FILE__ );
+    public function do_static( $request ) {
+        $cos = Citrus::getInstance();
+        $this->view = false;
+        $uri = $_SERVER['REQUEST_URI']; 
+        $file_ext = $request->param( 'ext' ); 
+        $file_type = $request->param( 'type' ); 
+        $file_name = $request->param( 'file' ); 
+        $file_path = $cos->app->path . "/static/$file_type/$file_name$file_ext";
+        $content = "";
+        $file_ext = substr( $file_ext, 1 );
+        if ( !file_exists( $file_path ) ) 
+            $file_path = CITRUS_WWW_PATH . substr( $uri, 1 );
+
+        if ( file_exists( $file_path ) ) {
+            $content = file_get_contents( $file_path );
+            switch ( $file_ext ) {
+                case 'js':
+                    $cos->response->contentType = 'application/javascript';
+                    break;
+                case 'css':
+                    $cos->response->contentType = 'text/css';
+                    break;
+                default:
+                    $cos->response->contentType = File::getType( $file_path );
+                    break;
+            }            
+        } else self::pageNotFound();
+        $cos->response->setCacheHeaders( $file_path );
+        if ( $cos->response->code == '200' ) echo $content;
     }
 }

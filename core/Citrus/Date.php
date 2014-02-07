@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -81,10 +81,11 @@ class Date extends \DateTime {
                 $c++;
             }
             if ( $indigit )        $parts[] = $digit;
-            $old = error_reporting(0);
+            
             $obj->setDate( (int)$parts[0], (int)$parts[1], (int)$parts[2] );
-            $obj->setTime( (int)$parts[3], (int)$parts[4], (int)$parts[5] );
-            error_reporting($old);
+
+            if ( isset( $parts[3], $parts[4], $parts[5] ) ) 
+                $obj->setTime( (int)$parts[3], (int)$parts[4], (int)$parts[5] );
         }
         return $obj;
     }
@@ -123,7 +124,7 @@ class Date extends \DateTime {
         return $this->format( 'd/m/Y' );
     }
     
-    public static function getMonth( $month, $lang ) {
+    static public function getMonth( $month, $lang ) {
         $months = array(
             'fr'    => array(
                 '01' => 'Janvier',

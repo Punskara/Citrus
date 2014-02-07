@@ -11,13 +11,6 @@
 	<input type="hidden" name="inst" value="new" />
 	<div class="gauche">
 		<label>
-			<span class="label base">type</span>
-			<select name="type">
-				<option>Développement</option>
-				<option>Production</option>
-			</select>
-		</label>
-		<label>
 			<span class="label base">Hôte</span>
 			<input type="text" name="hostname" class="big" />
 		</label>

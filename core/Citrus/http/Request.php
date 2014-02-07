@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -27,7 +27,8 @@
 
 
 namespace core\Citrus\http;
-use \core\Citrus;
+use \core\Citrus\Citrus;
+use \core\Citrus\Filter;
 
 /**
  * This class handles the HTTP request and its parameters.
@@ -58,24 +59,30 @@ class Request {
      * @var string
      */
     public $referer;
+
+    /**
+     * @var string
+     */
+    public $uri;
     
     /**
      * @var boolean  Determines whether the request is passed by AJAX or not.
      */
     public $isXHR;
-    
-    
+
     /**
      * Constructor
      */
     public function __construct() {
         $this->method = $_SERVER['REQUEST_METHOD'];
         $this->queryString = $_SERVER['QUERY_STRING'];
+        $this->uri = $_SERVER['REQUEST_URI'];
         $this->referer = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null ;
         $this->isXHR = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
         if ( $this->method == 'POST' ) {
             $this->inputMethod = INPUT_POST;
             $this->params = $_POST;
+            $this->files = $_FILES;
         } else {
             $this->inputMethod = INPUT_GET;
             $this->params = $_GET;
@@ -91,9 +98,9 @@ class Request {
      * 
      * @return mixed|boolean  Whether the parameter is found or not.
      */
-    public function param( $name, $filter ) {
+    public function param( $name, $filter = "string" ) {
         if ( isset( $this->params[$name] ) ) {
-            return \core\Citrus\Filter::filterVar( $name, $filter, $this->method, $this->params );
+            return Filter::filterVar( $name, $filter, $this->method, $this->params );
         }
         return false;
     }
@@ -146,19 +153,14 @@ class Request {
     public function addParams( $params = array() ) {
         $this->params = array_merge( $this->params, $params );
     }
-    
-    
-    /**
-     * Determines if the referer is internal or not by comparing it to the host.
-     * 
-     * @return boolean
-     */
-    public function refererIsInternal() {
-        $cos = Citrus\Citrus::getInstance();
-        $referer = parse_url( $this->referer );
-        if ( isset( $referer['host'] ) ) {
-            return $cos->host->httpHost == $referer['host'];
-        }
+
+    public function getFiles() {
+        if ( isset( $_FILES ) ) return $_FILES;
+        return Array();
+    }
+
+    public function getFile( $name ) {
+        if ( isset( $_FILES[$name] ) ) return $_FILES[$name];
         return false;
     }
 }

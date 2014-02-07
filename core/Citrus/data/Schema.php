@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -68,6 +68,11 @@ class Schema {
     /**
      * @var array
      */
+    public $manyProperties = array();
+    
+    /**
+     * @var array
+     */
     public $adminColumns;
     
     /**
@@ -79,6 +84,9 @@ class Schema {
      * @var string
      */
     public $orderSort;
+
+    public $orderColumnDefined;
+    public $linkColumns = Array();
     
     
     /**
@@ -121,6 +129,15 @@ class Schema {
         	if ( isset( $schema['adminColumns'] ) ) {
         	    $this->adminColumns = $schema['adminColumns'];
         	}
+            if ( isset( $schema['orderColumnDefined'] ) ) {
+                $this->orderColumnDefined = $schema['orderColumnDefined'];
+            }
+            if ( isset( $schema['linkColumns'] ) ) {
+                $this->linkColumns = $schema['linkColumns'];
+            }
+            if ( isset( $schema['manyProperties'] ) ) {
+                $this->manyProperties = $schema['manyProperties'];
+            }
         }
     }
     
@@ -167,7 +184,7 @@ class Schema {
      * 
      * @return array  $assoc  array of associations
      */
-    public static function getModelAssociations( $modelType ) {
+    static public function getModelAssociations( $modelType ) {
         $modelType = str_replace( '\\', '/', $modelType );
         $schemaFile = CITRUS_PATH . str_replace( 
             '_', 
@@ -222,7 +239,7 @@ class Schema {
      * 
      * @return array  $props  array of schema properties
      */
-    public static function getProperties( $modelType ) {
+    static public function getProperties( $modelType ) {
         $schemaFile = CITRUS_CLASS_PATH . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 
@@ -236,111 +253,13 @@ class Schema {
         }
         return $props;
     }
-    
-    /**
-	 * Builds SQL schema and writes it in a .sql file.
-	 *
-	 * @return boolean
-	 */
-    static public function buildSQLSchema() {
-        $cos = Citrus::getInstance();
-	    $dir = CITRUS_CLASS_PATH . $cos->projectName . '/schemas/';
-	    $mainSchema = array();
-	    if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( preg_match( '/\.schema.php/', $file ) ) {
-                            $schem = include $dir . $file;
-                            if ( is_array( $schem ) && count( $schem ) ) {
-                                $mainSchema[] = $schem;
-                            }
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        if ( count( $mainSchema ) ) {
-            $query = "SET FOREIGN_KEY_CHECKS = 0;\n\n";
-            foreach ( $mainSchema as $item ) {
-                $query .= "#------------ " . $item['tableName'] . " ------------\n";
-                $query .= 'DROP TABLE IF EXISTS `' . $item['tableName'] . "`;\n";
-                $query .= 'CREATE TABLE `' . $item['tableName'] . "` (\n";
-                if ( isset( $item['properties'] ) ) {
-                    $i = 0;
-                    $queryProps = array();
-                    $indexes = '';
-                    $engine = '';
-                    foreach ( $item['properties'] as $propName => $keys ) {
-                        $queryProps[$i] = "  `$propName` ";
-                        if ( isset( $keys['primaryKey'] ) && $keys['type'] == 'int' ) {
-                            $queryProps[$i] .= 'BIGINT NOT NULL AUTO_INCREMENT';
-                        } else {
-                            if ( $keys['type'] == 'string' ) {
-                                $queryProps[$i] .= 'VARCHAR(';
-                                $queryProps[$i] .= isset( $keys['length'] ) ? $keys['length'] : '255';
-                                $queryProps[$i] .= ')';
-                            } elseif ( $keys['type'] == 'text' ) {
-                                $queryProps[$i] .= 'LONGTEXT';
-                            } elseif ( $keys['type'] == 'boolean' ) {
-                                $queryProps[$i] .= 'BOOLEAN';
-                            } elseif ( $keys['type'] == 'datetime' ) {
-                                $queryProps[$i] .= 'DATETIME';
-                            } elseif ( $keys['type'] == 'int' && isset( $keys['foreignTable'] ) ) {
-                                $queryProps[$i] .= 'BIGINT';
-                            } elseif ( $keys['type'] == 'int' ) {
-                                $queryProps[$i] .= 'INT';
-                            } elseif ( $keys['type'] == 'float' ) {
-                                $queryProps[$i] .= 'FLOAT';
-                            }
-                            if ( isset( $keys['null'] ) && $keys['null'] === false ) {
-                                $queryProps[$i] .= ' NOT';
-                            }
-                            $queryProps[$i] .= ' NULL';
-                        }
-                        if ( isset( $keys['primaryKey'] ) && $keys['type'] == 'int' ) {
-                            $indexes[] .= "  PRIMARY KEY(`$propName`)";
-                        }
-                        $i++;
 
-                        if ( array_key_exists( 'foreignTable', $keys ) && array_key_exists( 'foreignReference', $keys ) ) {
-                            $fk = "  FOREIGN KEY (`" . $propName . "`) REFERENCES "
-                                       . "`" . $keys['foreignTable'] . "` (`" . $keys['foreignReference'] . "`) ";
-                            if ( isset( $keys['onDelete'] ) ) {
-                                $fk .= " ON DELETE " . $keys['onDelete'];
-                            } elseif ( $keys['null'] === true ) {
-                                $fk .= " ON DELETE SET NULL";
-                            }
-                            if ( isset( $keys['onUpdate'] ) ) {
-                                $fk .= " ON UPDATE " . $keys['onUpdate'];
-                            } else {
-                                $fk .= " ON UPDATE CASCADE";
-                            }
-                            $indexes[] = $fk;
-                        }
-                    }
-                    if ( $indexes != '' ) {
-                        $queryProps[] .= implode( ",\n", $indexes );
-                    }
-                    $query .= implode( ",\n", $queryProps );
-                    $query .= "\n)";
-                    $query .= " ENGINE = InnoDB";
-                    $query .= ";\n\n";
-                }
-            }
-            $query .= "# Restores the foreign key checks, as we unset them at the begining\n";
-            $query .= "SET FOREIGN_KEY_CHECKS = 1;\n\n";
-            $query .= User::createTable();
-            $query .= User::insertFirstUser();
-            $file = fopen( CITRUS_PATH . '/include/schema.sql', 'w' );
-            $write = fwrite( $file, $query );
-            fclose( $file );
-            return $write;
-        }
+    public function getProperty( $name ) {
+        if ( isset( $this->properties[$name] ) )
+            return $this->properties[$name];
         return false;
-	}
-	
+    }
+    
 	/**
 	 * Creates class files from php schemas
 	 * @return void

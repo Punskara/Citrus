@@ -33,6 +33,7 @@
 <body class="error">
     <div class="page">
         <p>Ouch ! Something went wrong…</p>
+        {citrus_exception}
     </div>
 </body>
 </html>

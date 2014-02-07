@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -26,25 +26,28 @@
 
 namespace core\Citrus;
 
+use \core\Citrus\mvc\App;
+use \core\Citrus\sys\Cache;
+use \core\Citrus\sys\Debug;
+use \core\Citrus\sys\Exception;
+use \core\Citrus\sys\Timer;
+use \core\Citrus\sys\Logger;
+use \core\Citrus\routing\Router;
+use \core\Citrus\routing\NoRouteFoundException;
+
 class Citrus {
 
     /**
      * @access public
      * @var \core\Citrus\db\Connection
      */
-    public $db;
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public $baseUrl;
+    private $db;
     
     /**
      * @access public
      * @var boolean
      */
-    public $debug = true;
+    public $debug;
 
     /**
      * @access public
@@ -54,60 +57,10 @@ class Citrus {
     
     /**
      * @access public
-     * @var string
-     */
-    public $webDir = '';
-    
-    /**
-     * @access public
-     * @var \core\Citrus\User
-     */
-    public $user;
-    
-    /**
-     * @access public
-     * @var \core\crr\User
-     */
-    public $extranetUser;
-    
-    /**
-     * @access public
      * @var \core\Citrus\Host
      */
     public $host;
-    
-    /**
-     * @access public
-     * @var boolean
-     */
-    public $hasRewriteEngine;
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public $lang;
 
-    /**
-     * @access public
-     * @var string
-     */
-    public $siteName;
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public $projectName;
-    
-    
-    /**
-     * @access public
-     * @var \core\Citrus\mvc\Template
-     */
-    public $template;
-    
-    
     /**
      * @access public
      * @var array
@@ -126,27 +79,23 @@ class Citrus {
      */
     public $router;
     
-    
     /**
      * @access public
      * @var array
      */
     public $services = array();
     
-    #public $defaults = array( 'app' => 'frontend' );
+    /**
+     * @access public
+     * @var string
+     */
+    static public $config_file = '/config/config.inc.php';
     
     /**
      * @access public
      * @var string
      */
-    public static $configFile = '/config/config.inc.php';
-    
-    /**
-     * @access public
-     * @var string
-     */
-    public static $configFileInstall = '/config/config.inc.default.php';
-    
+    static public $default_config_file = '/config/config.inc.default.php';
     
     /**
      * @access public
@@ -159,35 +108,36 @@ class Citrus {
      * @var \core\Citrus\sys\Cache
      */
     public $cache;
-
-    /**
-     * @access public
-     * @var \core\led\client\Client
-     */
-    public $client;
-
-
-    /**
-     * @access public
-     * @var lib/caddie
-     */
-    public $cart;
     
+    /**
+     * @access public
+     * @var boolean
+     */
     public $done = false;
+
+    /**
+     * @access public
+     * @var \core\Citrus\http\Response
+     */
+    public $response;
+
+    /**
+     * @access public
+     * @var \core\Citrus\http\Request
+     */
+    public $request;
+
+    private $globals = Array();
     
     /**
      * Accessor
      *
      * @return \core\Citrus\Citrus
      */
-    public static function getInstance( $cli = false ) {
-        if ( is_null( self::$instance ) ) {
-            try {
-                self::$instance = new Citrus( $cli );
-            } catch ( Exception $e ) {
-                sys\Debug::handleException( $e, true );
-            }
-        }
+    static public function getInstance( $cli = false ) {
+        if ( is_null( self::$instance ) )
+            self::$instance = new Citrus( $cli );
+
         return self::$instance;
     }
 
@@ -196,27 +146,7 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no valid host is found.
      */
-    private function __construct( $cli = false ) {
-        if ( $cli ) {
-            $this->BootCli();
-            return;
-        }
-        $this->Boot();
-        #if ( $this->host instanceof core\Citrus\Host ) {
-        if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
-            $this->hasRewriteEngine = $this->host->services['hasRewriteEngine'];
-            if ( $this->debug ) {
-                ini_set( 'display_errors', 0 );
-                error_reporting( E_ALL );
-            }
-            
-            define( 'CITRUS_PROJECT_URL', $this->host->baseUrl );
-            define( 'CITRUS_WEB_DIR', CITRUS_PROJECT_URL . 'web/');
-        } else {
-            throw new sys\Exception( "No valid Citrus Host found." );
-            exit;
-        }
-    }
+    private function __construct() {}
     
     private function registerAutoload() {
         spl_autoload_register( array( __CLASS__, 'autoload' ) );
@@ -228,50 +158,49 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no host or no valid host is found
      */
-    private function Boot() {
+    public function boot() {
+
+        session_start();
         $this->registerAutoload();
-        $this->loadConfiguration();
-        $this->cache = new \core\Citrus\sys\Cache();
-        
-        if ( $this->config ) {
-            date_default_timezone_set( $this->config['cos_Timezone'] );
-            
-            $this->siteName = $this->config['siteName'];
-            $this->projectName = $this->config['projectName'];
-            
-            # loading hosts
-            $CitrusHosts = $this->config['hosts'];
-            $CitrusHost = false;
 
-            if ( count( $CitrusHosts ) ) {
-                foreach ( $CitrusHosts as $host => $args ) {
-                    if ( strpos( $_SERVER['HTTP_HOST'], $args['httpHost'] ) !== false ) {
-                        $r = new \ReflectionClass( '\core\Citrus\Host' );
-                        $inst = $r->newInstanceArgs( $args ? $args : array() );
-                        if ( $inst ) {
-                            $this->host = $inst;
-                            $this->startServices();
-                        } else {
-                            throw new sys\Exception( "Provided host is not a valid Citrus host." );
-                        }
-                    }
-                }
-            } else {
-                throw new sys\Exception( "No valid host found" );
+        if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+
+            $this->cache = new Cache();
+            
+            # exception handling
+            set_exception_handler( array( '\core\Citrus\sys\Debug', 'handleException' ) );
+
+            # error handling
+            set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
+
+            # shutdown handling
+            register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
+
+            try {
+                $this->loadConfiguration();
+                $this->loadRouter();
+
+                $app = $this->router->app;
+                $module = $this->router->controller;
+                $action = $this->router->action;
+                $this->app = App::load( $app ); 
+                $this->app->createController( $module, $action );
+                $this->request->addParams( $this->router->params );
+                
+                $this->app->executeCtrlAction();
+            } catch ( NoRouteFoundException $e ) {
+                self::pageNotFound();
+            } catch ( Exception $e ) {
+                Debug::handleException( $e, $this->debug );
+                return;
             }
+
+
+            $this->done = true;
         }
-        
-        # exception handling
-        set_exception_handler( array( '\core\Citrus\sys\Debug', 'handleException' ) );
-
-        # shutdown handling
-        register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
-
-        # error handling
-        set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
     }
 
-    public function BootCli() {
+    public function bootCLI() {
         $this->registerAutoload();
     }
 
@@ -282,12 +211,46 @@ class Citrus {
      */
     public function loadConfiguration() {
         if ( !$this->config ) {
-            if ( file_exists( CITRUS_PATH . self::$configFile ) ) {
-                $this->config = include_once CITRUS_PATH . self::$configFile;
-            } else if ( file_exists( CITRUS_PATH . self::$configFileInstall ) ) {
-                $this->config = include_once CITRUS_PATH . self::$configFileInstall;
+            if ( file_exists( CITRUS_PATH . self::$config_file ) ) {
+                $this->config = include_once CITRUS_PATH . self::$config_file;
+            } elseif ( file_exists( CITRUS_PATH . self::$default_config_file ) ) {
+                $this->config = include_once CITRUS_PATH . self::$default_config_file;
+            }
+            if ( $this->config ) {
+                date_default_timezone_set( $this->config['default_timezone'] );
+                # loading hosts
+                $hosts = $this->config['hosts'];
+
+                if ( count( $hosts ) ) {
+                    foreach ( $hosts as $host => $args ) {
+                        if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
+                            $r = new \ReflectionClass( '\core\Citrus\Host' );
+                            $inst = $r->newInstanceArgs( $args ? $args : array() );
+                            if ( $inst ) {
+                                $this->host = $inst;
+                                $this->request = new http\Request();
+                                $this->startServices();
+                                break;
+                            } else {
+                                throw new Exception( "Provided host is not a valid Citrus host." );
+                            }
+                        }
+                    }
+                    $this->response = new http\Response();
+                } else {
+                    throw new Exception( "No host found in configuration file." );
+                }
             } else {
-                throw new sys\Exception( "Unable to find configuration file." );
+                throw new Exception( "Unable to find configuration file." );
+            }
+            if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
+                if ( $this->debug ) {
+                    ini_set( 'display_errors', 0 );
+                    error_reporting( E_ALL );
+                }
+                define( 'CITRUS_PROJECT_URL', $this->host->root_path );
+            } else {
+                throw new Exception( "No valid host found." );
             }
         }
     }
@@ -299,26 +262,10 @@ class Citrus {
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        if ( !isset( $this->config['defaultApp'] ) ) {
-            throw new sys\Exception( "Unable to find defaults routing settings. Please check config file." );
-        } else {
-            $app = $this->config['defaultApp'];
-            $this->router = new routing\Router( $app, $this->host->baseUrl );
-            try {
-                $this->router->loadRoutes();
-            } catch ( sys\Exception $e ) {
-                sys\Debug::handleException( $e, $this->debug );
-            }
-
-            $this->router->defaultRoutes();
-            $this->router->execute();
-        }
-    }
-    
-    public function checkUser( $login, $password ) {
-        return $this->db->execute( 
-        "SELECT * FROM user WHERE login = '$login' AND password = '$password'"
-        )->fetchObject( '\\core\\Citrus\\User' );
+        $this->router = new Router( $this->host->root_path );
+        $this->router->loadRoutes();
+        $this->router->defaultRoutes();
+        $this->router->execute();
     }
     
     /**
@@ -345,294 +292,54 @@ class Citrus {
         }
     }
     
-    public function generateApp( $name ) {
-        if ( is_dir( CITRUS_APPS_PATH ) ) {
-            if ( !is_dir(  CITRUS_APPS_PATH . '/' . $name ) ) {
-                $mainDir = mkdir( CITRUS_APPS_PATH . '/' . $name, 0755 );
-                if ( $mainDir ) {
-                    $modules = mkdir( CITRUS_APPS_PATH . '/' . $name . '/modules', 0755 );
-                    $config = mkdir( CITRUS_APPS_PATH . '/' . $name . '/config', 0755 );
-                    $templates = mkdir( CITRUS_APPS_PATH . '/' . $name . '/templates', 0755 );
-                    if ( $modules && $config && $templates ) {
-                        $app = new mvc\App( $name );
-                        $app->generateConfigFile();
-                        $app->generateViewFile();
-                        $app->generateRoutingFile();
-                        return true;
-                    }
-                } 
-            } else {
-                throw new sys\Exception( "App already exists" );
-            }
-        }
-        return false;
-    }
-    
-    public function generateModule( $name, $app, $resourceType = null ) {
-        if ( is_dir( CITRUS_APPS_PATH ) ) {
-            $modulePath = CITRUS_APPS_PATH . $app . '/modules/' . ucfirst( $name );
-            if ( !is_dir( $modulePath ) ) {
-                $mainDir = mkdir( $modulePath, 0755 );
-                if ( $mainDir ) {
-                    $config = mkdir( $modulePath . '/config', 0755 );
-                    $templates = mkdir( $modulePath . '/templates', 0755 );
-                    if ( $config && $templates ) {
-                        $module = new mvc\Module( $name, CITRUS_APPS_PATH . $app );
-                        $module->generateConfigFile();
-                        $module->generateControllerFile();
-                        return true;
-                    }
-                } 
-            } else {
-                throw new sys\Exception( "Module already exists" );
-            }
-        }
-        return false;
-    }
-    
-    
-    /**
-     * Gets list of applications existing in filesystem.
-     *
-     * @return array An array of apps names
-     */
-    public function getAppsList() {
-        $dir = CITRUS_APPS_PATH;
-        $apps = array();
-        
-        if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( CITRUS_APPS_PATH . $file ) ) {
-                            $apps[] = $file;
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        return $apps;
-    }
-    
-    
-    /**
-     * Gets list of modules existing in the directory of given $app.
-     *
-     * @param $app  string  App we want to scan.
-     *
-     * @return array An array of apps names
-     */
-    public function getModulesList( $app ) {
-        $dir = CITRUS_APPS_PATH . $app . '/modules/';
-        $modules = array();
-        
-        if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( $dir . $file ) ) {
-                            $modules[] = $file;
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        return $modules;
-    }
-    
-    
-    /**
-     * Builds SQL schema and writes it in a .sql file.
-     *
-     * @deprecated moved in \core\Citrus\data\Schema
-     * @return boolean
-     */
-    public function buildSQLSchema() {
-        $dir = CITRUS_CLASS_PATH . $this->projectName . '/';
-
-        $mainSchema = array();
-        $listeSchemas = read_folder( $dir , "/.schema.php$/" );
-        
-        foreach (  $listeSchemas as $schema ) {
-            $schem = include $schema;
-            if ( is_array( $schem ) && count( $schem ) ) $mainSchema[] = $schem;
-        }
-        
-        if ( count( $mainSchema ) ) {
-            $query = "SET FOREIGN_KEY_CHECKS = 0;\n\n";
-            foreach ( $mainSchema as $item ) {
-                $primary = Array();
-                $query .= "#------------ " . $item['tableName'] . " ------------\n";
-                $query .= 'DROP TABLE IF EXISTS `' . $item['tableName'] . "`;\n";
-                $query .= 'CREATE TABLE `' . $item['tableName'] . "` (\n";
-                if ( isset( $item['properties'] ) ) {
-                    $i = 0;
-                    $queryProps = array();
-                    $indexes = '';
-                    $engine = '';
-                    foreach ( $item['properties'] as $propName => $keys ) {
-                        $queryProps[$i] = "  `$propName` ";
-                        if ( isset( $keys['primaryKey'] ) && $keys['type'] == 'int' && isset( $keys['autoincrement'] ) && $keys['autoincrement'] == true ) {
-                            $queryProps[$i] .= 'BIGINT NOT NULL AUTO_INCREMENT';
-                        } else {
-                            if ( $keys['type'] == 'string' ) {
-                                $queryProps[$i] .= 'VARCHAR(';
-                                $queryProps[$i] .= isset( $keys['length'] ) ? $keys['length'] : '255';
-                                $queryProps[$i] .= ')';
-                            } elseif ( $keys['type'] == 'text' ) {
-                                $queryProps[$i] .= 'LONGTEXT';
-                            } elseif ( $keys['type'] == 'blob' ) {
-                                $queryProps[$i] .= 'BLOB';
-                            } elseif ( $keys['type'] == 'boolean' ) {
-                                $queryProps[$i] .= 'BOOLEAN';
-                            } elseif ( $keys['type'] == 'datetime' ) {
-                                $queryProps[$i] .= 'DATETIME';
-                            } elseif ( $keys['type'] == 'int' && isset( $keys['foreignTable'] ) ) {
-                                $queryProps[$i] .= 'BIGINT';
-                            } elseif ( $keys['type'] == 'int' ) {
-                                $queryProps[$i] .= 'INT';
-                            } elseif ( $keys['type'] == 'float' ) {
-                                $queryProps[$i] .= 'FLOAT';
-                            }
-                            if ( isset( $keys['null'] ) && $keys['null'] === false ) {
-                                $queryProps[$i] .= ' NOT';
-                            }
-                            $queryProps[$i] .= ' NULL';
-                        }
-                        if ( isset( $keys['primaryKey'] ) ) $primary[] = $propName;
-                        $i++;
-
-                        if ( array_key_exists( 'foreignTable', $keys ) && array_key_exists( 'foreignReference', $keys ) ) {
-                            $fk = "  FOREIGN KEY (`" . $propName . "`) REFERENCES "
-                                       . "`" . $keys['foreignTable'] . "` (`" . $keys['foreignReference'] . "`) ";
-                            if ( isset( $keys['onDelete'] ) ) {
-                                $fk .= " ON DELETE " . $keys['onDelete'];
-                            } elseif ( $keys['null'] === true ) {
-                                $fk .= " ON DELETE SET NULL";
-                            }
-                            if ( isset( $keys['onUpdate'] ) ) {
-                                $fk .= " ON UPDATE " . $keys['onUpdate'];
-                            } else {
-                                $fk .= " ON UPDATE CASCADE";
-                            }
-                            $indexes[] = $fk;
-                        }
-                    }
-                    
-                    if (count($primary) > 0) 
-                        $indexes[] = "  PRIMARY KEY(`". implode( "`,`", $primary ) ."`)";
-                    
-                    if ( $indexes != '' ) {
-                        $queryProps[] .= implode( ",\n", $indexes );
-                    }
-                    $query .= implode( ",\n", $queryProps );
-                    $query .= "\n)";
-                    $query .= " ENGINE = InnoDB";
-                    $query .= ";\n\n";
-                }
-            }
-            $query .= "# Restores the foreign key checks, as we unset them at the begining\n";
-            $query .= "SET FOREIGN_KEY_CHECKS = 1;\n\n";
- //           $query .= User::createTable();
- //           $query .= User::insertFirstUser();
-            $file = fopen( CITRUS_PATH . '/include/schema.sql', 'w' );
-            $write = fwrite( $file, $query );
-            fclose( $file );
-            return $write;
-        }
-        return false;
-    }
-    
-    
-    
-    public static function pageNotFound( $message = null ) {
-        $cos = Citrus::getInstance();
-        $response = new http\Response();
-        $response->code = '404';
-        $response->message = $message;
-        $response->sendHeaders();
-        ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
-    }
-    
-    public static function pageForbidden( $message = null ) {
-        $cos = Citrus::getInstance();
-        $response = new http\Response();
-        $response->code = '403';
-        $response->message = $message;
-        $response->sendHeaders();
-        ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
-    }
-    public static function internalServerError( $message = null ) {
-        $cos = Citrus::getInstance();
-        $response = new http\Response();
-        $response->code = '500';
-        $response->message = $message;
-        $response->sendHeaders();
-        /*ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;*/
-        exit;
-    }
-    
-    
     /**
      * Starts all enabled services.
      * 
      */
     public function startServices() {
         $services = $this->host->services;
-        if ($services['debug']['active']) {
-            sys\Debug::$debug = true;
-            $this->debug = new sys\Debug();
-            $this->debug->timer = new sys\Timer( "total" );
+        if ( $services['debug']['active'] ) {
+            Debug::$debug = true;
+            $this->debug = new Debug( $this->request );
+            $this->debug->timer = new Timer( "total" );
             $this->debug->timer->start();
         }
         else $this->debug = false;
 
         if ( isset( $services['logger'] ) && $services['logger']['active'] == true ) {
-            $this->logger = new sys\Logger( $this->host->httpHost );
+            $this->logger = new Logger( $this->host->domain );
             $this->logger->logEvent( 'Logging service started.' );
         }
-        if ( isset( $services['db'] ) && $services['db']['active'] == true ) {
-            if ( isset( $services['db']['connection'] ) ) {
+    }
+
+    /**
+     * Initiates a database connection
+     * according to project configuration
+     */
+    public function getDatabase() {
+        if ( $this->db ) return $this->db;
+        $config = $this->host->services;
+        if ( isset( $config['db'] ) && $config['db']['active'] == true ) {
+            if ( isset( $config['db']['connection'] ) ) {
                 try {
-                    list ( $dsn, $username, $password ) = $services['db']['connection'];
+                    list ( $dsn, $username, $password ) = $config['db']['connection'];
                     $this->db = new db\Connection( $dsn, $username, $password );
-                    
-                    // orm configuration
-                    $paths = array( CITRUS_CLASS_PATH . $this->projectName . '/' );
-                    $isDevMode = $this->debug;
-                    $this->orm = db\Orm::getInstance( $services['db']['connection'], $paths, $isDevMode );
                     
                     if ( $this->debug ) {
                         $this->db->setAttribute( \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION );
                     }
+                    return $this->db;
                 } catch ( \PDOException $e ) {
-                    sys\Debug::handleException( $e, $this->debug );
+                    Debug::handleException( $e, $this->debug );
                 }
             }
         }
     }
-    
 
     /**
      * executed when Citrus stops (properly or not) 
      */
-    public static function shutDown() {
+    static public function shutDown() {
         $cos = Citrus::getInstance();
         if ( $cos->debug )
             $cos->debug->showErrorIfExists();
@@ -654,5 +361,18 @@ class Citrus {
     
     public function getController() {
         return $this->app->controller;
+    }
+
+    public function getClassName( $class_name ) {
+        return join( '', array_slice( explode( '\\', $name ), -1 ) );
+    }
+
+    public function setGlobal( $name, $value ) {
+        $this->globals[$name] = $value;
+    }
+
+    public function getGlobal( $name ) {
+        if ( isset( $this->globals[$name] ) ) return $this->globals[$name];
+        return false;
     }
 }

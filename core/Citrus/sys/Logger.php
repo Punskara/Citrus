@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -28,6 +28,8 @@
 
 namespace core\Citrus\sys;
 
+use \core\Citrus\utils\File;
+
 class Logger {
     private $_dir = '';
     private $_file;
@@ -46,7 +48,7 @@ class Logger {
     
     public function writeLog() {
         if ( count( $this->events ) ) {
-            $this->_file = new \core\Citrus\utils\File( $this->_fileName, \core\Citrus\utils\File::MODE_WOE );
+            $this->_file = new File( $this->_fileName, File::MODE_WOE );
             $this->_file->write( implode( "\n", $this->events ) . "\n" );
             $this->_file->close();
         }

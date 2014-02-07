@@ -2,19 +2,14 @@
 
 return $config = array(
     # project configuration
-    'siteName' => 'Citrus',
-    'projectName' => 'citrus',
-    
-    # routing defaults
-    'defaultApp' => 'install',
+    'site_name' => 'Citrus',
     
     # hosts
     'hosts' => array(
         'dev' => array(
-            'httpHost'          => $_SERVER['HTTP_HOST'],
-            'baseUrl'           => dirname( $_SERVER['SCRIPT_NAME'] ),
-            'services'          => array(
-                'hasRewriteEngine' => array( 'active' => true ),
+            'domain'    => $_SERVER['HTTP_HOST'],
+            'root_path' => dirname( $_SERVER['SCRIPT_NAME'] ),
+            'services'  => array(
                 'logger' => array( 'active' => true ),
                 'debug'  => array( 'active' => false ),
                 'db'     => array( 'active' => false,
@@ -29,5 +24,5 @@ return $config = array(
     ),
     
     # Citrus locale Configuration
-    'cos_Timezone' => 'Europe/Paris',
+    'default_timezone' => 'Europe/Paris',
 );
