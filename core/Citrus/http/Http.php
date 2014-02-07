@@ -42,11 +42,11 @@ class Http {
             $extraParams .= '?' . $args['extraParams'];
         }
         
-        if ( substr( $url, 0, 1 ) == '/' && substr( CITRUS_PROJECT_URL, strlen( CITRUS_PROJECT_URL ) - 1, 1 ) ) {
-            $location = substr( CITRUS_PROJECT_URL, 0, strlen( CITRUS_PROJECT_URL ) - 1 );
+        if ( substr( $url, 0, 1 ) == '/' && substr( CTS_PROJECT_URL, strlen( CTS_PROJECT_URL ) - 1, 1 ) ) {
+            $location = substr( CTS_PROJECT_URL, 0, strlen( CTS_PROJECT_URL ) - 1 );
             $location .= $url . $extraParams;
         } else {
-            $location = CITRUS_PROJECT_URL . $url . $extraParams;
+            $location = CTS_PROJECT_URL . $url . $extraParams;
         }
         header( "location:$location" );
         exit;

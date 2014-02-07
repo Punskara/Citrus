@@ -121,7 +121,7 @@ class Controller {
         $cos->response->message = $message;
         $cos->response->sendHeaders();
         ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
+        include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
         $tpl = ob_get_contents();
         ob_end_clean();
         echo $tpl;
@@ -140,7 +140,7 @@ class Controller {
         $cos->response->message = $message;
         $cos->response->sendHeaders();
         ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        include CTS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
         $tpl = ob_get_contents();
         ob_end_clean();
         echo $tpl;
@@ -178,7 +178,7 @@ class Controller {
         $content = "";
         $file_ext = substr( $file_ext, 1 );
         if ( !file_exists( $file_path ) ) 
-            $file_path = CITRUS_WWW_PATH . substr( $uri, 1 );
+            $file_path = CTS_WWW_PATH . substr( $uri, 1 );
 
         if ( file_exists( $file_path ) ) {
             $content = file_get_contents( $file_path );

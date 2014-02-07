@@ -31,7 +31,7 @@ class Logger {
 
     public function __construct( $name ) {
         $this->_linePrefix = date( '[Y-m-d H:i:s]' ) . " ";
-        $this->_fileName = CITRUS_LOG_PATH . $name . '-' . date( 'Ym') . '.log';
+        $this->_fileName = CTS_LOG_PATH . $name . '-' . date( 'Ym') . '.log';
     }
     
     public function logEvent( $str ) {

@@ -108,7 +108,7 @@ class Router {
     }
       
     public function loadRoutes() {
-        $routesFile = CITRUS_PATH . '/config/routing.php';
+        $routesFile = CTS_PATH . '/config/routing.php';
         
         if ( file_exists( $routesFile ) ) {
             $routing = include $routesFile;
@@ -147,7 +147,7 @@ class Router {
             $app = $this->app;
             $virtual = false;
         } 
-        $routesFile = CITRUS_APPS_PATH . $app . '/config/routing.php';
+        $routesFile = CTS_APPS_PATH . $app . '/config/routing.php';
 
         if ( file_exists( $routesFile ) ) {            
             $routes = include $routesFile;

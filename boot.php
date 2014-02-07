@@ -1,14 +1,16 @@
 <?php
 
-define( 'CITRUS_PATH', dirname( __FILE__ ) );
-define( 'CITRUS_CLASS_PATH', CITRUS_PATH . '/core/' );
-define( 'CITRUS_APPS_PATH', CITRUS_PATH . '/apps/' );
-define( 'CITRUS_LIB_PATH', CITRUS_CLASS_PATH . 'lib/' );
-define( 'CITRUS_WWW_PATH', CITRUS_PATH . '/www/' );
-define( 'CITRUS_LOG_PATH', CITRUS_PATH . '/log/' );
-define( 'CITRUS_RW_EXT', '.html' );
-define( 'CITRUS_SCHEME', isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://' );
+define( 'CTS_PATH', dirname( __FILE__ ) );
+define( 'CTS_APPS_DIR', '/apps/' );
 
-require_once CITRUS_PATH . '/include/functions.php';
-require_once CITRUS_CLASS_PATH . '/Citrus/Citrus.php';
+define( 'CTS_CLASS_PATH', CTS_PATH . '/core/' );
+define( 'CTS_APPS_PATH', CTS_PATH . CTS_APPS_DIR );
+define( 'CTS_LIB_PATH', CTS_CLASS_PATH . 'lib/' );
+define( 'CTS_WWW_PATH', CTS_PATH . '/www/' );
+define( 'CTS_LOG_PATH', CTS_PATH . '/log/' );
+define( 'CTS_RW_EXT', '.html' );
+define( 'CTS_SCHEME', isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ? 'https://' : 'http://' );
+
+require_once CTS_PATH . '/include/functions.php';
+require_once CTS_CLASS_PATH . '/Citrus/Citrus.php';
 

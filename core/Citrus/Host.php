@@ -59,6 +59,6 @@ class Host {
     }
 
     public function getURL() {
-        return CITRUS_SCHEME . $this->domain . $this->root_path;
+        return CTS_SCHEME . $this->domain . $this->root_path;
     }
 }

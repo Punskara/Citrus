@@ -109,11 +109,11 @@ class Debug {
         $cos->response->message = $debug ? strip_tags( $exception->getMessage() ) : 'An error occured.';
         $cos->response->sendHeaders();
         if ( $debug ) {
-            $exceptTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/exception.tpl' );
+            $exceptTpl = file_get_contents( CTS_PATH . '/core/Citrus/sys/templates/exception.tpl' );
             $msg = Exception::renderHtml( $exception, $message );
             $exceptTpl = preg_replace( '#\{citrus_exception\}#', $msg, $exceptTpl );
         } else {            
-            $exceptTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/exception_lite.tpl' );
+            $exceptTpl = file_get_contents( CTS_PATH . '/core/Citrus/sys/templates/exception_lite.tpl' );
             #$cos->logger->logEvent( $exception->getMessage() );
             $msg = $exception->getMessage();
             error_log( 
@@ -138,7 +138,7 @@ class Debug {
 
         $cos->debug ?
             $errorTpl = self::renderErrorHtml( $number, $msg, $file, $line, $context ) :
-            $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
+            $errorTpl = file_get_contents( CTS_PATH . '/core/Citrus/sys/templates/error_lite.tpl' );
         
         die( $errorTpl );
     }
@@ -177,7 +177,7 @@ class Debug {
             }
             $s .= '</ol>';
         }
-        $errorTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/error.tpl' );
+        $errorTpl = file_get_contents( CTS_PATH . '/core/Citrus/sys/templates/error.tpl' );
         $errorTpl = preg_replace( '#\{citrus_error\}#', $s, $errorTpl );
         return $errorTpl;
     }

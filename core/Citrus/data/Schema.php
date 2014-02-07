@@ -19,8 +19,7 @@
 
 namespace core\Citrus\data;
 use \core\Citrus\Citrus;
-use \core\Citrus\User;
-use \core\Citrus\utils;
+use \core\Citrus\utils\File;
 
 /**
  * @todo finish associations classes (getMultipleAssociations)
@@ -98,7 +97,7 @@ class Schema {
      */
     public function getSchema() {
         $className = str_replace( '\\', '/', $this->className );
-        $schemaFile = CITRUS_PATH . '/' . str_replace( 
+        $schemaFile = CTS_PATH . '/' . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 
             $className 
@@ -178,7 +177,7 @@ class Schema {
      */
     static public function getModelAssociations( $modelType ) {
         $modelType = str_replace( '\\', '/', $modelType );
-        $schemaFile = CITRUS_PATH . str_replace( 
+        $schemaFile = CTS_PATH . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 
             $modelType 
@@ -210,7 +209,7 @@ class Schema {
         if ( strpos( $modelType, '\\core\\Citrus' ) !== false ) {
             $modelType = str_replace( '\\core\\', '', $modelType );
         }
-        $schemaFile = CITRUS_CLASS_PATH . str_replace( 
+        $schemaFile = CTS_CLASS_PATH . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 
             str_replace( '\\', '/', $modelType )
@@ -232,7 +231,7 @@ class Schema {
      * @return array  $props  array of schema properties
      */
     static public function getProperties( $modelType ) {
-        $schemaFile = CITRUS_CLASS_PATH . str_replace( 
+        $schemaFile = CTS_CLASS_PATH . str_replace( 
             '_', 
             DIRECTORY_SEPARATOR, 
             $modelType 
@@ -258,9 +257,9 @@ class Schema {
 	 */
 	static public function buildParentClasses() {
 	    $cos = Citrus::getInstance();
-	    $dir = CITRUS_CLASS_PATH . $cos->projectName . '/schemas/';
+	    $dir = CTS_CLASS_PATH . $cos->projectName . '/schemas/';
 	    
-	    $wrDir = CITRUS_CLASS_PATH . $cos->projectName . '/Parent/';
+	    $wrDir = CTS_CLASS_PATH . $cos->projectName . '/Parent/';
 	    
 	    $mainSchema = array();
 	    
@@ -283,7 +282,7 @@ class Schema {
         }
         if ( count( $mainSchema ) ) {
             foreach ( $mainSchema as $item ) {
-                $f = new utils\File( $wrDir . $item['modelType'] . '.php', utils\File::MODE_WOS );
+                $f = new File( $wrDir . $item['modelType'] . '.php', File::MODE_WOS );
                 
                 $f->write( "<?php\n" );
                 $f->write( "/**\n* @Entity @Table(name=\"" . $item['tableName'] . "\")\n*/\n\n" );

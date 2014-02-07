@@ -66,7 +66,7 @@ class View {
      */
     private $vars = array();
 
-    public $static_path = CITRUS_PROJECT_URL;
+    public $static_path = CTS_PROJECT_URL;
 
     const TPL_EXT = ".tpl.php";
 
@@ -161,7 +161,7 @@ class View {
                 if ( $media == 'print' ) $s = substr( $s, 1 );
                 if ( substr( $s, 0, 4 ) == "http" ) $href = $s;             
                 elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
-                else $href = CITRUS_PROJECT_URL . "css/$s";
+                else $href = CTS_PROJECT_URL . "css/$s";
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
                 $st = new Element( 'link', array(
                     'attributes' => array(
@@ -179,14 +179,14 @@ class View {
         
         if ( $cos->app && $cos->app->controller ) {
             $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.css' ;
-            if (is_file(CITRUS_WWW_PATH . $src)) {
+            if (is_file(CTS_WWW_PATH . $src)) {
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
                 $st = new Element( 'link', array(
                     'attributes' => array(
                         'rel' => 'stylesheet' . $rel_less,
                         'media' => $media,
                         'type' => 'text/css',
-                        'href' => CITRUS_PROJECT_URL . $src,
+                        'href' => CTS_PROJECT_URL . $src,
                     ), 
                     'inline' => true,
                     'closeTag' => false
@@ -261,11 +261,11 @@ class View {
         
         if ( $cos->app && $cos->app->controller ) {
             $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
-            if (is_file(CITRUS_WWW_PATH . $src)) {
+            if (is_file(CTS_WWW_PATH . $src)) {
                 $elt = new Element( 'script', array(
                     'attributes' => array(
                         'type' => 'text/javascript',
-                        'src' => CITRUS_PROJECT_URL . $src,
+                        'src' => CTS_PROJECT_URL . $src,
                     ), 
                     'inline' => false,
                 ) );
@@ -314,7 +314,7 @@ class View {
         $cos = Citrus::getInstance();
 
         if ( !file_exists( $this->tpl_file ) )
-            $this->tpl_file = CITRUS_APPS_PATH . $cos->app->name . 
+            $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
                               '/templates/' . basename( $this->tpl_file );
         if ( !file_exists( $this->tpl_file ) )
             throw new Exception( "Template file not found: $this->tpl_file." );
@@ -340,7 +340,7 @@ class View {
     }
 
     public function getAppConfig( $app ) {
-        $config_path = CITRUS_APPS_PATH . $app->name . '/config/view.php';
+        $config_path = CTS_APPS_PATH . $app->name . '/config/view.php';
         if ( file_exists( $config_path ) ) require_once $config_path;
     }
 }

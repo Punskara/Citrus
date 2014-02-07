@@ -72,7 +72,7 @@ abstract class App {
      */
     public function __construct( $name ) {
         $this->name = $name;
-        $this->tpl_dir = CITRUS_APPS_PATH . $this->name . '/templates/';
+        $this->tpl_dir = CTS_APPS_PATH . $this->name . '/templates/';
         if ( !is_dir( $this->tpl_dir ) ) 
             throw new Exception( "Application template directory doesn't exist." );
     }
@@ -90,19 +90,18 @@ abstract class App {
      * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
      */
     public function createController( $name, $action ) {
-        if ( !$name ) $this->controller = new Controller( $action );
-        else {
-            $args       = Array( 'action' => $action );
-            $path       = $this->path . '/modules/' . $name;
-            $class_file = $path . '/Controller.php';
-            $class_name = str_replace( CITRUS_PATH, '', $path );
-            $class_name = str_replace( '/', '\\', $class_name ) . '\Controller';
-
+        $path = $this->path . '/controllers/';
+        $class_file = $path . ucfirst( $name ) . 'Controller.php';
+        $class_name = str_replace( CTS_PATH, '', $path );
+        $class_name = str_replace( '/', '\\', $class_name ) . ucfirst( $name ) . 'Controller';
+        if ( !$name ) {
+            $this->controller = new Controller( $action );
+        } else {
             if ( file_exists( $class_file ) && class_exists( $class_name ) ) {
                 $r = new \ReflectionClass( $class_name ); 
-                $this->controller = $r->newInstanceArgs( $args ? $args : array() );
-                $this->controller->name = $name;
-
+                $this->controller = $r->newInstanceArgs( Array(
+                    'action' => $action,
+                ) );
                 if ( $this->controller->is_protected == null ) {
                     $this->controller->is_protected = $this->is_protected;
                 }
@@ -169,11 +168,11 @@ abstract class App {
 
     static public function load( $name ) {
         $app_path = $name;
-        $class_name = str_replace( '/', '\\', '/apps/' . $app_path . '/' . ucfirst( $name ) . 'App' );
+        $class_name = str_replace( '/', '\\', CTS_APPS_DIR . $app_path . '/' . ucfirst( $name ) . 'App' );
         if ( class_exists( $class_name ) ) {
             $r = new \ReflectionClass( $class_name ); 
             $app = $r->newInstanceArgs( array( $name ) );            
-            $app->path = CITRUS_APPS_PATH . $app_path;
+            $app->path = CTS_APPS_PATH . $app_path;
             return $app;
         } else {
             throw new Exception( "Unable to find app '$name'" );
@@ -187,14 +186,14 @@ abstract class App {
      * @return array An array of apps names
      */
     static public function listApps() {
-        $dir = CITRUS_APPS_PATH;
+        $dir = CTS_APPS_PATH;
         $apps = array();
         
         if ( is_dir( $dir ) ) {
             if ( $dh = opendir( $dir ) ) {
                 while ( ( $file = readdir( $dh ) ) !== false ) {
                     if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( CITRUS_APPS_PATH . $file ) ) {
+                        if ( is_dir( CTS_APPS_PATH . $file ) ) {
                             $apps[] = $file;
                         }
                     }
@@ -203,5 +202,9 @@ abstract class App {
             }
         }
         return $apps;
+    }
+
+    public function getControllerUrl() {
+        return url_to( $this->name . '/' . strtolower( $this->controller->getPrefix() ) . '/', 1 );
     }
 }

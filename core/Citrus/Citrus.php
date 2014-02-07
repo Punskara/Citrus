@@ -204,10 +204,10 @@ class Citrus {
      */
     public function loadConfiguration() {
         if ( !$this->config ) {
-            if ( file_exists( CITRUS_PATH . self::$config_file ) ) {
-                $this->config = include_once CITRUS_PATH . self::$config_file;
-            } elseif ( file_exists( CITRUS_PATH . self::$default_config_file ) ) {
-                $this->config = include_once CITRUS_PATH . self::$default_config_file;
+            if ( file_exists( CTS_PATH . self::$config_file ) ) {
+                $this->config = include_once CTS_PATH . self::$config_file;
+            } elseif ( file_exists( CTS_PATH . self::$default_config_file ) ) {
+                $this->config = include_once CTS_PATH . self::$default_config_file;
             }
             if ( $this->config ) {
                 date_default_timezone_set( $this->config['default_timezone'] );
@@ -241,7 +241,7 @@ class Citrus {
                     ini_set( 'display_errors', 0 );
                     error_reporting( E_ALL );
                 }
-                define( 'CITRUS_PROJECT_URL', $this->host->root_path );
+                define( 'CTS_PROJECT_URL', $this->host->root_path );
             } else {
                 throw new Exception( "No valid host found." );
             }
@@ -280,8 +280,8 @@ class Citrus {
             $file = str_replace( '\\', DIRECTORY_SEPARATOR, $class );
         }
         $file = str_replace( '\\', DIRECTORY_SEPARATOR, $class );
-        if ( file_exists( CITRUS_PATH . "/$file.php" ) ) {
-            include_once( CITRUS_PATH . "/$file.php" );
+        if ( file_exists( CTS_PATH . "/$file.php" ) ) {
+            include_once( CTS_PATH . "/$file.php" );
         }
     }
     
