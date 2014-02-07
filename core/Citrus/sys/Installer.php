@@ -14,19 +14,18 @@ class Installer {
     }
 
     public function appExists( $name ) {
-        $app_path = CTS_APPS_PATH . '/' . $name;
+        $app_path = CTS_APPS_PATH . $name;
         return is_dir( $app_path );
     }
 
     public function generateApp( $name ) {
         if ( is_dir( CTS_APPS_PATH ) ) {
-            $app_path = CTS_APPS_PATH . '/' . $name;
-            if ( !$this->appExists( $app_path ) ) {
+            if ( !$this->appExists( $name ) ) {
                 $mainDir = mkdir( $app_path, 0755 );
                 if ( $mainDir ) {
-                    $modules = mkdir( $app_path . '/controllers', 0755 );
-                    $templates = mkdir( $app_path . '/templates', 0755 );
-                    $config = mkdir( $app_path . '/config', 0755 );
+                    $modules    = mkdir( $app_path . '/controllers', 0755 );
+                    $templates  = mkdir( $app_path . '/templates', 0755 );
+                    $config     = mkdir( $app_path . '/config', 0755 );
                     if ( $modules && $templates && $config ) {
                         $this->generateAppClassFile( $name );
                         $this->generateAppRoutingFile( $name );
