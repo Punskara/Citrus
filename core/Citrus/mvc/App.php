@@ -61,7 +61,7 @@ abstract class App {
     public $tpl_dir;
     
     abstract protected function setViewSettings();
-    protected function onBeforeExecuteAction() {}
+    protected function beforeExecuteAction() {}
 
     /**
      * Constructor.
@@ -126,7 +126,7 @@ abstract class App {
     public function executeCtrlAction() {
         $cos = Citrus::getInstance();
         if ( $this->controller->actionExists() ) {
-            $this->onBeforeExecuteAction();
+            $this->beforeExecuteAction();
             $act = $this->controller->executeAction( $cos->request );
             if ( $act !== false ) $this->output();
         } else $this->onActionNotFound();
