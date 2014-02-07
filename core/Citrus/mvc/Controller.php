@@ -152,21 +152,37 @@ class Controller {
      * Is executed if the action doesn't exist.
      *
      * @param string  $message  A message to display in the 404 page.
-     * @see \core\Citrus\Citrus::pageNotFound()
      */
-    public function do_PageNotFound( $message = null ) {
-        Citrus::pageNotFound( $message );
+    static public function pageNotFound( $message = null ) {
+        $cos = Citrus::getInstance();
+        $cos->response->code = '404';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
-
+    
     /**
      * Shows up the default "Page forbidden" template
      * Can be executed when the action is not allowed.
      *
      * @param string  $message  A message to display in the 404 page.
-     * @see \core\Citrus\Citrus::pageNotFound()
      */
-    public function do_PageForbidden( $message = null ) {
-        Citrus::pageForbidden( $message );
+    static public function pageForbidden( $message = null ) {
+        $cos = Citrus::getInstance();
+        $cos->response->code = '403';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
     
     /**
@@ -224,7 +240,7 @@ class Controller {
                     $content = file_get_contents( $file_path );
                     break;
             }            
-        } else Citrus::pageNotFound();
+        } else self::pageNotFound();
         $cos->response->setCacheHeaders( $file_path );
         if ( $cos->response->code == '200' ) echo $content;
     }

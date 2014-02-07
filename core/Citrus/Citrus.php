@@ -268,33 +268,6 @@ class Citrus {
         }
     }
     
-    public static function pageNotFound( $message = null ) {
-        $cos = Citrus::getInstance();
-        $cos->response->code = '404';
-        $cos->response->message = $message;
-        $cos->response->sendHeaders();
-        ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
-    }
-    
-    public static function pageForbidden( $message = null ) {
-        $cos = Citrus::getInstance();
-        $cos->response->code = '403';
-        $cos->response->message = $message;
-        $cos->response->sendHeaders();
-        ob_start();
-        include CITRUS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
-    }
-
-    
     /**
      * Starts all enabled services.
      * 
@@ -366,27 +339,5 @@ class Citrus {
         return $this->app->controller;
     }
 
-    /**
-     * Gets list of applications existing in filesystem.
-     *
-     * @return array An array of apps names
-     */
-    public function getAppsList() {
-        $dir = CITRUS_APPS_PATH;
-        $apps = array();
-        
-        if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( CITRUS_APPS_PATH . $file ) ) {
-                            $apps[] = $file;
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        return $apps;
     }
 }
