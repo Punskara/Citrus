@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -32,7 +32,10 @@
  */
  
 namespace core\Citrus\routing;
-use \core\Citrus\sys;
+
+use \core\Citrus\Citrus;
+use \core\Citrus\mvc\App;
+use \core\Citrus\sys\Exception;
 
 class Router {
     
@@ -75,13 +78,18 @@ class Router {
     
     public function execute() {
         if ( count( $this->routes ) ) {
-            foreach($this->routes as $route) {
-                if ($route->is_matched) {
+            foreach( $this->routes as $route ) {
+                if ( $route->is_matched ) {
                     $this->setRoute( $route );
-                    break;
+                    return;
                 }
             }
+            throw new NoRouteFoundException();
         }
+    }
+
+    public function getRouteURL() {
+        return $this->route->url;
     }
     
     private function setRoute( $route ) {
@@ -91,6 +99,7 @@ class Router {
 
         if ( isset( $params['app'] ) ) {
             $this->app = $params['app']; 
+            // $this->loadAppRoutes();
             unset( $params['app'] );
         }
         if ( isset( $params['controller'] ) ) {
@@ -126,11 +135,11 @@ class Router {
                 }
             }
             // browsing apps files
-            $cos = \core\Citrus\Citrus::getInstance();
-            foreach ( $cos->getAppsList() as $app ) $this->loadAppRoutes( $app );
+            $apps = App::listApps();
+            foreach ( $apps as $app ) $this->loadAppRoutes( $app );
             
          } else {
-             throw new sys\Exception( "No routing file found." );
+             throw new Exception( "No routing file found." );
          }
     }
     
@@ -146,11 +155,11 @@ class Router {
             $app = $this->app;
             $virtual = false;
         } 
-        $routesFile = CITRUS_PATH . '/apps/' . $app . '/config/routing.php';
+        $routesFile = CITRUS_APPS_PATH . $app . '/config/routing.php';
 
         if ( file_exists( $routesFile ) ) {            
             $routes = include $routesFile;
-            if ( isset($routes['routes']) && is_array( $routes['routes'] ) && count( $routes ) ) {
+            if ( isset( $routes['routes'] ) && is_array( $routes['routes'] ) && count( $routes ) ) {
                 foreach ( $routes['routes'] as $route ) {
                     if ( isset( $route['url'] ) ) {
                         $target = Array();
