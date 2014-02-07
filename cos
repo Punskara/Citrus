@@ -2,6 +2,14 @@
 <?php
 chdir( dirname( __FILE__ ) );
 include 'boot.php';
+\core\Citrus\Citrus::getInstance()->bootCLI();
+
+// referenced commands 
+$commands = Array(
+    "compile-less",
+    "new-app",     
+    "new-module",  
+);
 
 // command
 $command = null;
@@ -10,39 +18,43 @@ if ( isset( $argv[1] ) ) {
 }
 if ( $command ) {
     switch ( $command ) {
-        case 'cssmin':
-            if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
+        case 'new-app':
+            if ( isset( $argv[2] ) ) {
                 try {
-                    $m = \core\lib\minifiers\CSSMinifier::minify(
-                        $argv[2], $argv[3]
-                    );
-                    echo "Minified!\n";
-                } catch ( \core\Citrus\sys\Exception $e ) {
-                    echo $e->getMessage();
-                } catch ( \core\Citrus\http\CurlExecFailedException $e ) {
+                    $name = $argv[2];
+                    if ( preg_match( "/^[a-z]$/", $name ) ) {
+                        echo "[ERROR] App name must be alphabetic, lower case only.\n";
+                        return;
+                    }
+                    $installer = new \apps\install\Installer();
+                    $installer->generateApp( $argv[2] );
+                    echo "[OK] App '$name' created.\n";
+                } catch ( Exception $e ) {
                     echo $e->getMessage() . "\n";
                 }
-
-            } else {
-                echo "syntax: cssmin input output\n";
-            }
+            } else echo "[INFO] syntax: new-app appname.\n";
             break;
-        case 'jsmin':
+
+        case 'new-module':
             if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
                 try {
-                    $m = \core\lib\minifiers\JSMinifier::minify(
-                        $argv[2], $argv[3]
-                    );
-                    echo "Minified!\n";
-                } catch ( \core\Citrus\sys\Exception $e ) {
-                    echo $e->getMessage();
-                } catch ( \core\Citrus\http\CurlExecFailedException $e ) {
+                    $app_name = $argv[2];
+                    $mod_name = $argv[3];
+                    $installer = new \apps\install\Installer();
+                    if ( !$installer->appExists( $app_name ) ) {
+                        echo "[ERROR] App '$app_name' doesn't exist. Try new-app first.\n";
+                        return;
+                    }
+                    if ( !preg_match( "/^[a-z]+$/", $mod_name ) ) {
+                        echo "[ERROR] Module name must be alphabetic, lower case only.\n";
+                        return;
+                    }
+                    $installer->generateModule( $mod_name, $app_name );
+                    echo "[OK] Module '$mod_name' created in app '$app_name'.\n";
+                } catch ( Exception $e ) {
                     echo $e->getMessage() . "\n";
                 }
-
-            } else {
-                echo "syntax: jsmin input output\n";
-            }
+            } else echo "[INFO] syntax: new-module appname modulename.\n";
             break;
 
         case 'compile-less':
@@ -58,11 +70,12 @@ if ( $command ) {
                 echo "syntax: compile-less input output\n";
             }
             break;
-        
+
         default:
             break;
     }
 } else {
-    echo "Commands: jsmin, cssmin, compile-less.\n";
+    $cmd_list = implode( ', ', $commands );
+    echo "Commands: $cmd_list\n";
 }
 
