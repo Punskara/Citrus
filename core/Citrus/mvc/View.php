@@ -10,7 +10,7 @@
 |   Authors: Rémi Cazalet                                                   |
 |          : Nicolas Mouret                                                 |
 |   Founder: Studio Caramia                                                 |
-|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
+|  Copyright (c) 2008-2014, Studio Caramia. All Rights Reserved.            |
 | ------------------------------------------------------------------------- |
 |   For the full copyright and license information, please view the LICENSE |
 |   file that was distributed with this source code.                        |
