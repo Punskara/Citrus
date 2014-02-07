@@ -62,6 +62,8 @@ class Request {
      */
     public $isXHR;
 
+    public $address;
+
     /**
      * Constructor
      */
@@ -71,6 +73,7 @@ class Request {
         $this->uri = $_SERVER['REQUEST_URI'];
         $this->referer = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null ;
         $this->isXHR = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+        $this->address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null;
         if ( $this->method == 'POST' ) {
             $this->inputMethod = INPUT_POST;
             $this->params = $_POST;
