@@ -5,7 +5,8 @@
         box-shadow: 0 0 5px rgba(0,0,0,.2) inset;
         border-radius:      4px;
         margin:             10px auto;
-        /*width:              800px;*/
+        /*position: absolute;*/
+        width:              80%;
         padding: 20px;
     }
     .citrus-error pre {
@@ -23,8 +24,19 @@
     .citrus-error li i {
         background:         #ddd;
     }
+    .citrus-error-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,.7);
+        z-index: 9999;
+    }
 </style>
-<div class="citrus-error">
-    <p>Ouch ! There's something Citrus didn't like…</p>
-    {citrus_error}
+<div class="citrus-error-overlay">
+    <div class="citrus-error">
+        <p>Ouch ! There's something Citrus didn't like…</p>
+        {citrus_error}
+    </div>
 </div>

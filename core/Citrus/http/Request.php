@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -27,7 +27,8 @@
 
 
 namespace core\Citrus\http;
-use \core\Citrus;
+use \core\Citrus\Citrus;
+use \core\Citrus\Filter;
 
 /**
  * This class handles the HTTP request and its parameters.
@@ -99,7 +100,7 @@ class Request {
      */
     public function param( $name, $filter = "string" ) {
         if ( isset( $this->params[$name] ) ) {
-            return \core\Citrus\Filter::filterVar( $name, $filter, $this->method, $this->params );
+            return Filter::filterVar( $name, $filter, $this->method, $this->params );
         }
         return false;
     }
@@ -151,21 +152,6 @@ class Request {
      */
     public function addParams( $params = array() ) {
         $this->params = array_merge( $this->params, $params );
-    }
-    
-    
-    /**
-     * Determines if the referer is internal or not by comparing it to the host.
-     * 
-     * @return boolean
-     */
-    public function refererIsInternal() {
-        $cos = Citrus\Citrus::getInstance();
-        $referer = parse_url( $this->referer );
-        if ( isset( $referer['host'] ) ) {
-            return $cos->host->httpHost == $referer['host'];
-        }
-        return false;
     }
 
     public function getFiles() {

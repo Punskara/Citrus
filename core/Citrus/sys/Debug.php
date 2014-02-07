@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -93,8 +93,15 @@ class Debug {
     
     public function startNewTimer( $label ) {
         $this->timers[] = new Timer( $label );
+        return count( $this->timers ) - 1;
     }
     
+    public function stopTimer( $id ) {
+        if ( isset( $this->timers[$id] ) ) {
+            $this->timers[$id]->stop();
+        }
+    }
+
     public function stopLastTimer() {
         $timer = end( $this->timers );
         $timer->stop();
@@ -104,24 +111,30 @@ class Debug {
         $timer->stop();
     }
     
-    public static function handleException( $exception, $debug = false, $message = null ) {
+    static public function handleException( $exception, $debug = false, $message = null ) {
         $cos = Citrus::getInstance();
-        $debug = self::$debug;
         $cos->response->code = '500';
         $cos->response->message = $debug ? strip_tags( $exception->getMessage() ) : 'An error occured.';
         $cos->response->sendHeaders();
-        #$cos->logger->logEvent( $exception->getMessage() );
         if ( $debug ) {
             $exceptTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/exception.tpl' );
             $msg = Exception::renderHtml( $exception, $message );
             $exceptTpl = preg_replace( '#\{citrus_exception\}#', $msg, $exceptTpl );
         } else {            
             $exceptTpl = file_get_contents( CITRUS_PATH . '/core/Citrus/sys/templates/exception_lite.tpl' );
+            #$cos->logger->logEvent( $exception->getMessage() );
+            $msg = $exception->getMessage();
+            error_log( 
+                "Exception: '" . $exception->getMessage() . "'" .
+                " in " . $exception->getFile() . ', '.
+                'line ' . $exception->getLine() 
+            );
+            $exceptTpl = preg_replace( '#\{citrus_exception\}#', $msg, $exceptTpl );
         }
         die( $exceptTpl );
     }
     
-    public static function handleError( $number, $msg, $file, $line, $context ) {
+    static public function handleError( $number, $msg, $file, $line, $context ) {
         $cos = Citrus::getInstance();
         $cos->response->code = '500';
         $cos->response->message = $cos->debug ? strip_tags( $msg ) : 'An error occured.';
@@ -150,7 +163,7 @@ class Debug {
         }
     }
 
-    public static function renderErrorHtml( $number, $msg, $file, $line, $context, $message = null, $trace = false ) {
+    static public function renderErrorHtml( $number, $msg, $file, $line, $context, $message = null, $trace = false ) {
         $s = '';
         if ( $message ) {
             $s .= '<p class="message">' . $message . '</p>';

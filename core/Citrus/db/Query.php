@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -90,13 +90,12 @@ abstract class Query {
 	 * @return mixed
 	 */
 	public function Execute( $params = array(), $driverOptions = array() ) {
-		//echo "<p>$this</p>";
 		$rec = false;
-		#try {
+		try {
 		    $rec = $this->database->Execute( (string)$this, $params, $driverOptions );
-		#} catch ( \PDOException $e ) {
-        #    \core\Citrus\sys_Debug::handleException( $e, true, 'SQL: ' . $this->RenderSql() );
-        #}
+		} catch ( \PDOException $e ) {
+           \core\Citrus\sys_Debug::handleException( $e, true, 'SQL: ' . $this->RenderSql() );
+        }
 		return $rec;
 	}
 	/**
