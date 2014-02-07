@@ -2,7 +2,7 @@
 
 namespace apps\install;
 use \core\Citrus\Citrus;
-use \core\Citrus\mvc;
+use \core\Citrus\mvc\App;
 use \core\Citrus\sys;
 
 class Installer {
@@ -26,10 +26,10 @@ class Installer {
                 if ( $mainDir ) {
                     $modules = mkdir( $app_path . '/modules', 0755 );
                     $templates = mkdir( $app_path . '/templates', 0755 );
-                    if ( $modules && $templates ) {
-                        // $app = \core\Citrus\mvc\App::load( $name );
+                    $config = mkdir( $app_path . '/config', 0755 );
+                    if ( $modules && $templates && $config ) {
                         $this->generateAppClassFile( $name );
-                        // $this->generateAppRoutingFile( $name );
+                        $this->generateAppRoutingFile( $name );
                         return true;
                     }
                 } 
@@ -66,22 +66,7 @@ class Installer {
      * @return array An array of apps names
      */
     public function getAppsList() {
-        $dir = CITRUS_APPS_PATH;
-        $apps = array();
-        
-        if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( CITRUS_APPS_PATH . $file ) ) {
-                            $apps[] = $file;
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        return $apps;
+        return App::listApps();
     }
     
     
@@ -117,7 +102,7 @@ class Installer {
      * @return boolean whether the file could be created or not.
      */
     public function generateAppRoutingFile( $app_name ) {
-        $path = CITRUS_APPS_PATH . $app;
+        $path = CITRUS_APPS_PATH . $app_name;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'routing.tpl';
             $tpl =  fopen( $templateFile, 'r' );
