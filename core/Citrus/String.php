@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -29,41 +29,12 @@
 namespace core\Citrus;
 
 class String {
-    public static function slug2( $string ) {
-        $str = strtolower( trim( $string ) );
-        $char = explode(',', "à,â,ä,â,è,é,ë,ê,î,ï,ô,ö,ù,ü,û,ç" );
-        $rep = explode( ',', "a,a,a,a,e,e,e,e,i,i,o,o,u,u,u,c" );
-        
-        $str = self::accent( $str );
-        $str = preg_replace( '/[^a-z0-9-]/', '-', $str );
-        $str = preg_replace( '/-+/', "-", $str );
-        $str = trim( $str, '-' );
-        return $str;
-    }
-    
-    public static function slug( $string ) {
-        $string = strtolower( $string );
-        $repl = array( 
-            "à" => "a", "ä" => "a", "â" => "a",
-            "é" => "e", "è" => "e", "ë" => "e", "ê" => "e",
-            "î" => "i", "ï" => "i",
-            "ô" => "o", "ö" => "o",
-            "ù" => "u", "û" => "u", "ü" => "u",
-            "ç" => 'c',
-            "'" => "-", "’" => "-",
-            "\"" => "", "\(" => "-", "\)" =>"-",
-            "&" => "-", ":" => "-", ":" => "-",
-            "\?" => "", "!" => "", "," => "",
-            "\." => "", "\/" => "-", " " => "-",
-            "--" => "-", "'" => "",
-            "%C9" => 'e', 
-            "#39;" => '', "#34;" => '',
-        );
-        foreach ( $repl as $find => $rep ) {
-            $string = preg_replace( "/" . $find . "/", $rep, $string );
-        }
-        
-        return $string;
+    static public function slug( $string, $sep = '-' ) {
+        $clean = iconv( 'UTF-8', 'ASCII//TRANSLIT', $string );
+        $clean = preg_replace( "/[^a-zA-Z0-9\/_|+ -]/", '', $clean );
+        $clean = preg_replace( "/[\/_|+ -]+/", $sep, $clean );
+        $clean = strtolower( trim( $clean, '-' ) );
+        return $clean;
     }
     
     static public function accent( $search ) {
@@ -73,5 +44,18 @@ class String {
         $search = preg_replace( '/[ôö]/iu', 'o', $search );
         $search = preg_replace( '/[ùûü]/iu', 'u', $search );  
         return $search;
+    }
+
+    static public function br2nl( $string, $isXHTML = false ) {
+        return $string;
+        $br = $isXHTML ? "<br />" : "<br>";
+        return str_replace( $br, "\n", $string );
+    }
+
+    static public function splitCamelCase( $s ) {
+        return preg_split( 
+            '/([[:upper:]][[:lower:]]+)/', $s, null, 
+            PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY 
+        );
     }
 }
