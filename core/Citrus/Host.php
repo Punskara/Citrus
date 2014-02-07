@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -24,9 +24,6 @@
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 
-
-
-
 namespace core\Citrus;
 
 class Host {
@@ -40,11 +37,6 @@ class Host {
      * @var string
      */
     public $root_path;
-
-    /**
-     * @var string
-     */
-    public $scheme;
     
     /**
      * @var boolean
@@ -56,6 +48,7 @@ class Host {
      */
     public $services = array();
     
+
     /**
      * Constructor
      * 
@@ -64,16 +57,16 @@ class Host {
      * @param array   $services  an array of citrus services.
      */
     public function __construct( $domain, $root_path, $services ) {
-        $this->domain = $domain;
-        $this->root_path = $root_path;
-        $this->services = $services;
+        $this->domain       = $domain;
+        $this->root_path    = $root_path;
+        $this->services     = $services;
     }
     
     public function __toString() {
         return $this->domain;
     }
 
-    public function getUrl() {
-        return CITRUS_SCHEME . $this->domain . CITRUS_PROJECT_URL;
+    public function getURL() {
+        return CITRUS_SCHEME . $this->domain . $this->root_path;
     }
 }

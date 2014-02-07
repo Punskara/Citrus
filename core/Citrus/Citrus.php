@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: devs@citrus-project.net                                        |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -26,13 +26,22 @@
 
 namespace core\Citrus;
 
+use \core\Citrus\mvc\App;
+use \core\Citrus\sys\Cache;
+use \core\Citrus\sys\Debug;
+use \core\Citrus\sys\Exception;
+use \core\Citrus\sys\Timer;
+use \core\Citrus\sys\Logger;
+use \core\Citrus\routing\Router;
+use \core\Citrus\routing\NoRouteFoundException;
+
 class Citrus {
 
     /**
      * @access public
      * @var \core\Citrus\db\Connection
      */
-    public $db;
+    private $db;
     
     /**
      * @access public
@@ -80,13 +89,13 @@ class Citrus {
      * @access public
      * @var string
      */
-    public static $config_file = '/config/config.inc.php';
+    static public $config_file = '/config/config.inc.php';
     
     /**
      * @access public
      * @var string
      */
-    public static $default_config_file = '/config/config.inc.default.php';
+    static public $default_config_file = '/config/config.inc.default.php';
     
     /**
      * @access public
@@ -100,33 +109,35 @@ class Citrus {
      */
     public $cache;
     
+    /**
+     * @access public
+     * @var boolean
+     */
     public $done = false;
 
     /**
      * @access public
-     * @var \core\Citrus\Http\Response
+     * @var \core\Citrus\http\Response
      */
     public $response;
 
     /**
      * @access public
-     * @var \core\Citrus\Http\Request
+     * @var \core\Citrus\http\Request
      */
     public $request;
+
+    private $globals = Array();
     
     /**
      * Accessor
      *
      * @return \core\Citrus\Citrus
      */
-    public static function getInstance( $cli = false ) {
-        if ( is_null( self::$instance ) ) {
-            try {
-                self::$instance = new Citrus( $cli );
-            } catch ( Exception $e ) {
-                sys\Debug::handleException( $e, true );
-            }
-        }
+    static public function getInstance( $cli = false ) {
+        if ( is_null( self::$instance ) )
+            self::$instance = new Citrus( $cli );
+
         return self::$instance;
     }
 
@@ -135,23 +146,7 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no valid host is found.
      */
-    private function __construct( $cli = false ) {
-        if ( $cli ) {
-            $this->BootCli();
-            return;
-        }
-        $this->Boot();
-        if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
-            if ( $this->debug ) {
-                ini_set( 'display_errors', 0 );
-                error_reporting( E_ALL );
-            }
-            define( 'CITRUS_PROJECT_URL', $this->host->root_path );
-        } else {
-            throw new sys\Exception( "No valid Citrus Host found." );
-            exit;
-        }
-    }
+    private function __construct() {}
     
     private function registerAutoload() {
         spl_autoload_register( array( __CLASS__, 'autoload' ) );
@@ -163,49 +158,49 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no host or no valid host is found
      */
-    private function Boot() {
+    public function boot() {
+
+        session_start();
         $this->registerAutoload();
-        $this->loadConfiguration();
-        $this->cache = new \core\Citrus\sys\Cache();
-        
-        if ( $this->config ) {
-            date_default_timezone_set( $this->config['default_timezone'] );
+
+        if ( isset( $_SERVER['HTTP_HOST'] ) ) {
+
+            $this->cache = new Cache();
             
-            # loading hosts
-            $CitrusHosts = $this->config['hosts'];
-            $CitrusHost = false;
+            # exception handling
+            set_exception_handler( array( '\core\Citrus\sys\Debug', 'handleException' ) );
 
-            if ( count( $CitrusHosts ) ) {
-                foreach ( $CitrusHosts as $host => $args ) {
-                    if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
-                        $r = new \ReflectionClass( '\core\Citrus\Host' );
-                        $inst = $r->newInstanceArgs( $args ? $args : array() );
-                        if ( $inst ) {
-                            $this->host = $inst;
-                            $this->request = new http\Request();
-                            $this->startServices();
-                        } else {
-                            throw new sys\Exception( "Provided host is not a valid Citrus host." );
-                        }
-                    }
-                }
-                $this->response = new http\Response();
-            } else {
-                throw new sys\Exception( "No valid host found" );
+            # error handling
+            set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
+
+            # shutdown handling
+            register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
+
+            try {
+                $this->loadConfiguration();
+                $this->loadRouter();
+
+                $app = $this->router->app;
+                $module = $this->router->controller;
+                $action = $this->router->action;
+                $this->app = App::load( $app ); 
+                $this->app->createController( $module, $action );
+                $this->request->addParams( $this->router->params );
+                
+                $this->app->executeCtrlAction();
+            } catch ( NoRouteFoundException $e ) {
+                self::pageNotFound();
+            } catch ( Exception $e ) {
+                Debug::handleException( $e, $this->debug );
+                return;
             }
+
+
+            $this->done = true;
         }
-        
-        # exception handling
-        set_exception_handler( array( '\core\Citrus\sys\Debug', 'handleException' ) );
-
-        # shutdown handling
-        register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
-
-        # error handling
-        set_error_handler( array( '\core\Citrus\sys\Debug', 'handleError') , -1 & ~E_NOTICE & ~E_USER_NOTICE );
     }
 
-    public function BootCli() {
+    public function bootCLI() {
         $this->registerAutoload();
     }
 
@@ -219,9 +214,43 @@ class Citrus {
             if ( file_exists( CITRUS_PATH . self::$config_file ) ) {
                 $this->config = include_once CITRUS_PATH . self::$config_file;
             } elseif ( file_exists( CITRUS_PATH . self::$default_config_file ) ) {
-                $this->config = include_once CITRUS_PATH . self::$config_file;
+                $this->config = include_once CITRUS_PATH . self::$default_config_file;
+            }
+            if ( $this->config ) {
+                date_default_timezone_set( $this->config['default_timezone'] );
+                # loading hosts
+                $hosts = $this->config['hosts'];
+
+                if ( count( $hosts ) ) {
+                    foreach ( $hosts as $host => $args ) {
+                        if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
+                            $r = new \ReflectionClass( '\core\Citrus\Host' );
+                            $inst = $r->newInstanceArgs( $args ? $args : array() );
+                            if ( $inst ) {
+                                $this->host = $inst;
+                                $this->request = new http\Request();
+                                $this->startServices();
+                                break;
+                            } else {
+                                throw new Exception( "Provided host is not a valid Citrus host." );
+                            }
+                        }
+                    }
+                    $this->response = new http\Response();
+                } else {
+                    throw new Exception( "No host found in configuration file." );
+                }
             } else {
-                throw new sys\Exception( "Unable to find configuration file." );
+                throw new Exception( "Unable to find configuration file." );
+            }
+            if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
+                if ( $this->debug ) {
+                    ini_set( 'display_errors', 0 );
+                    error_reporting( E_ALL );
+                }
+                define( 'CITRUS_PROJECT_URL', $this->host->root_path );
+            } else {
+                throw new Exception( "No valid host found." );
             }
         }
     }
@@ -233,16 +262,11 @@ class Citrus {
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        $this->router = new routing\Router( $this->host->root_path );
-        try {
-            $this->router->loadRoutes();
-        } catch ( sys\Exception $e ) {
-            sys\Debug::handleException( $e, $this->debug );
-        }
-
+        $this->router = new Router( $this->host->root_path );
+        $this->router->loadRoutes();
         $this->router->defaultRoutes();
         $this->router->execute();
-}
+    }
     
     /**
      * Mass assign an object properties
@@ -275,15 +299,15 @@ class Citrus {
     public function startServices() {
         $services = $this->host->services;
         if ( $services['debug']['active'] ) {
-            sys\Debug::$debug = true;
-            $this->debug = new sys\Debug( $this->request );
-            $this->debug->timer = new sys\Timer( "total" );
+            Debug::$debug = true;
+            $this->debug = new Debug( $this->request );
+            $this->debug->timer = new Timer( "total" );
             $this->debug->timer->start();
         }
         else $this->debug = false;
 
         if ( isset( $services['logger'] ) && $services['logger']['active'] == true ) {
-            $this->logger = new sys\Logger( $this->host->domain );
+            $this->logger = new Logger( $this->host->domain );
             $this->logger->logEvent( 'Logging service started.' );
         }
     }
@@ -306,7 +330,7 @@ class Citrus {
                     }
                     return $this->db;
                 } catch ( \PDOException $e ) {
-                    sys\Debug::handleException( $e, $this->debug );
+                    Debug::handleException( $e, $this->debug );
                 }
             }
         }
@@ -315,7 +339,7 @@ class Citrus {
     /**
      * executed when Citrus stops (properly or not) 
      */
-    public static function shutDown() {
+    static public function shutDown() {
         $cos = Citrus::getInstance();
         if ( $cos->debug )
             $cos->debug->showErrorIfExists();
@@ -339,5 +363,16 @@ class Citrus {
         return $this->app->controller;
     }
 
+    public function getClassName( $class_name ) {
+        return join( '', array_slice( explode( '\\', $name ), -1 ) );
+    }
+
+    public function setGlobal( $name, $value ) {
+        $this->globals[$name] = $value;
+    }
+
+    public function getGlobal( $name ) {
+        if ( isset( $this->globals[$name] ) ) return $this->globals[$name];
+        return false;
     }
 }
