@@ -1,6 +1,6 @@
 <?php
 
-namespace apps\install;
+namespace core\Citrus\sys;
 use \core\Citrus\Citrus;
 use \core\Citrus\mvc\App;
 use \core\Citrus\sys;
@@ -10,21 +10,21 @@ class Installer {
     private $tpl_dir;
 
     public function __construct() {
-        $this->tpl_dir = CITRUS_PATH . '/apps/install/generation/templates/';
+        $this->tpl_dir = __DIR__ . '/templates/';
     }
 
     public function appExists( $name ) {
-        $app_path = CITRUS_APPS_PATH . '/' . $name;
+        $app_path = CTS_APPS_PATH . '/' . $name;
         return is_dir( $app_path );
     }
 
     public function generateApp( $name ) {
-        if ( is_dir( CITRUS_APPS_PATH ) ) {
-            $app_path = CITRUS_APPS_PATH . '/' . $name;
+        if ( is_dir( CTS_APPS_PATH ) ) {
+            $app_path = CTS_APPS_PATH . '/' . $name;
             if ( !$this->appExists( $app_path ) ) {
                 $mainDir = mkdir( $app_path, 0755 );
                 if ( $mainDir ) {
-                    $modules = mkdir( $app_path . '/modules', 0755 );
+                    $modules = mkdir( $app_path . '/controllers', 0755 );
                     $templates = mkdir( $app_path . '/templates', 0755 );
                     $config = mkdir( $app_path . '/config', 0755 );
                     if ( $modules && $templates && $config ) {
@@ -41,17 +41,11 @@ class Installer {
     }
     
     public function generateModule( $name, $app, $resourceType = null ) {
-        if ( is_dir( CITRUS_APPS_PATH ) ) {
-            $modulePath = CITRUS_APPS_PATH . $app . '/modules/' . $name;
-            if ( !is_dir( $modulePath ) ) {
-                $mainDir = mkdir( $modulePath, 0755 );
-                if ( $mainDir ) {
-                    $templates = mkdir( $modulePath . '/templates', 0755 );
-                    if ( $templates ) {
-                        $this->generateControllerFile( $name, $app );
-                        return true;
-                    }
-                } 
+        if ( is_dir( CTS_APPS_PATH ) ) {
+            $modulePath = CTS_APPS_PATH . $app . '/controllers/';
+            if ( is_dir( $modulePath ) || mkdir( $modulePath, 0755 ) ) {
+                $this->generateControllerFile( $name, $app );
+                return true;
             } else {
                 throw new sys\Exception( "Module already exists" );
             }
@@ -78,7 +72,7 @@ class Installer {
      * @return array An array of apps names
      */
     public function getModulesList( $app ) {
-        $dir = CITRUS_APPS_PATH . $app . '/modules/';
+        $dir = CTS_APPS_PATH . $app . '/modules/';
         $modules = array();
         
         if ( is_dir( $dir ) ) {
@@ -102,7 +96,7 @@ class Installer {
      * @return boolean whether the file could be created or not.
      */
     public function generateAppRoutingFile( $app_name ) {
-        $path = CITRUS_APPS_PATH . $app_name;
+        $path = CTS_APPS_PATH . $app_name;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'routing.tpl';
             $tpl =  fopen( $templateFile, 'r' );
@@ -126,7 +120,7 @@ class Installer {
      * @return boolean whether the file could be created or not.
      */
     public function generateControllerFile( $name, $app ) {
-        $path = CITRUS_APPS_PATH . $app;
+        $path = CTS_APPS_PATH . $app;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'controller.tpl';
             $tpl = fopen( $templateFile, 'r' );
@@ -136,7 +130,8 @@ class Installer {
             $content = str_replace( "{module_name}", $name, $content );
             $write = false;
             if ( $content ) {
-                $file = fopen( $path . '/modules/' . $name . '/Controller.php', 'w' );
+                $name = ucfirst( strtolower( $name ) ) . 'Controller.php';
+                $file = fopen( $path . '/controllers/' . $name, 'w' );
                 $write = fwrite( $file, $content );
                 fclose( $file );
             }
@@ -145,7 +140,7 @@ class Installer {
     }
     
     public function generateAppClassFile( $app_name ) {
-        $path = CITRUS_APPS_PATH . '/' . $app_name;
+        $path = CTS_APPS_PATH . '/' . $app_name;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'App.tpl';
             $tpl =  fopen( $templateFile, 'r' );

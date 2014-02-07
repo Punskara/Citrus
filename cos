@@ -26,7 +26,7 @@ if ( $command ) {
                         echo "[ERROR] App name must be alphabetic, lower case only.\n";
                         return;
                     }
-                    $installer = new \apps\install\Installer();
+                    $installer = new \core\Citrus\sys\Installer();
                     $installer->generateApp( $argv[2] );
                     echo "[OK] App '$name' created.\n";
                 } catch ( Exception $e ) {
@@ -38,9 +38,9 @@ if ( $command ) {
         case 'new-module':
             if ( isset( $argv[2] ) && isset( $argv[3] ) ) {
                 try {
-                    $app_name = $argv[2];
-                    $mod_name = $argv[3];
-                    $installer = new \apps\install\Installer();
+                    $mod_name = $argv[2];
+                    $app_name = $argv[3];
+                    $installer = new \core\Citrus\sys\Installer();
                     if ( !$installer->appExists( $app_name ) ) {
                         echo "[ERROR] App '$app_name' doesn't exist. Try new-app first.\n";
                         return;
@@ -54,7 +54,7 @@ if ( $command ) {
                 } catch ( Exception $e ) {
                     echo $e->getMessage() . "\n";
                 }
-            } else echo "[INFO] syntax: new-module appname modulename.\n";
+            } else echo "[INFO] syntax: new-module modulename appname.\n";
             break;
 
         case 'compile-less':
