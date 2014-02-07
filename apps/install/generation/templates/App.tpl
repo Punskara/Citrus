@@ -10,8 +10,10 @@ class {app_class} extends App {
     public $layout       = 'main';
     public $is_protected = false;
 
+    public function onBeforeExecuteAction() {}
+
     public function setViewSettings() {
-        if ( !isset( $cos ) ) $cos = \core\Citrus\Citrus::getInstance();
+        if ( !isset( $cos ) ) $cos = Citrus::getInstance();
         if ( $cos->debug ) {
             $this->controller->view->addCSS( 
                 CITRUS_PROJECT_URL . 'citrus-debug/css/citrus.min.css' 

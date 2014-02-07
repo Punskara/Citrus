@@ -2,7 +2,7 @@
 /*
 .---------------------------------------------------------------------------.
 |   Software: Citrus PHP Framework                                          |
-|   Version: 1.0                                                            |
+|   Version: 1.0.2                                                            |
 |   Contact: contact@citrus-project.net                                     |
 |      Info: http://citrus-project.net                                      |
 |   Support: http://citrus-project.net/documentation/                       |
@@ -28,7 +28,7 @@
 namespace apps\install\modules\main;
 use \core\Citrus\Citrus;
 use \core\Citrus\mvc\Controller as AController;
-use \core\Citrus\http;
+use \core\Citrus\http\Http;
 use \core\Citrus\db\InsertQuery;
 use \apps\install\Installer;  
 
@@ -65,8 +65,8 @@ class Controller extends AController {
                 
                 $bdd_lnk = explode(';', $h['services']['db']['connection'][0]);
                 
-                $host['hostname'] = $h['httpHost'];
-                $host['path'] = $h['baseUrl'];
+                $host['hostname'] = $h['domain'];
+                $host['path'] = $h['root_path'];
                 $host['log'] = $h['services']['logger']['active'] ? 1 : 0;
                 $host['debug'] = $h['services']['debug']['active'] ? 1 : 0;
                 $host['bdd'] = $h['services']['db']['active'] ? 1 : 0;
@@ -74,11 +74,9 @@ class Controller extends AController {
                 $host['bddhost'] = substr($bdd_lnk[1],5) ? substr($bdd_lnk[1],5) : '' ;
                 $host['login'] = $h['services']['db']['connection'][1];
                 $host['password'] = $h['services']['db']['connection'][2];
-                $host['type'] = $h['type'];
                 $json['hosts'][] = (object) $host;
             }
             
-            // $cos = Citrus::getInstance();
             $installer = new Installer();
             foreach ( $installer->getAppsList() as $app ) $res[ $app ] =  $installer->getModulesList( $app );
             
@@ -91,17 +89,17 @@ class Controller extends AController {
 
     public function do_generate( $request ) {
         $this->view->layout = false;
-        $config = json_decode(html_entity_decode ($request->param('config', 'string' ), ENT_QUOTES));
+        $config = json_decode( html_entity_decode ( $request->param('config', 'string' ), ENT_QUOTES ) );
         // création du fichier config
 
-        foreach ($config->hosts as $k=>$host) {
+        foreach ( $config->hosts as $k=>$host ) {
             $hosts_generate[] = array(
-                'httpHost'          => $host->hostname,
-                'baseUrl'           => $host->path,
-                'services'          => array(
+                'domain'    => $host->hostname,
+                'root_path' => $host->path,
+                'services'  => array(
                     'logger' => array( 'active' => $host->log ? true : false ),
                     'debug'  => array( 'active' => $host->debug ? true : false ),
-                    'db'     => array( 'active' => $config->bdd ? true : false ,
+                    'db'     => array( 'active' => $host->bdd ? true : false ,
                         'connection' => array( 
                             "mysql:dbname=" . $host->database . ";host=" . $host->bddhost , 
                             $host->login, 
@@ -109,7 +107,6 @@ class Controller extends AController {
                         ),
                     ),
                 ),
-                'type'              => $host->type,
             );
         }
         
@@ -126,10 +123,12 @@ class Controller extends AController {
         );
         
         $config_file = '<?php' . chr(10) . 'return $config = ' . $config_str .';';
-        // sauvegarde de l'ancien fichier de configuration
+
+        // saving old configuration settings
         if ( is_file( CITRUS_PATH . '/config/config.inc.php' ) )
             rename ( CITRUS_PATH . '/config/config.inc.php', CITRUS_PATH . '/config/config.' . date("Ymdhis") . '.php' );
-        // ecriture du fichier de configuration
+
+        // writing new configuration settings
         $fp = fopen( CITRUS_PATH . '/config/config.inc.php' , 'w');
         fwrite($fp, $config_file);
         fclose($fp);
@@ -137,7 +136,9 @@ class Controller extends AController {
         // création des apps et modules
         $installer = new Installer();
         $exist = $installer->getAppsList();
-        foreach ( $installer->getAppsList() as $app ) $exist[ $app ] =  $installer->getModulesList( $app );
+        
+        foreach ( $installer->getAppsList() as $app ) 
+            $exist[ $app ] =  $installer->getModulesList( $app );
 
         foreach ( $config->apps as $app => $modules ) {
             if ( !isset($exist[ $app ]) ) $installer->generateApp( $app );
@@ -146,7 +147,7 @@ class Controller extends AController {
                     $installer->generateModule( $module, $app );
         }
         
-        http\Http::redirect( CITRUS_PROJECT_URL );
+        Http::redirect( CITRUS_PROJECT_URL );
         
     }
 }

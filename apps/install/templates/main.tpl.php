@@ -60,7 +60,7 @@ $scpt1 = $head->addChild( 'script', array(
     ),
     'inline' => false,
 ) );
-$scpt1->addHtml( "var rootUrl = '" . $cos->host->baseUrl . "';" );
+$scpt1->addHtml( "var rootUrl = '" . $cos->host->root_path . "';" );
 
 // body
 $body = $html->addChild( 'body' );
