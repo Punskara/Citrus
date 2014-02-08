@@ -1,6 +1,6 @@
 <?php
 
-define( 'CTS_PATH', dirname( __FILE__ ) );
+define( 'CTS_PATH', __DIR__ );
 define( 
     'CTS_IS_DEV', 
     !isset( $_SERVER['REMOTE_ADDR'] ) || $_SERVER['REMOTE_ADDR'] == '127.0.0.1'
