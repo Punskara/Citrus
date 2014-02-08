@@ -29,12 +29,12 @@ class View {
     /**
      * @var array
      */
-    private $styleSheets = array();
+    private $stylesheets = array();
     
     /**
      * @var array
      */
-    private $javascriptFiles = array();
+    private $javascripts = array();
     
     /**
      * @var string
@@ -45,16 +45,6 @@ class View {
      * @var string
      */
     public $layout_file;
-
-    /**
-     * @var array
-     */
-    private $addedStyleSheets = array();
-    
-    /**
-     * @var array
-     */
-    private $addedJavascripts = array();
     
     /**
      * @var String
@@ -66,7 +56,13 @@ class View {
      */
     private $vars = array();
 
+
+    /**
+     * @var strong
+     */
     public $static_path = CTS_PROJECT_URL;
+
+
 
     const TPL_EXT = ".tpl.php";
 
@@ -81,7 +77,7 @@ class View {
         $this->tpl_file = $cos->app->tpl_dir . $tpl_name . self::TPL_EXT;
 
         // automaticly disabling layout if XMLHTTPRequest
-        $this->layout = !$cos->request->isXHR;
+        $this->layout = !$cos->request->is_XHR;
     }
     
     /** 
@@ -89,8 +85,8 @@ class View {
      *
      * @param array $stylesheets The stylesheets to add
      */
-    public function setCSS( $styleSheets ) {
-        $this->styleSheets = $styleSheets;
+    public function setCSS( $stylesheets ) {
+        $this->stylesheets = $stylesheets;
     }
     
     /** 
@@ -99,7 +95,7 @@ class View {
      * @param array $stylesheets The stylesheets to add
      */
     public function addCSS( $path ) {
-        $this->addedStyleSheets[] = $path;
+        $this->stylesheets[] = $path;
     }
     
 
@@ -128,8 +124,8 @@ class View {
         
         $cssFiles = '';
         $sheets = array();
-        if ( $this->styleSheets ) {
-            foreach ( $this->styleSheets as $s ) {
+        if ( $this->stylesheets ) {
+            foreach ( $this->stylesheets as $s ) {
                 $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
                 if ( $media == 'print' ) $s = substr( $s, 1 );
 
@@ -143,36 +139,15 @@ class View {
 
                 $st = new Element( 'link', array(
                     'attributes' => array(
-                        'rel' => 'stylesheet' . $rel_less,
+                        'rel'   => 'stylesheet' . $rel_less,
                         'media' => $media,
-                        'type' => 'text/css',
-                        'href' => $href,
+                        'type'  => 'text/css',
+                        'href'  => $href,
                     ), 
                     'inline' => true,
                     'closeTag' => false,
                 ) );
                 $sheets[] = $st;
-            }
-        }
-        if ( count( $this->addedStyleSheets ) ) {
-            foreach ( $this->addedStyleSheets as $s ) {
-                $media = substr( $s, 0, 1 ) == '@' ? 'print' : 'screen';
-                if ( $media == 'print' ) $s = substr( $s, 1 );
-                if ( substr( $s, 0, 4 ) == "http" ) $href = $s;             
-                elseif ( substr( $s, 0, 1 ) === '/' )  $href = $s;
-                else $href = CTS_PROJECT_URL . "css/$s";
-                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
-                $st = new Element( 'link', array(
-                    'attributes' => array(
-                        'rel' => 'stylesheet' . $rel_less,
-                        'media' => $media,
-                        'type' => 'text/css',
-                        'href' => $href,
-                    ), 
-                    'inline' => true,
-                    'closeTag' => false
-                ) ); 
-                $sheets[] = $st;                
             }
         }
         
@@ -182,13 +157,13 @@ class View {
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
                 $st = new Element( 'link', array(
                     'attributes' => array(
-                        'rel' => 'stylesheet' . $rel_less,
+                        'rel'   => 'stylesheet' . $rel_less,
                         'media' => $media,
-                        'type' => 'text/css',
-                        'href' => CTS_PROJECT_URL . $src,
+                        'type'  => 'text/css',
+                        'href'  => CTS_PROJECT_URL . $src,
                     ), 
-                    'inline' => true,
-                    'closeTag' => false
+                    'inline'    => true,
+                    'closeTag'  => false
                 ) );
                 $sheets[] = $st;                
             }
@@ -199,10 +174,10 @@ class View {
     /** 
      * Sets the javascript files to be used in the html file
      *
-     * @param array $javascriptFiles The files to add
+     * @param array $files The files to add
      */
     public function setJS( $files ) {
-        $this->javascriptFiles = $files;
+        $this->javascripts = $files;
     }
     
     /** 
@@ -211,7 +186,7 @@ class View {
      * @param string  $path  Path to the file.
      */
     public function addJS( $path ) {
-        $this->addedJavascripts[] = $path;
+        $this->javascripts[] = $path;
     }
     
     
@@ -223,17 +198,17 @@ class View {
     public function getJSAsElements( $show_type_attr = false ) {
         $cos = Citrus::getInstance();
         $elements = array();
-        if ( $this->javascriptFiles ) {
+        if ( $this->javascripts ) {
             $files = array();
-            foreach ( $this->javascriptFiles as $s ) {
+            foreach ( $this->javascripts as $s ) {
                 $is_absolute = substr( $s, 0, 1 ) == "/";
                 $is_remote = substr( $s, 0, 4 ) == "http";
                 if ( $is_absolute || $is_remote ) $src = $s;
                 else $src = $this->static_path . "js/$s";
                 $elt = new Element( 'script', array(
                     'attributes' => array(
-                        'type' => 'text/javascript',
-                        'src' => $src,
+                        'type'  => 'text/javascript',
+                        'src'   => $src,
                     ), 
                     'inline' => false 
                 ) );
@@ -241,30 +216,15 @@ class View {
             }
         }
         
-        if ( count( $this->addedJavascripts ) ) {
-            foreach ( $this->addedJavascripts as $s ) {
-                $is_absolute = substr( $s, 0, 1 ) == "/";
-                $is_remote = substr( $s, 0, 4 ) == "http";
-                if ( $is_absolute || $is_remote ) $src = $s;
-                else $src = $this->static_path . "js/$s";
-                $elt = new Element( 'script', array(
-                    'attributes' => array(
-                        'type' => 'text/javascript',
-                        'src' => $src,
-                    ), 
-                    'inline' => false,
-                ) );
-                $elements[] = $elt;
-            }
-        }
-        
         if ( $cos->app && $cos->app->controller ) {
-            $src = 'js/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.js' ;
-            if (is_file(CTS_WWW_PATH . $src)) {
+            $src =  'js/' . $cos->app->name . '/modules/' . 
+                    $cos->app->controller->name . '.js' ;
+                    
+            if ( is_file( CTS_WWW_PATH . $src ) ) {
                 $elt = new Element( 'script', array(
                     'attributes' => array(
-                        'type' => 'text/javascript',
-                        'src' => CTS_PROJECT_URL . $src,
+                        'type'  => 'text/javascript',
+                        'src'   => CTS_PROJECT_URL . $src,
                     ), 
                     'inline' => false,
                 ) );

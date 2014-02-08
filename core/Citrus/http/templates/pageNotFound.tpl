@@ -1,4 +1,4 @@
-<?php if ( !$cos->request->isXHR ) { ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+<?php if ( !$cos->request->is_XHR ) { ?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
 <head>
@@ -35,5 +35,5 @@
         <p class="message">Error 404.</p>
         <p>The page you requested doesn't exist.</p>
     </div>
-<?php if ( !$cos->request->isXHR ) { ?></body>
+<?php if ( !$cos->request->is_XHR ) { ?></body>
 </html><?php } ?>

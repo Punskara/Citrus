@@ -39,12 +39,12 @@ class Response {
     /**
      * @var string
      */
-    public $contentType = 'text/html';
+    public $content_type = 'text/html';
     
     /**
      * @var string
      */
-    public $contentCharset = 'utf-8';
+    public $charset = 'utf-8';
 
     public $headers = Array();
 
@@ -58,45 +58,65 @@ class Response {
             return false;
         }
 
+        $charset = empty( $this->charset ) 
+                    ? '' 
+                    : '; charset=' . $this->charset;
+
         $this->addHeader( 
             'Content-Type', 
-            $this->contentType . 
-                ( empty( $this->contentCharset ) ? '' : '; charset=' . $this->contentCharset ) 
+            $this->content_type . $charset
         );
         if ( count( $this->headers ) ) 
             foreach ( $this->headers as $k => $v )
                 header( $k . ': ' . $v, true );
         
         $this->message = str_replace( array( "\r", "\n" ), '', $this->message );
-        header( 'HTTP/1.1 ' . $this->code . ' ' . $this->message, true, $this->code );
+        header( 
+            'HTTP/1.1 ' . $this->code . ' ' . $this->message, 
+            true, $this->code 
+        );
         return $this->code;
     } 
 
     public function addHeader( $name, $value ) {
         $this->headers[$name] = $value;
+        return $this;
     }
 
     public function removeHeader( $name ) {
         if ( isset( $this->headers[$name] ) ) unset( $this->headers[$name] );
+        return $this;
     }
 
     public function setCacheHeaders( $file_path ) {
-        $last_modified = filemtime( $file_path );
-        $etag_file = md5_file( $file_path );
-        $modified_since = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] : false );
-        $etag_header = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) : false );
-        $file_size = filesize( $file_path );
+        $last_modified  = filemtime( $file_path );
+        $etag_file      = md5_file( $file_path );
+        $modified_since = ( isset( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) 
+                            ? $_SERVER['HTTP_IF_MODIFIED_SINCE'] 
+                            : false 
+                        );
+        $etag_header    = ( isset( $_SERVER['HTTP_IF_NONE_MATCH'] ) 
+                            ? trim( $_SERVER['HTTP_IF_NONE_MATCH'] ) 
+                            : false 
+                        );
+        $file_size      = filesize( $file_path );
 
-        $this->addHeader( "Last-Modified", gmdate( "D, d M Y H:i:s", $last_modified ) . " GMT" );
-        $this->addHeader( "Etag", $etag_header );
-        $this->addHeader( "Cache-Control", "public" );
+        $this->addHeader( 
+            "Last-Modified", 
+            gmdate( "D, d M Y H:i:s", $last_modified ) . " GMT" 
+        );
+        $this->addHeader( "Etag", $etag_header )
+             ->addHeader( "Cache-Control", "public" );
 
         $now = new Date();
         $exp = $now->add( \DateInterval::createFromDateString( '1 week' ) );
-        $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) );
-        $this->addHeader( 'Content-Length', $file_size );
+        $this->addHeader( 'Expires', $exp->format( "D, d M Y H:i:s \G\M\T" ) )
+             ->addHeader( 'Content-Length', $file_size );
 
-        if ( $modified_since && @strtotime( $_SERVER['HTTP_IF_MODIFIED_SINCE'] ) == $last_modified || $etag_header == $etag_file ) {
+        if ( $modified_since 
+             && @strtotime( $modified_since ) == $last_modified 
+             || $etag_header == $etag_file 
+        ) {
             $this->code = 304;
             $this->message = "Not Modified";
         }

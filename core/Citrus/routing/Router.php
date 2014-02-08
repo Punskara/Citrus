@@ -60,12 +60,14 @@ class Router {
 
     public function defaultRoutes() {
         $this->map( '/:app/:controller/:action' . $this->ext );
+        return $this;
     }
 
     public function map( $rule, $target = array(), $conditions = array() ) {
         $this->routes[$rule] = new Route( 
             $rule, $this->request_uri, $target, $conditions 
         );
+        return $this;
     }
     
     public function execute() {
@@ -78,6 +80,7 @@ class Router {
             }
             throw new NoRouteFoundException();
         }
+        return $this;
     }
 
     public function getRouteURL() {
@@ -110,29 +113,31 @@ class Router {
     public function loadRoutes() {
         $routesFile = CTS_PATH . '/config/routing.php';
         
-        if ( file_exists( $routesFile ) ) {
-            $routing = include $routesFile;
-            if ( isset( $routing['routes'] ) ) {
-                $routes = $routing['routes'];
-                if ( count( $routes ) ) {
-                    foreach ( $routes as $route ) {
-                        if ( isset( $route['url'] ) && isset( $route['target'] ) ) {
-                            $this->map( 
-                                $route['url'], 
-                                $route['target'], 
-                                isset( $route['conditions'] ) ? $route['conditions'] : Array() 
-                            );
-                        }
-                    }
+        if ( !file_exists( $routesFile ) ) {
+            throw new Exception( "No routing file found." );
+            return;
+        }
+        $routing = include $routesFile;
+        if ( isset( $routing['routes'] ) ) {
+            $routes = $routing['routes'];
+            if ( count( $routes ) ) foreach ( $routes as $route ) {
+                if ( isset( $route['url'] ) 
+                     && isset( $route['target'] ) 
+                ) {
+                    $this->map( 
+                        $route['url'], 
+                        $route['target'], 
+                        isset( $route['conditions'] ) 
+                            ? $route['conditions'] 
+                            : Array() 
+                    );
                 }
             }
-            // browsing apps files
-            $apps = App::listApps();
-            foreach ( $apps as $app ) $this->loadAppRoutes( $app );
-            
-         } else {
-             throw new Exception( "No routing file found." );
-         }
+        }
+        // browsing apps files
+        $apps = App::listApps();
+        foreach ( $apps as $app ) $this->loadAppRoutes( $app );
+        return $this;
     }
     
 
@@ -143,20 +148,30 @@ class Router {
 
     public function loadAppRoutes( $app = null ) {
         $virtual = true;
-        if ( is_null($app)) {
+        if ( is_null( $app ) ) {
             $app = $this->app;
             $virtual = false;
         } 
-        $routesFile = CTS_APPS_PATH . $app . '/config/routing.php';
+        $routes_file = CTS_APPS_PATH . $app . '/config/routing.php';
 
-        if ( file_exists( $routesFile ) ) {            
-            $routes = include $routesFile;
-            if ( isset( $routes['routes'] ) && is_array( $routes['routes'] ) && count( $routes ) ) {
+        if ( file_exists( $routes_file ) ) {            
+            $routes = include $routes_file;
+            if ( isset( $routes['routes'] ) 
+                 && is_array( $routes['routes'] ) 
+                 && count( $routes ) 
+            ) {
                 foreach ( $routes['routes'] as $route ) {
                     if ( isset( $route['url'] ) ) {
                         $target = Array();
-                        if ( isset( $route['target'] ) ) $target = $route['target'];
-                        $this->map( $route['url'], $target, isset($route['conditions']) ? $route['conditions'] : Array() );
+                        if ( isset( $route['target'] ) ) 
+                            $target = $route['target'];
+
+                        $this->map( 
+                            $route['url'], $target, 
+                            isset( $route['conditions'] ) 
+                                ? $route['conditions'] 
+                                : Array() 
+                        );
                     }
                 }
             }

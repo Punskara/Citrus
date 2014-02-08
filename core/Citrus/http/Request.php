@@ -40,12 +40,12 @@ class Request {
     /**
      * @var integer
      */
-    public $inputMethod;
+    public $input_method;
     
     /**
      * @var string
      */
-    public $queryString;
+    public $query_string;
     
     /**
      * @var string
@@ -60,7 +60,7 @@ class Request {
     /**
      * @var boolean  Determines whether the request is passed by AJAX or not.
      */
-    public $isXHR;
+    public $is_XHR;
 
     public $address;
 
@@ -68,19 +68,25 @@ class Request {
      * Constructor
      */
     public function __construct() {
-        $this->method = $_SERVER['REQUEST_METHOD'];
-        $this->queryString = $_SERVER['QUERY_STRING'];
-        $this->uri = $_SERVER['REQUEST_URI'];
-        $this->referer = isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null ;
-        $this->isXHR = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
-        $this->address = isset( $_SERVER['REMOTE_ADDR'] ) ? $_SERVER['REMOTE_ADDR'] : null;
+        $this->method       = $_SERVER['REQUEST_METHOD'];
+        $this->query_string = $_SERVER['QUERY_STRING'];
+        $this->uri          = $_SERVER['REQUEST_URI'];
+        $this->referer      = isset( $_SERVER['HTTP_REFERER'] ) 
+                                ? $_SERVER['HTTP_REFERER'] 
+                                : null ;
+        $this->address      = isset( $_SERVER['REMOTE_ADDR'] ) 
+                                ? $_SERVER['REMOTE_ADDR'] : null;
+
+        $this->is_XHR = isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) 
+                        && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+
         if ( $this->method == 'POST' ) {
-            $this->inputMethod = INPUT_POST;
-            $this->params = $_POST;
-            $this->files = $_FILES;
+            $this->input_method = INPUT_POST;
+            $this->params       = $_POST;
+            $this->files        = $_FILES;
         } else {
-            $this->inputMethod = INPUT_GET;
-            $this->params = $_GET;
+            $this->input_method  = INPUT_GET;
+            $this->params       = $_GET;
         }
     }
     
@@ -99,45 +105,6 @@ class Request {
         }
         return false;
     }
-    
-    /**
-     * Gets a variable sent by POST
-     * 
-     * @param string  $key  Name of the variable.
-     * 
-     * @return mixed|array|boolean  If found, the value of the variable, else false. If key is not provided, returns all the $_POST array.
-     */
-    public function post( $key = null ) {
-        if ( $key ) {
-            if ( isset( $_POST[$key] ) ) {
-                return $_POST[$key];
-            } else {
-                return false;
-            }
-        } else {
-            return $_POST;
-        }
-    }
-    
-    /**
-     * Gets a variable sent by GET
-     * 
-     * @param string  $key  Name of the variable.
-     * 
-     * @return mixed|array|boolean  If found, the value of the variable, else false. If key is not provided, returns all the $_GET array.
-     */
-    public function get( $key ) {
-        if ( $key ) {
-            if ( isset( $_GET[$key] ) ) {
-                return $_GET[$key];
-            } else {
-                return false;
-            }
-        } else {
-            return $_GET;
-        }
-    }
-
 
     /**
      * Adds a parameter to the request parameters

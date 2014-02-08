@@ -80,7 +80,7 @@ class Model {
     protected $_props = Array();
 
     public function __construct() {
-        $this->datecreated = new Date( $this->datecreated );
+        $this->datecreated  = new Date( $this->datecreated );
         $this->datemodified = new Date( $this->datemodified );
         
         

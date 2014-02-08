@@ -74,7 +74,9 @@ abstract class App {
         $this->name = $name;
         $this->tpl_dir = CTS_APPS_PATH . $this->name . '/templates/';
         if ( !is_dir( $this->tpl_dir ) ) 
-            throw new Exception( "Application template directory doesn't exist." );
+            throw new Exception( 
+                "Application template directory doesn't exist." 
+            );
     }
 
     public function __toString() {
@@ -90,10 +92,12 @@ abstract class App {
      * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
      */
     public function createController( $name, $action ) {
-        $path = $this->path . '/controllers/';
+        $path       = $this->path . '/controllers/';
         $class_file = $path . ucfirst( $name ) . 'Controller.php';
         $class_name = str_replace( CTS_PATH, '', $path );
-        $class_name = str_replace( '/', '\\', $class_name ) . ucfirst( $name ) . 'Controller';
+        $class_name = str_replace( '/', '\\', $class_name ) . 
+                      ucfirst( $name ) . 'Controller';
+
         if ( !$name ) {
             $this->controller = new Controller( $action );
         } else {
@@ -167,12 +171,15 @@ abstract class App {
      */
 
     static public function load( $name ) {
-        $app_path = $name;
-        $class_name = str_replace( '/', '\\', CTS_APPS_DIR . $app_path . '/' . ucfirst( $name ) . 'App' );
+        $app_path = CTS_APPS_DIR . $name;
+        $class_name = str_replace( 
+            '/', '\\', 
+            $app_path . '/' . ucfirst( $name ) . 'App' 
+        );
         if ( class_exists( $class_name ) ) {
-            $r = new \ReflectionClass( $class_name ); 
-            $app = $r->newInstanceArgs( array( $name ) );            
-            $app->path = CTS_APPS_PATH . $app_path;
+            $r          = new \ReflectionClass( $class_name ); 
+            $app        = $r->newInstanceArgs( array( $name ) );            
+            $app->path  = $app_path;
             return $app;
         } else {
             throw new Exception( "Unable to find app '$name'" );
@@ -189,22 +196,24 @@ abstract class App {
         $dir = CTS_APPS_PATH;
         $apps = array();
         
-        if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( is_dir( CTS_APPS_PATH . $file ) ) {
-                            $apps[] = $file;
-                        }
+        if ( is_dir( $dir ) && $dh = opendir( $dir ) ) {
+            while ( ( $file = readdir( $dh ) ) !== false ) {
+                if ( substr( $file, 0, 1) != '.' ) {
+                    if ( is_dir( CTS_APPS_PATH . $file ) ) {
+                        $apps[] = $file;
                     }
                 }
-                closedir( $dh );
             }
+            closedir( $dh );
         }
         return $apps;
     }
 
     public function getControllerUrl() {
-        return url_to( $this->name . '/' . strtolower( $this->controller->getPrefix() ) . '/', 1 );
+        return url_to( 
+            $this->name . '/' . 
+            strtolower( $this->controller->getPrefix() ) . 
+            '/', 1 
+        );
     }
 }

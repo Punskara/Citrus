@@ -92,7 +92,7 @@ class Controller {
         $tpl_name = strtolower( $this->getPrefix() ) . '/' . $this->action;
         $this->view = new View( $tpl_name );
 
-        $this->view->layout = !$request->isXHR;
+        $this->view->layout = !$request->is_XHR;
         $this->$action( $request );
 
         if ( $cos->debug ) $cos->debug->stopLastTimer();
@@ -179,15 +179,16 @@ class Controller {
     
 
     public function do_static( $request ) {
-        $cos = Citrus::getInstance();
+        $cos        = Citrus::getInstance();
         $this->view = false;
-        $uri = $_SERVER['REQUEST_URI']; 
-        $file_ext = $request->param( 'ext' ); 
-        $file_type = $request->param( 'type' ); 
-        $file_name = $request->param( 'file' ); 
-        $file_path = $cos->app->path . "/static/$file_type/$file_name$file_ext";
-        $content = "";
-        $file_ext = substr( $file_ext, 1 );
+        $uri        = $_SERVER['REQUEST_URI']; 
+        $file_ext   = $request->param( 'ext' ); 
+        $file_type  = $request->param( 'type' ); 
+        $file_name  = $request->param( 'file' ); 
+        $file_path  = $cos->app->path . "/static/$file_type/$file_name$file_ext";
+        $content    = "";
+        $file_ext   = substr( $file_ext, 1 );
+
         if ( !file_exists( $file_path ) ) 
             $file_path = CTS_WWW_PATH . substr( $uri, 1 );
 
@@ -195,13 +196,13 @@ class Controller {
             $content = file_get_contents( $file_path );
             switch ( $file_ext ) {
                 case 'js':
-                    $cos->response->contentType = 'application/javascript';
+                    $cos->response->content_type = 'application/javascript';
                     break;
                 case 'css':
-                    $cos->response->contentType = 'text/css';
+                    $cos->response->content_type = 'text/css';
                     break;
                 default:
-                    $cos->response->contentType = File::getType( $file_path );
+                    $cos->response->content_type = File::getType( $file_path );
                     break;
             }            
         } else self::pageNotFound();
@@ -209,3 +210,4 @@ class Controller {
         if ( $cos->response->code == '200' ) echo $content;
     }
 }
+    
