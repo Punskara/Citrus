@@ -69,7 +69,7 @@ class View {
     /**
      * Constructor
      *
-     * @param \core\Citrus\mvc\App $app The app which uses the view.
+     * @param String $tpl_name Absolute path to template file (without extension)
      */
     public function __construct( $tpl_name ) {
         $cos = Citrus::getInstance();
@@ -269,6 +269,9 @@ class View {
         return $content;
     }
 
+    /**
+     *
+     */
     public function getContent() {
         $cos = Citrus::getInstance();
 
