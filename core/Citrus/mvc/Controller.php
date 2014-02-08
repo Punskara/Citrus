@@ -89,10 +89,13 @@ class Controller {
             $cos->debug->startNewTimer( "action " . $action );
         }
 
-        $tpl_name = strtolower( $this->getPrefix() ) . '/' . $this->action;
-        $this->view = new View( $tpl_name );
+        $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
+        $this->view = new View( $cos->app->tpl_dir . $tpl_name );
 
+        // automaticly disabling layout if XMLHTTPRequest
         $this->view->layout = !$request->is_XHR;
+
+
         $this->$action( $request );
 
         if ( $cos->debug ) $cos->debug->stopLastTimer();

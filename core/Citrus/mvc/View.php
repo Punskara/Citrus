@@ -72,12 +72,7 @@ class View {
      * @param String $tpl_name Absolute path to template file (without extension)
      */
     public function __construct( $tpl_name ) {
-        $cos = Citrus::getInstance();
-
-        $this->tpl_file = $cos->app->tpl_dir . $tpl_name . self::TPL_EXT;
-
-        // automaticly disabling layout if XMLHTTPRequest
-        $this->layout = !$cos->request->is_XHR;
+        $this->tpl_file = $tpl_name . self::TPL_EXT;
     }
     
     /** 
