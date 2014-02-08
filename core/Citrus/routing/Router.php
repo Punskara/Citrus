@@ -44,8 +44,9 @@ class Router {
 
     public function __construct( $base_url ) {
         
-        $request = $_SERVER['REQUEST_URI'];
-        $base_url = substr( $base_url, 1 );
+        $request    = $_SERVER['REQUEST_URI'];
+        $base_url   = substr( $base_url, 1 );
+        
         if (strpos( $request, $base_url ) !== false ) {
             $request = str_replace( $base_url, '', $request );
         }
