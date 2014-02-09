@@ -179,7 +179,7 @@ abstract class App {
         if ( class_exists( $class_name ) ) {
             $r          = new \ReflectionClass( $class_name ); 
             $app        = $r->newInstanceArgs( array( $name ) );            
-            $app->path  = $app_path;
+            $app->path  = CTS_APPS_PATH . $app->name;
             return $app;
         } else {
             throw new Exception( "Unable to find app '$name'" );
