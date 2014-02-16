@@ -113,7 +113,7 @@ class SelectQuery extends Query {
 	 * @param string $where Criteria to add
 	 * @return \core\Citrus\db\SelectQuery
 	 */
-	public function AddORWhere( $where ) {
+	public function addORWhere( $where ) {
 	    $this->where[] = '(' . implode( "\n OR ", $where ) . ')';
 	}
 	

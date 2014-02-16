@@ -34,7 +34,7 @@ abstract class Query {
 	 * Alias => table hash
 	 * @var array
 	 */
-	public $Aliases = array();
+	public $aliases = array();
 	/**
 	 * Columns to return
 	 * @var array
@@ -44,7 +44,7 @@ abstract class Query {
 	 * Last executed SQL
 	 * @var string
 	 */
-	public $Sql = "";
+	public $sql = "";
 	/**
 	 * database connection
 	 * @var \core\Citrus\db\Connection
@@ -68,7 +68,7 @@ abstract class Query {
 	 * Render SQL
 	 * @return string
 	 */
-	abstract public function RenderSql();
+	abstract public function renderSql();
 	/**
 	 * Executes the query
 	 * @return mixed
@@ -81,7 +81,7 @@ abstract class Query {
 	 * Prepares / Executes the query
 	 * @return mixed
 	 */
-	public function Execute( $params = array(), $driverOptions = array() ) {
+	public function execute( $params = array(), $driverOptions = array() ) {
 		$rec = false;
 		try {
 		    $rec = $this->database->Execute( (string)$this, $params, $driverOptions );
@@ -97,7 +97,7 @@ abstract class Query {
 	 * @param string $alias
 	 * @return string
 	 */
-	public function AddAlias( $table, $alias ) {
+	public function addAlias( $table, $alias ) {
 		$this->Aliases[$alias] = $table;
 		return "`$table` AS `$alias`";
 	}
@@ -108,7 +108,7 @@ abstract class Query {
 	 * @param string $table
 	 * @return string
 	 */
-	public function AddColumn( $column, $table = null ) {
+	public function addColumn( $column, $table = null ) {
 		return $thistable[] = $table ? "`$table`.`$column`" : "`$column`";
 	}
 	/**
@@ -118,7 +118,7 @@ abstract class Query {
 	 * @param string $table
 	 * @return void
 	 */
-	public function AddColumns( $columns, $table = null ) {
+	public function addColumns( $columns, $table = null ) {
 		foreach ( $columns as $column ) {
 			$thistable[] = $table ? "`$table`.`$column`" : "`$column`";
 		}

@@ -19,7 +19,7 @@
 
 
 namespace core\Citrus\http;
-use core\Citrus\Citrus;
+use \core\Citrus\Citrus;
 
 /**
  * This class provides a redirection function

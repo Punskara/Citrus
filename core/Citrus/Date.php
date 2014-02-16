@@ -23,14 +23,6 @@ class Date extends \DateTime {
     const SQL_FORMAT = 'Y-m-d H:i:s';
     const FR_FORMAT = 'd/m/Y';
     
-    public $dayNames = array( 'dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi' );
-    public $shortDayNames = array( 'dim', 'lun', 'mar', 'mer', 'jeu', 'ven', 'sam' );
-    public $monthNames = array(
-        'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-        'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'
-    );
-    public $shortMonthNames = array( 'jan', 'fév', 'mar', 'avr', 'mai', 'jui', 'jul', 'aou', 'sep', 'oct', 'nov', 'dec' );
-    
     function __construct( $date = 'now' ) {
         if ( $date == 'now' ) {
             $date = date( self::SQL_FORMAT );
@@ -72,7 +64,7 @@ class Date extends \DateTime {
                 }
                 $c++;
             }
-            if ( $indigit )        $parts[] = $digit;
+            if ( $indigit ) $parts[] = $digit;
             
             $obj->setDate( (int)$parts[0], (int)$parts[1], (int)$parts[2] );
 
@@ -82,73 +74,10 @@ class Date extends \DateTime {
         return $obj;
     }
     
-    public function getFullPattern() {
-        $pattern = "/^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})-([a-zA-Z]{6,9})$/";
-        if ( preg_match( $pattern, $this->format( 'Y-m-d-l'), $regs ) ) {
-            $days = array( 
-                'Sunday'    => 'Dimanche',
-                'Monday'    => 'Lundi',
-                'Tuesday'   => 'Mardi',
-                'Wednesday' => 'Mercredi',
-                'Thursday'  => 'Jeudi',
-                'Friday'    => 'Vendredi',
-                'Saturday'  => 'Samedi',
-            );
-            $months = array(
-                '01' => 'Janvier',
-                '02' => 'Février',
-                '03' => 'Mars',
-                '04' => 'Avril',
-                '05' => 'Mai',
-                '06' => 'Juin',
-                '07' => 'Juillet',
-                '08' => 'Août',
-                '09' => 'Septembre',
-                '10' => 'Octobre',
-                '11' => 'Novembre',
-                '12' => 'Décembre'
-            );
-            return $days[$regs[4]] . ' ' . $regs[3] . ' ' . $months[$regs[2]] . ' ' . $regs[1];
-        }
-    }
-    
     public function __toString() {
-        return $this->format( 'd/m/Y' );
+        return $this->format( self::FR_FORMAT );
     }
     
-    static public function getMonth( $month, $lang ) {
-        $months = array(
-            'fr'    => array(
-                '01' => 'Janvier',
-                '02' => 'Février',
-                '03' => 'Mars',
-                '04' => 'Avril',
-                '05' => 'Mai',
-                '06' => 'Juin',
-                '07' => 'Juillet',
-                '08' => 'Août',
-                '09' => 'Septembre',
-                '10' => 'Octobre',
-                '11' => 'Novembre',
-                '12' => 'Décembre',
-            ),
-            'en'    => array(
-                '01' => 'January',
-                '02' => 'February',
-                '03' => 'March',
-                '04' => 'April',
-                '05' => 'May',
-                '06' => 'June',
-                '07' => 'July',
-                '08' => 'August',
-                '09' => 'September',
-                '10' => 'October',
-                '11' => 'November',
-                '12' => 'December',
-            ),
-        );
-        return $months[$lang][$month];
-    }
     
     public function isBetween( $date1, $date2 ) {
         if ( !( $date1 instanceof Date ) ) {

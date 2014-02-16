@@ -72,11 +72,7 @@ class Model {
     public function __construct() {
         $this->datecreated  = new Date( $this->datecreated );
         $this->datemodified = new Date( $this->datemodified );
-        
-        
-        $cos = Citrus::getInstance();
-        $this_class = get_class( $this );
-        $this->schema = Schema::getInstance( get_class( $this ) );
+        $this->schema = Schema::getInstance( get_called_class() );
     }
     
     public function __get( $name ) {
