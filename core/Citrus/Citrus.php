@@ -145,6 +145,14 @@ class Citrus {
         spl_autoload_register( Array( __CLASS__, 'autoload' ) );
     }
     
+
+    static function autoload( $class ) {
+        $file = str_replace( '\\', DIRECTORY_SEPARATOR, $class );
+        if ( file_exists( CTS_PATH . "/$file.php" ) ) {
+            require_once( CTS_PATH . "/$file.php" );
+        }
+    }
+
     
     /**
      * Boots the system and its services.
@@ -153,7 +161,7 @@ class Citrus {
      */
     public function boot() {
         session_start();
-        $this->registerAutoload();
+        // $this->registerAutoload();
 
         if ( isset( $_SERVER['HTTP_HOST'] ) ) {
 
@@ -267,33 +275,6 @@ class Citrus {
             ->loadRoutes()
             ->defaultRoutes()
             ->execute();
-    }
-    
-    /**
-     * Mass assign an object properties
-     * @param object $target Target object
-     * @param array $props Properties to assign
-     */
-    static function apply( $tgt, $props ) {
-        foreach ( $props as $p => $v ) {
-            $tgt->$p = $v;
-        }
-        return $tgt;
-    }
-    
-    static function autoload( $class ) {
-        if ( strpos( $class, __NAMESPACE__ ) !== false ) {
-            $file = str_replace( 
-                '\\', DIRECTORY_SEPARATOR, 
-                substr( $class, strlen( __NAMESPACE__ ) + 1 ) 
-            );
-        } else {
-            $file = str_replace( '\\', DIRECTORY_SEPARATOR, $class );
-        }
-        $file = str_replace( '\\', DIRECTORY_SEPARATOR, $class );
-        if ( file_exists( CTS_PATH . "/$file.php" ) ) {
-            include_once( CTS_PATH . "/$file.php" );
-        }
     }
     
     /**
