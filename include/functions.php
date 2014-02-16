@@ -23,15 +23,6 @@
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 
-function include_slice( $partial, $vars = null ) {
-    $cos = \core\Citrus\Citrus::getInstance();
-    if ( $cos->debug ) $cos->debug->startNewTimer( "partial " . $partial );
-    if ( is_array( $vars ) ) extract( $vars, EXTR_OVERWRITE );
-    $file = $cos->app->path . "/templates/$partial" . \core\Citrus\mvc\View::TPL_EXT;
-    if ( file_exists( $file ) ) include $file;
-    if ( $cos->debug ) $cos->debug->stopLastTimer();
-}
-
 function vexp( $var, $pre = false ) {
     $st = '';
     if ( $pre ) $st .= '<pre>';

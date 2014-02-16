@@ -301,4 +301,13 @@ class View {
         $config_path = CTS_APPS_PATH . $app->name . '/config/view.php';
         if ( file_exists( $config_path ) ) require_once $config_path;
     }
+
+    static public function partial( $partial, $vars = null ) {
+        $cos = \core\Citrus\Citrus::getInstance();
+        if ( $cos->debug ) $cos->debug->startNewTimer( "partial " . $partial );
+        if ( is_array( $vars ) ) extract( $vars, EXTR_OVERWRITE );
+        $file = $cos->app->path . "/templates/$partial" . \core\Citrus\mvc\View::TPL_EXT;
+        if ( file_exists( $file ) ) include $file;
+        if ( $cos->debug ) $cos->debug->stopLastTimer();
+    }
 }
