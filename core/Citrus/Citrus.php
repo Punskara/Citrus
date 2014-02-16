@@ -182,17 +182,22 @@ class Citrus {
             # shutdown handling
             register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
 
+            $this->request = new Request();
+            $this->response = new Response();
             try {
                 $this->loadConfiguration();
+                $this->startServices();
                 $this->loadRouter();
-
-                $app = $this->router->app;
-                $module = $this->router->controller;
-                $action = $this->router->action;
-                $this->app = App::load( $app ); 
-                $this->app->createController( $module, $action );
                 $this->request->addParams( $this->router->params );
+
+                $app        = $this->router->app;
+                $controller = $this->router->controller;
+                $action     = $this->router->action;
+                $this->app  = App::load( $app ); 
+
+                $this->app->createController( $controller, $action );
                 $this->app->executeCtrlAction();
+
             } catch ( NoRouteFoundException $e ) {
                 Controller::pageNotFound();
             } catch ( Exception $e ) {
@@ -239,8 +244,6 @@ class Citrus {
                     $inst = $r->newInstanceArgs( $args ? $args : Array() );
                     if ( $inst ) {
                         $this->host = $inst;
-                        $this->request = new http\Request();
-                        $this->startServices();
                         break;
                     } else {
                         throw new Exception( 
@@ -249,7 +252,6 @@ class Citrus {
                     }
                 }
             }
-            $this->response = new http\Response();
         
             if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
                 if ( $this->debug ) {
