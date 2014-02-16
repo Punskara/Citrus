@@ -20,11 +20,14 @@ namespace core\Citrus;
 
 use \core\Citrus\mvc\App;
 use \core\Citrus\mvc\Controller;
+use \core\Citrus\sys\Config;
 use \core\Citrus\sys\Cache;
 use \core\Citrus\sys\Debug;
 use \core\Citrus\sys\Exception;
 use \core\Citrus\sys\Timer;
 use \core\Citrus\sys\Logger;
+use \core\Citrus\http\Response;
+use \core\Citrus\http\Request;
 use \core\Citrus\routing\Router;
 use \core\Citrus\routing\NoRouteFoundException;
 
