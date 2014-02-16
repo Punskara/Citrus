@@ -19,22 +19,21 @@
 
 namespace core\Citrus\data;
 use \core\Citrus\Citrus;
-use \core\Citrus\utils\File;
+use \core\Citrus\User;
+use \core\Citrus\utils;
+use \core\Citrus\sys\Exception;
 
-/**
- * @todo finish associations classes (getMultipleAssociations)
- */
 class Schema {
     
     /**
      * @var string
      */
-    public $className;
+    public $class_name;
     
     /**
      * @var string
      */
-    public $tableName;
+    public $table_name;
     
     /**
      * @var array
@@ -49,7 +48,7 @@ class Schema {
     /**
      * @var string
      */
-    public $pluralDescription;
+    public $plural_description;
     
     /**
      * @var array
@@ -59,7 +58,7 @@ class Schema {
     /**
      * @var array
      */
-    public $manyProperties = array();
+    public $many_properties = array();
     
     /**
      * @var array
@@ -83,11 +82,23 @@ class Schema {
     /**
      * Constructor.
      * 
-     * @param $className  name of the class we work with.
+     * @param $class_name  name of the class we work with.
      */
-    public function __construct( $className ) {
-        $this->className = $className;
-        $this->getSchema();
+    private function __construct( $class_name ) {
+        $this->class_name = $class_name;
+        $this->loadSchema();
+    }
+
+    static public function getInstance( $class_name ) {
+        $cache = Citrus::getInstance()->cache;
+        $schema = false;
+        if ( $cache->hasSchemaOfClass( $class_name ) ) {
+            $schema = $cache->getSchemaOfClass( $class_name );
+        } else {
+            $schema = new Schema( $class_name );
+            $cache->addSchema( $class_name, $schema );
+        }
+        return $schema;
     }
     
     
@@ -95,154 +106,88 @@ class Schema {
      * Reads the schema file and loads its data.
      * 
      */
-    public function getSchema() {
-        $className = str_replace( '\\', '/', $this->className );
+    private function loadSchema() {
         $schemaFile = CTS_PATH . '/' . str_replace( 
-            '_', 
+            '\\', 
             DIRECTORY_SEPARATOR, 
-            $className 
+            $this->class_name 
         ) . '.schema.php';
         
+        $found = false;
+
         if ( file_exists( $schemaFile ) ) {
+            $found = true;
+        } elseif ( $this->hasParentSchema() ) {
+            $found = true;
+            $schemaFile = $this->getParentSchema();
+        } else {
+            throw new Exception( "Unable to find schema for $this->class_name" );
+            return;
+        }
+        if ( $found ) {
             $schema = include $schemaFile;
-            $this->tableName = $schema['tableName'];
-            $this->className = $schema['modelType'];
+            $this->table_name = $schema['table_name'];
+            $this->class_name = $schema['modelType'];
             $this->description = $schema['description'];
-        	$this->pluralDescription = $schema['pluralDescription'];
-        	$this->properties = $schema['properties'];
-        	$this->gender = isset( $schema['gender'] ) ? $schema['gender'] : 'm';
-        	if ( isset( $schema['orderColumn'] ) ) {
-        	    $this->orderColumn = $schema['orderColumn'];
-        	}
-        	if ( isset( $schema['orderSort'] ) ) {
-        	    $this->orderSort = $schema['orderSort'];
-        	}
-        	if ( isset( $schema['adminColumns'] ) ) {
-        	    $this->adminColumns = $schema['adminColumns'];
-        	}
+            $this->plural_description = $schema['plural_description'];
+            $this->properties = $schema['properties'];
+            $this->gender = isset( $schema['gender'] ) ? $schema['gender'] : 'm';
+            if ( isset( $schema['orderColumn'] ) ) {
+                $this->orderColumn = $schema['orderColumn'];
+            }
+            if ( isset( $schema['orderSort'] ) ) {
+                $this->orderSort = $schema['orderSort'];
+            }
+            if ( isset( $schema['adminColumns'] ) ) {
+                $this->adminColumns = $schema['adminColumns'];
+            }
             if ( isset( $schema['orderColumnDefined'] ) ) {
                 $this->orderColumnDefined = $schema['orderColumnDefined'];
             }
             if ( isset( $schema['linkColumns'] ) ) {
                 $this->linkColumns = $schema['linkColumns'];
             }
-            if ( isset( $schema['manyProperties'] ) ) {
-                $this->manyProperties = $schema['manyProperties'];
+            if ( isset( $schema['many_properties'] ) ) {
+                $this->many_properties = $schema['many_properties'];
             }
         }
     }
-    
-    public function getFilters() {
-        if ( is_array( $this->schema ) ) {
-            foreach ( $this->schema['properties'] as $prop ) {
-                vexp($prop['type']);
-            }
-        }
+
+    public function hasParentSchema() {
+        $c = new \ReflectionClass( $this->class_name ); 
+        $parent = $c->getParentClass();
+        $parent_class = $parent->getName();
+        return file_exists(
+            CTS_PATH . '/' . str_replace( 
+            '\\', 
+            DIRECTORY_SEPARATOR, 
+            $parent_class 
+        ) . '.schema.php' );
     }
-    
+
+    public function getParentSchema() {
+        $c = new \ReflectionClass( $this->class_name ); 
+        $parent = $c->getParentClass();
+        return CTS_PATH . '/' . str_replace( 
+            '\\', 
+            DIRECTORY_SEPARATOR, 
+            $parent->getName()
+        ) . '.schema.php';
+    }
+
     /**
-     * Gets the one to one associations of the class
+     * Gets all "one to one" associations
      * 
      * @return array  $assoc  array of associations
      */
     public function getAssociations() {
         $assoc = array();
-        foreach ( $this->properties as $propName => $propAttr ) {
-            if ( array_key_exists( 'foreignTable', $propAttr ) ) {
-                $assoc[$propName] = $propAttr;
+        foreach ( $this->properties as $name => $attr ) {
+            if ( array_key_exists( 'foreignTable', $attr ) ) {
+                $assoc[$name] = $attr;
             }
         }
         return $assoc;
-    }
-    
-    
-    /**
-     * Gets the one to many associations of the class
-     * 
-     * @return array  $assoc  array of associations
-     */
-    public function getMultipleAssociations() {
-        $mAssoc = array();
-        foreach ( $this->multipleAssociations as $tableName => $props ) {
-            #$mAssoc[];
-        }
-        return $assoc;
-    }
-    
-    
-    /**
-     * Gets all the associations of the class
-     * 
-     * @return array  $assoc  array of associations
-     */
-    static public function getModelAssociations( $modelType ) {
-        $modelType = str_replace( '\\', '/', $modelType );
-        $schemaFile = CTS_PATH . str_replace( 
-            '_', 
-            DIRECTORY_SEPARATOR, 
-            $modelType 
-        ) . '.schema.php';
-        
-        $props = array();
-        if ( file_exists( $schemaFile ) ) {
-            $schema = include $schemaFile;
-        	$props = $schema['properties'];
-        }
-		$assoc = array();
-        if ( $props ) {
-            foreach ( $props as $propName => $propAttr ) {
-                if ( array_key_exists( 'foreignTable', $propAttr ) ) {
-                    $assoc[$propName] = $propAttr;
-                }
-            }
-        }
-        return $assoc;
-    }
-    
-    
-    /**
-     * Gets the database table name of the class.
-     * 
-     * @return string  $tableName  name of the table.
-     */
-    static public function getTableName( $modelType ) {
-        if ( strpos( $modelType, '\\core\\Citrus' ) !== false ) {
-            $modelType = str_replace( '\\core\\', '', $modelType );
-        }
-        $schemaFile = CTS_CLASS_PATH . str_replace( 
-            '_', 
-            DIRECTORY_SEPARATOR, 
-            str_replace( '\\', '/', $modelType )
-        ) . '.schema.php';
-        $props = array();
-        $tableName = '';
-
-        if ( file_exists( $schemaFile ) ) {
-            $schema = include $schemaFile;
-        	$tableName = $schema['tableName'];
-        }
-        return $tableName;
-    }
-    
-    
-    /**
-     * Gets all the object properties
-     * 
-     * @return array  $props  array of schema properties
-     */
-    static public function getProperties( $modelType ) {
-        $schemaFile = CTS_CLASS_PATH . str_replace( 
-            '_', 
-            DIRECTORY_SEPARATOR, 
-            $modelType 
-        ) . '.schema.php';
-        $props = array();
-
-        if ( file_exists( $schemaFile ) ) {
-            $schema = include $schemaFile;
-        	$props = $schema['properties'];
-        }
-        return $props;
     }
 
     public function getProperty( $name ) {
@@ -250,59 +195,4 @@ class Schema {
             return $this->properties[$name];
         return false;
     }
-    
-	/**
-	 * Creates class files from php schemas
-	 * @return void
-	 */
-	static public function buildParentClasses() {
-	    $cos = Citrus::getInstance();
-	    $dir = CTS_CLASS_PATH . $cos->projectName . '/schemas/';
-	    
-	    $wrDir = CTS_CLASS_PATH . $cos->projectName . '/Parent/';
-	    
-	    $mainSchema = array();
-	    
-	    $tabul = '    ';
-	    
-	    if ( is_dir( $dir ) ) {
-            if ( $dh = opendir( $dir ) ) {
-                while ( ( $file = readdir( $dh ) ) !== false ) {
-                    if ( substr( $file, 0, 1) != '.' ) {
-                        if ( preg_match( '/\.schema.php/', $file ) ) {
-                            $schem = include $dir . $file;
-                            if ( is_array( $schem ) && count( $schem ) ) {
-                                $mainSchema[] = $schem;
-                            }
-                        }
-                    }
-                }
-                closedir( $dh );
-            }
-        }
-        if ( count( $mainSchema ) ) {
-            foreach ( $mainSchema as $item ) {
-                $f = new File( $wrDir . $item['modelType'] . '.php', File::MODE_WOS );
-                
-                $f->write( "<?php\n" );
-                $f->write( "/**\n* @Entity @Table(name=\"" . $item['tableName'] . "\")\n*/\n\n" );
-                $f->write( "namespace core\\" . $cos->projectName . "\\Parent\\;\n" );
-                $f->write( "use \\core\\Citrus\\data\\Model;\n\n" );
-                $f->write( "class " .$item['modelType'] . " extends Model {\n" );
-                
-                if ( isset( $item['properties'] ) ) {
-                    foreach ( $item['properties'] as $prop => $attrs ) {
-                        if ( isset( $attrs['primaryKey'] ) ) {
-                            $f->write( "$tabul/**\n$tabul* @Id @Column(type=\"integer\") @GeneratedValue\n$tabul*/\n" );
-                            $f->write( $tabul . "private $" . $prop . ";\n" );
-                        }
-                    }
-                }
-                
-                $f->write( "}" );
-                $f->close();
-                exit;
-            }
-        }    
-	}
 }

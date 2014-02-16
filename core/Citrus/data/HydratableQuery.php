@@ -19,7 +19,6 @@
 
 namespace core\Citrus\data;
 use \core\Citrus\Citrus;
-use \core\Citrus\data;
 use \core\Citrus\db\SelectQuery;
 
 /**
@@ -51,8 +50,9 @@ class HydratableQuery extends SelectQuery {
         parent::__construct();
         if ( class_exists( $targetClass ) ) {
             $this->targetClass = $targetClass;
-            $this->table = data\Schema::getTableName( $targetClass );
-            $this->assocs = data\Schema::getModelAssociations( $targetClass );
+            $sc = Schema::getInstance( $targetClass );
+            $this->table = $sc->table_name;
+            $this->assocs = $sc->getAssociations();
             $this->columns = array( '*' );
         } else {
             throw new \Exception( "Cannot hydrate query: targetClass '$targetClass' does not exist." );
@@ -124,16 +124,7 @@ class HydratableQuery extends SelectQuery {
         if ( !$this->targetClass ) throw new \Exception( "Cannot hydrate query: no target class specified." );
         $i = 0;
         $this->columns = array( "COUNT(DISTINCT(`$this->table`.`id`))" );
-        /*$this->leftJoins = Array();
-        foreach ( $this->assocs as $colName => $attr ) {
-            $table = $this->AddAlias( $attr['foreignTable'], 'i' . $i );
-            $join =  'i' . $i . '.' . $attr['foreignReference'] . " = " . $this->table . '.' . $colName;
-            $this->AddLeftJoin( $table, $join );
-            $i++;
-        }*/
         $res = $this->Execute()->fetchColumn( 0 );
-        // $this->leftJoins = Array();
-        // $this->columns = Array();
         return $res;
     }
 }

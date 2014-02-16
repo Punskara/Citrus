@@ -44,18 +44,7 @@ class ModelCollection {
     public function __construct( $targetClass ) {
         if ( class_exists( $targetClass ) ) {   
             $this->targetClass = $targetClass;
-            $schema = Model::getSchema( $this->targetClass );
-            $cos = Citrus::getInstance();
-            if ( $cos->cache->hasSchemaOfClass( $targetClass ) ) {
-                $schema = $cos->cache->getSchemaOfClass( $targetClass );
-            } else {
-                $schema = Model::getSchema( $targetClass );
-                $cos->cache->addSchema( $targetClass, $schema );
-            }
-            
             $this->query = new HydratableQuery( $targetClass );
-            $this->query->columns = array( '*' );
-            $this->query->table = $schema->tableName;
         }
     }
     
