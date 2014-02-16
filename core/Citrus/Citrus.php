@@ -361,7 +361,10 @@ class Citrus {
         } else {
             $msg = 'Shutting down…';
         }
-        if ( $cos->debug ) $cos->getLogger( 'debug' )->logEvent( $msg );
+        if ( $cos->debug ) {
+            $cos->getLogger( 'debug' )->logEvent( $msg );
+            echo $cos->debug->debugBar();
+        }
         unset( $cos );
     }   
     
