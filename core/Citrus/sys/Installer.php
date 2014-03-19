@@ -21,7 +21,8 @@ class Installer {
     public function generateApp( $name ) {
         if ( is_dir( CTS_APPS_PATH ) ) {
             if ( !$this->appExists( $name ) ) {
-                $mainDir = mkdir( $app_path, 0755 );
+                $app_path   = CTS_APPS_PATH . $name;
+                $mainDir    = mkdir( $app_path, 0755 );
                 if ( $mainDir ) {
                     $modules    = mkdir( $app_path . '/controllers', 0755 );
                     $templates  = mkdir( $app_path . '/templates', 0755 );
