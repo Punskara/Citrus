@@ -20,6 +20,7 @@ namespace core\Citrus;
 
 use \core\Citrus\mvc\App;
 use \core\Citrus\mvc\Controller;
+use \core\Citrus\mvc\NoControllerFoundException;
 use \core\Citrus\sys\Config;
 use \core\Citrus\sys\Cache;
 use \core\Citrus\sys\Debug;
@@ -162,7 +163,7 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no host or no valid host is found
      */
-    public function boot() {
+    public function boot( $cfg ) {
         session_start();
         // $this->registerAutoload();
 
@@ -179,13 +180,14 @@ class Citrus {
             # error handling
             set_error_handler( 
                 Array( '\core\Citrus\sys\Debug', 'handleError') , 
-                -1 & ~E_NOTICE & ~E_USER_NOTICE 
+                E_ALL
+                // -1 & ~E_NOTICE & ~E_USER_NOTICE 
             );
 
             # shutdown handling
             register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
 
-            $this->request = new Request();
+            $this->request  = new Request();
             $this->response = new Response();
             try {
                 $this->loadConfiguration();
@@ -202,6 +204,8 @@ class Citrus {
                 $this->app->executeCtrlAction();
 
             } catch ( NoRouteFoundException $e ) {
+                Controller::pageNotFound();
+            } catch ( NoControllerFoundException $e ) {
                 Controller::pageNotFound();
             } catch ( Exception $e ) {
                 Debug::handleException( $e, $this->debug );
@@ -258,7 +262,6 @@ class Citrus {
         
             if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
                 if ( $this->debug ) {
-                    ini_set( 'display_errors', 0 );
                     error_reporting( E_ALL );
                 }
                 define( 'CTS_PROJECT_URL', $this->host->root_path );
@@ -364,7 +367,7 @@ class Citrus {
         } else {
             $msg = 'Shutting down…';
         }
-        if ( $cos->debug ) {
+        if ( $cos->debug && !$cos->request->is_XHR ) {
             $cos->getLogger( 'debug' )->logEvent( $msg );
             echo $cos->debug->debugBar();
         }

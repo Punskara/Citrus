@@ -71,8 +71,9 @@ class View {
      *
      * @param String $tpl_name Absolute path to template file (without extension)
      */
-    public function __construct( $tpl_name ) {
+    public function __construct( $tpl_name, $layout = true ) {
         $this->tpl_file = $tpl_name . self::TPL_EXT;
+        $this->layout = $layout;
     }
     
     /** 
@@ -269,7 +270,9 @@ class View {
      */
     public function getContent() {
         $cos = Citrus::getInstance();
-
+        if ( !file_exists( $this->tpl_file ) )
+            $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
+                              '/templates/' . $this->tpl_file;
         if ( !file_exists( $this->tpl_file ) )
             $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
                               '/templates/' . basename( $this->tpl_file );
@@ -303,11 +306,13 @@ class View {
     }
 
     static public function partial( $partial, $vars = null ) {
-        $cos = \core\Citrus\Citrus::getInstance();
+        $cos = Citrus::getInstance();
         if ( $cos->debug ) $cos->debug->startNewTimer( "partial " . $partial );
+
         if ( is_array( $vars ) ) extract( $vars, EXTR_OVERWRITE );
-        $file = $cos->app->path . "/templates/$partial" . \core\Citrus\mvc\View::TPL_EXT;
+        $file = $cos->app->path . "/templates/$partial" . self::TPL_EXT;
         if ( file_exists( $file ) ) include $file;
+
         if ( $cos->debug ) $cos->debug->stopLastTimer();
     }
 }
