@@ -14,14 +14,14 @@ class Installer {
     }
 
     public function appExists( $name ) {
-        $app_path = CTS_APPS_DIR . $name;
+        $app_path = CTS_APPS_PATH . $name;
         return is_dir( $app_path );
     }
 
     public function generateApp( $name ) {
-        if ( is_dir( CTS_APPS_DIR ) ) {
+        if ( is_dir( CTS_APPS_PATH ) ) {
             if ( !$this->appExists( $name ) ) {
-                $app_path = CTS_APPS_DIR . $name;
+                $app_path = CTS_APPS_PATH . $name;
                 $mainDir = mkdir( $app_path, 0755 );
                 if ( $mainDir ) {
                     $modules    = mkdir( $app_path . '/controllers', 0755 );
@@ -41,8 +41,8 @@ class Installer {
     }
     
     public function generateModule( $name, $app, $resourceType = null ) {
-        if ( is_dir( CTS_APPS_DIR ) ) {
-            $modulePath = CTS_APPS_DIR . $app . '/controllers/';
+        if ( is_dir( CTS_APPS_PATH ) ) {
+            $modulePath = CTS_APPS_PATH . $app . '/controllers/';
             if ( is_dir( $modulePath ) || mkdir( $modulePath, 0755 ) ) {
                 $this->generateControllerFile( $name, $app );
                 return true;
@@ -72,7 +72,7 @@ class Installer {
      * @return array An array of apps names
      */
     public function getModulesList( $app ) {
-        $dir = CTS_APPS_DIR . $app . '/modules/';
+        $dir = CTS_APPS_PATH . $app . '/modules/';
         $modules = array();
         
         if ( is_dir( $dir ) ) {
@@ -96,7 +96,7 @@ class Installer {
      * @return boolean whether the file could be created or not.
      */
     public function generateAppRoutingFile( $app_name ) {
-        $path = CTS_APPS_DIR . $app_name;
+        $path = CTS_APPS_PATH . $app_name;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'routing.tpl';
             $tpl =  fopen( $templateFile, 'r' );
@@ -120,7 +120,7 @@ class Installer {
      * @return boolean whether the file could be created or not.
      */
     public function generateControllerFile( $name, $app ) {
-        $path = CTS_APPS_DIR . $app;
+        $path = CTS_APPS_PATH . $app;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'controller.tpl';
             $tpl = fopen( $templateFile, 'r' );
@@ -140,7 +140,7 @@ class Installer {
     }
     
     public function generateAppClassFile( $app_name ) {
-        $path = CTS_APPS_DIR . '/' . $app_name;
+        $path = CTS_APPS_PATH . '/' . $app_name;
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'App.tpl';
             $tpl =  fopen( $templateFile, 'r' );
