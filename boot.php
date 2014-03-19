@@ -10,7 +10,7 @@ define(
 );
 
 define( 'CTS_PATH',         __DIR__ );
-define( 'CTS_APPS_DIR',     '/apps/' );
+define( 'CTS_APPS_DIR',     CTS_PATH . '/apps/' );
 define( 'CTS_CORE_PATH',    CTS_PATH . '/core/' );
 define( 'CTS_APPS_PATH',    CTS_PATH . CTS_APPS_DIR );
 define( 'CTS_LIB_PATH',     CTS_CORE_PATH . 'lib/' );
