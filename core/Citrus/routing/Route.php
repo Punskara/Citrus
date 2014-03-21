@@ -44,7 +44,7 @@ class Route {
      
         $url_regex = preg_replace_callback( 
             '@:[\w]+@', 
-            array( $this, 'regex_url' ), 
+            array( $this, 'regexURL' ), 
             $url 
         );
         $url_regex .= '/?';
@@ -64,13 +64,12 @@ class Route {
         unset( $p_values );        
     }
 
-    function regex_url($matches) {
+    private function regexURL( $matches ) {
         $key = str_replace( ':', '', $matches[0] );
         if ( array_key_exists( $key, $this->conditions ) ) {
             return '(' . $this->conditions[$key] . ')';
-        } 
-        else {
+        } else {
             return '([a-zA-Z0-9_\+\-%]+)';
         }
-  }
+    }
 }

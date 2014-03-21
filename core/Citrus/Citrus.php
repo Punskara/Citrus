@@ -271,25 +271,63 @@ class Citrus {
         }
     }
     
-    
+    private function loadRoutingConfiguration( $app = null ) {
+        if ( $app ) $routing_file = CTS_APPS_PATH . $app;
+        else $routing_file = CTS_PATH;
+
+        $routing_file .= '/config/routing.php';
+
+        if ( file_exists( $routes_file ) ) {            
+            $routes = include $routes_file;
+            if ( isset( $routes['routes'] ) 
+                 && is_array( $routes['routes'] ) 
+                 && count( $routes ) 
+            ) {
+                foreach ( $routes['routes'] as $route ) {
+                    if ( isset( $route['url'] ) ) {
+                        $target = Array();
+                        if ( isset( $route['target'] ) ) 
+                            $target = $route['target'];
+
+                        $this->router->map( 
+                            $route['url'], $target, 
+                            isset( $route['conditions'] ) 
+                                ? $route['conditions'] 
+                                : Array() 
+                        );
+                    }
+                }
+            }
+        }
+        // browsing apps files
+        $apps = App::listApps();
+        foreach ( $apps as $app ) $this->loadRoutes( $app );
+
+        // defaut route 
+        $this->router->map( '/:app/:controller/:action' );
+
+        return $this;
+    }
+
     /**
      * Loads the routing system.
      *
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        $this->router = new Router( $this->host->root_path );
-        $this->router
-            ->loadRoutes()
-            ->defaultRoutes()
-            ->execute();
+        $this->router = new Router( 
+            $this->host->root_path,
+            $_SERVER['REQUEST_URI']
+        );
+        $this->loadRoutingConfiguration()
+        $this->router->execute();
     }
     
     /**
      * Starts all enabled services.
      * 
      */
-    public function startServices() {
+    private function startServices() {
         $services = $this->host->services;
 
         if ( $services['debug']['active'] ) {
