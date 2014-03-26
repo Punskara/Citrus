@@ -29,7 +29,7 @@ use \core\Citrus\String;
  * The C in MVC. Communicate with Citrus, the Model and the View to
  * execute the right action.
  */
-class Controller {
+abstract class Controller {
     
     /**
      * @var string
@@ -67,7 +67,7 @@ class Controller {
     }
 
     public function getPrefix() {
-        if ( preg_match( '@\\\\([\w]+)$@', get_class( $this ), $matches ) ) {
+        if ( preg_match( '@\\\\([\w]+)$@', get_called_class(), $matches ) ) {
             $s = String::splitCamelCase( $matches[1] );
             return $s[0];
         } return "";
@@ -101,15 +101,6 @@ class Controller {
         if ( $cos->debug ) $cos->debug->stopLastTimer();
 
         return true;
-    }
-
-    /** 
-      * @return true  if ( ctrlIsProtected && !inException || !ctrlIsProtected  && inException )
-      * @return false if ( ctrlIsProtected && inException || !ctrlIsProtected  && !inException )
-    */
-    public function isActionProtected() {
-        $inException = in_array( $this->action, $this->security_exceptions );
-        return $this->is_protected ? $inException ? false : true : $inException ? true : false;
     }
 
     /**
@@ -188,7 +179,7 @@ class Controller {
         $file_ext   = $request->param( 'ext' ); 
         $file_type  = $request->param( 'type' ); 
         $file_name  = $request->param( 'file' ); 
-        $file_path  = $cos->app->path . "/static/$file_type/$file_name$file_ext";
+        $file_path  = $cos->app->getPath() . "/static/$file_type/$file_name$file_ext";
         $content    = "";
         $file_ext   = substr( $file_ext, 1 );
 

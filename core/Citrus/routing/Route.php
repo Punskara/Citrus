@@ -32,8 +32,9 @@ class Route {
     public $params;
     public $url;
     private $conditions;
+    public $controller;
     
-    public function __construct( $url, $request_uri, $target, $conditions ) {
+    public function __construct( $url, $request_uri, $target = Array(), $conditions = Array() ) {
         $this->url = $url;
         $this->params = array();
         $this->conditions = $conditions;
@@ -54,7 +55,8 @@ class Route {
             foreach( $p_names as $index => $value ) {
                 $this->params[substr( $value, 1 )] = urldecode( $p_values[$index] );
             }
-            foreach( $target as $key => $value ) {
+
+            if ( count( $target ) ) foreach( $target as $key => $value ) {
                 $this->params[$key] = $value;
             }
             $this->is_matched = true;
@@ -70,6 +72,12 @@ class Route {
             return '(' . $this->conditions[$key] . ')';
         } else {
             return '([a-zA-Z0-9_\+\-%]+)';
+        }
+    }
+
+    public function getParam( $name ) {
+        if ( array_key_exists( $name, $this->params ) ) {
+            return $this->params[$name];
         }
     }
 }

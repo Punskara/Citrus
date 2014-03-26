@@ -35,24 +35,22 @@ class Router {
     public $app;
     public $controller;
     public $action;
-    public $params;
+    // public $params;
 
     public $routes = array();
     public $route;
 
-    public function __construct( $base_url, $request_uri ) {
-        
-        $request    = $request_uri;
-        $base_url   = substr( $base_url, 1 );
-        
-        if (strpos( $request, $base_url ) !== false ) {
-            $request = str_replace( $base_url, '', $request );
+    public function __construct( $request_uri, $base_url = "" ) {
+        $base_url = substr( $base_url, 1 );
+
+        if (strpos( $request_uri, $base_url ) !== false ) {
+            $request_uri = str_replace( $base_url, '', $request_uri );
         }
         
-        $pos = strpos( $request, '?' );
-        if ( $pos ) $request = substr( $request, 0, $pos );
+        $pos = strpos( $request_uri, '?' );
+        if ( $pos ) $request_uri = substr( $request_uri, 0, $pos );
      
-        $this->request_uri = $request;
+        $this->request_uri = $request_uri;
         $this->routes = array();
         
     }
@@ -63,6 +61,15 @@ class Router {
         );
         return $this;
     }
+/*
+    public function quickMap( $rule, $controller, $conditions = array() ) {
+        $rt = new Route( 
+            $rule, $this->request_uri, Array( "controller" => $controller ), $conditions 
+        );
+        // $rt->controller = $controller;
+        $this->routes[$rule] = $rt;
+        return $this;
+    }*/
     
     public function execute() {
         if ( count( $this->routes ) ) {
@@ -77,29 +84,46 @@ class Router {
         return $this;
     }
 
+    public function executeRoutes( $routes ) {
+        if ( count( $routes ) ) {
+            foreach( $routes as $r ) {
+                $route = new Route( 
+                    $r["url"], 
+                    $this->request_uri, 
+                    isset( $r["target"] ) ? $r["target"] : Array(), 
+                    isset( $r["conditions"] ) ? $r['conditions'] : Array()
+                );
+                if ( $route->is_matched ) {
+                    $this->setRoute( $route );
+                    return $route;
+                }
+            }
+            // throw new NoRouteFoundException();
+        }
+        return false;
+    }
+
     public function getRouteURL() {
         return $this->route->url;
+    }
+
+    public function getController() {
+        return $this->controller;
+    }
+
+    public function setController( $controller ) {
+        $this->controller = $controller;
     }
     
     private function setRoute( $route ) {
         $this->route = $route;
-        $params      = $route->params;
-
-        if ( isset( $params['app'] ) ) {
-            $this->app = $params['app']; 
-            unset( $params['app'] );
-        }
-
-        if ( isset( $params['controller'] ) ) {
-            $this->controller = $params['controller']; 
-            unset( $params['controller'] );
-        }
-
-        if ( isset( $params['action'] ) ) {
-            $this->action = $params['action']; 
-            unset( $params['action'] );
-        }
-
-        $this->params = array_merge( $params, $_GET );
     }   
+
+    public function getRoute() {
+        return $this->route;
+    }
+
+    public function hasRoute() {
+        return $this->route instanceof Route;
+    }
 }

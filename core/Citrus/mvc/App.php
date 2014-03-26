@@ -19,16 +19,28 @@
 
 
 namespace core\Citrus\mvc;
-use core\Citrus\http\Request;
-use core\Citrus\Citrus;
-use core\Citrus\sys\Exception;
+use \core\Citrus\Citrus;
+use \core\Citrus\sys\Exception;
+use \core\Citrus\routing\Router;
+use \core\Citrus\http\Response;
+use \core\Citrus\http\Request;
 
-abstract class App {
+/*abstract*/ class App {
     
     /**
      * @var string
      */
     public $name;
+
+    /**
+     * @var \core\Citrus\http\Response
+     */
+    public $response;
+
+    /**
+     * @var \core\Citrus\http\Request
+     */
+    public $request;
     
     /**
      * @var \core\Citrus\mvc\Controller
@@ -38,29 +50,21 @@ abstract class App {
     /**
      * @var string
      */
-    public $path;
-    
-    /**
-     * @var Boolean
-     */
-    public $is_protected = false;
-
-    /**
-     * @var Closure
-     */
-    public $isAccessAllowed;
-
-    /**
-     * @var Closure
-     */
-    public $onActionProtected;
+    private $path;
 
     /**
      * @var string
      */
-    public $tpl_dir;
+    protected $tpl_dir;
+
+    /**
+     * @var string
+     */
+    private $controllers_dir;
+
+    public $router;
     
-    abstract protected function setViewSettings();
+    /*abstract*/ protected function setViewSettings() {}
     protected function beforeExecuteAction() {}
 
     /**
@@ -70,70 +74,39 @@ abstract class App {
      * 
      * @throws \core\Citrus\sys\Exception if the name is not referenced.
      */
-    public function __construct( $name ) {
-        $this->name = $name;
-        $this->tpl_dir = CTS_APPS_PATH . $this->name . '/templates/';
-        if ( !is_dir( $this->tpl_dir ) ) 
-            throw new Exception( 
-                "Application template directory doesn't exist." 
-            );
-    }
+    public function __construct( $name, $path, $router ) {
+        $this->name     = $name;
+        $this->router   = $router;
+        $this->request  = new Request();
+        $this->response = new Response();
 
-    public function __toString() {
-        return $this->name;
-    }
- 
-    /**
-     * Creates the controller which will execute the action requested.
-     *
-     * @param array $name Controller name
-     * @param array $action Action to be performed
-     *
-     * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
-     */
-    public function createController( $name, $action ) {
-        $path       = $this->path . '/controllers/';
-        $class_file = $path . ucfirst( $name ) . 'Controller.php';
-        $class_name = str_replace( CTS_PATH, '', $path );
-        $class_name = str_replace( '/', '\\', $class_name ) . 
-                      ucfirst( $name ) . 'Controller';
-
-        if ( !$name ) {
-            $this->controller = new Controller( $action );
-        } else {
-            if ( file_exists( $class_file ) && class_exists( $class_name ) ) {
-                $r = new \ReflectionClass( $class_name ); 
-                $this->controller = $r->newInstanceArgs( Array(
-                    'action' => $action,
-                ) );
-                if ( $this->controller->is_protected == null ) {
-                    $this->controller->is_protected = $this->is_protected;
-                }
-                return $this->controller;
-            } else {
-                throw new Exception( "Unable to find controller '$name'" );
-                return false;
-            }
+        if ( $router->hasRoute() ) {
+            $this->request->addParams( $this->router->getRoute()->params );
+            $this->setController( $this->router->getRoute()->getParam( 'controller' ) );
         }
-        return $this->controller;
     }
     
 
     /**
      * Executes the controller method that the action determines.
      *
-     * @param array $name Controller name
-     * @param array $action Action to be performed
+     * @param array $request A Request object
      *
-     * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
      */
-    public function executeCtrlAction() {
-        $cos = Citrus::getInstance();
-        if ( $this->controller->actionExists() ) {
+    public function executeController() {
+        if ( $this->shouldExecuteController() ) {
             $this->beforeExecuteAction();
-            $act = $this->controller->executeAction( $cos->request );
-            if ( $act !== false ) $this->output();
-        } else $this->onActionNotFound();
+            if ( $this->controller instanceof Controller ) {
+                if ( $this->controller->actionExists() ) {
+                    $this->beforeExecuteAction();
+                    $act = $this->controller->executeAction( $this->request );
+                    if ( $act !== false ) $this->output();
+                } else $this->onActionNotFound();
+            } elseif ( $this->controller instanceof \Closure ) {
+                $this->controller->__invoke();
+                // closure test
+            }
+        }
     }
 
     protected function output() {
@@ -144,76 +117,54 @@ abstract class App {
         }
     }
 
-    /**
-     * Triggered when action is protected.
-     * if controller doesn't have method "onActionProtected"
-     */
-
-    protected function onActionProtected() {
-        Controller::pageForbidden();
-    }
-
-    /**
-     * Triggered when action is not found.
-     * if controller doesn't have method "onActionNotFound"
-     */
-
-    protected function onActionNotFound() {
-        Controller::pageNotFound();
-    }
-
-
-    /**
-     * Creates an instance of requested App.
-     * @param $name Name of requested App
-     * @throws Exception when requested app class is not found.
-     * @return subclass of \core\Citrus\mvc\App
-     */
-
-    static public function load( $name ) {
-        $app_path = CTS_APPS_DIR . $name;
-        $class_name = str_replace( 
-            '/', '\\', 
-            $app_path . '/' . ucfirst( $name ) . 'App' 
-        );
-        if ( class_exists( $class_name ) ) {
-            $r          = new \ReflectionClass( $class_name ); 
-            $app        = $r->newInstanceArgs( array( $name ) );            
-            $app->path  = CTS_APPS_PATH . $app->name;
-            return $app;
-        } else {
-            throw new Exception( "Unable to find app '$name'" );
-            return false;
-        }
-    }
-
-    /**
-     * Gets list of applications existing in filesystem.
-     *
-     * @return array An array of apps names
-     */
-    static public function listApps() {
-        $dir = CTS_APPS_PATH;
-        $apps = array();
-        
-        if ( is_dir( $dir ) && $dh = opendir( $dir ) ) {
-            while ( ( $file = readdir( $dh ) ) !== false ) {
-                if ( substr( $file, 0, 1) != '.' ) {
-                    if ( is_dir( CTS_APPS_PATH . $file ) ) {
-                        $apps[] = $file;
-                    }
-                }
-            }
-            closedir( $dh );
-        }
-        return $apps;
-    }
-
     public function getControllerUrl() {
         return url_to( 
             $this->name . '/' . 
             strtolower( $this->controller->getPrefix() ) . 
             '/', 1 
         );
+    }
+
+
+
+    public function setController( $controller ) {
+        $this->controller = $controller;
+    }
+
+
+    public function setControllersDir( $dir ) {
+        if ( file_exists( $this->path . $dir ) ) 
+            $this->controllers_dir = $this->path . $dir;
+        else throw new Exception( "Directory `$this->path$dir` does not exist." );
+    }
+
+    public function getControllersDir() {
+        return $this->controllers_dir;
+    }
+
+    public function setTplDir( $dir ) {
+        if ( file_exists( $this->path . $dir ) ) 
+            $this->tpl_dir = $this->path . $dir;
+        else throw new Exception( "Directory `$this->path$dir` does not exist." );
+    }
+
+    public function getTplDir() {
+        return $this->tpl_dir;
+    }
+
+    public function setPath( $path ) {
+        $this->path = $path;
+    }
+
+    public function getPath() {
+        return $this->path;
+    }
+
+    public function __toString() {
+        return $this->name;
+    }
+
+    public function shouldExecuteController() {
+        return true;
     }
 }

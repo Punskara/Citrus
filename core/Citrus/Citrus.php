@@ -163,7 +163,7 @@ class Citrus {
      * 
      * @throws \core\Citrus\sys\Exception if no host or no valid host is found
      */
-    public function boot( $cfg ) {
+    public function boot( $app, $cfg ) {
         session_start();
         // $this->registerAutoload();
 
@@ -192,16 +192,9 @@ class Citrus {
             try {
                 $this->loadConfiguration();
                 $this->startServices();
-                $this->loadRouter();
-                $this->request->addParams( $this->router->params );
 
-                $app        = $this->router->app;
-                $controller = $this->router->controller;
-                $action     = $this->router->action;
-                $this->app  = App::load( $app ); 
-
-                $this->app->createController( $controller, $action );
-                $this->app->executeCtrlAction();
+                $this->app = $this->loadApp( $app );
+                $this->app->executeController();
 
             } catch ( NoRouteFoundException $e ) {
                 Controller::pageNotFound();
@@ -214,6 +207,63 @@ class Citrus {
 
 
             $this->done = true;
+        }
+    }
+
+    /**
+     * Creates an instance of requested App.
+     * @param $name Name of requested App
+     * @throws Exception when requested app class is not found.
+     * @return subclass of \core\Citrus\mvc\App
+     */
+
+    public function loadApp( $app ) {
+        $router = new Router( 
+            $_SERVER['REQUEST_URI'],
+            $this->host->root_path # . CTS_INIT_FILE . '/'
+        );
+        $routes = $this->getAppRoutes( $app );
+        $routes[] = Array(
+            'url' => '/:app/:controller/:action'
+        );
+        foreach ( $routes as $r ) {
+            $router->map( 
+                $r['url'], 
+                array_key_exists( 'target', $r )     ? $r['target']     : Array(),
+                array_key_exists( 'conditions', $r ) ? $r['conditions'] : Array()
+            );
+        }
+        
+        $router->executeRoutes( $routes );
+
+        $rt         = $router->getRoute();
+        $controller = $rt->getParam( "controller" );
+        $action     = $rt->getParam( "action" );
+        $app_class  = str_replace( 
+            '/', '\\', 
+            CTS_APPS_DIR . '/' . $app . '/' . ucfirst( $app ) . 'App' 
+        );
+
+        if ( class_exists( $app_class ) ) {
+            $r          = new \ReflectionClass( $app_class ); 
+            $app        = $r->newInstanceArgs( array( $app, CTS_APPS_PATH . '/', $router ) );
+
+            $controller_class = CTS_APPS_DIR . '/' . 
+                                $app . CTS_CTRL_DIR . '/' . 
+                                ucfirst( $controller ) . "Controller";
+
+            $controller_class = str_replace( 
+                '/', '\\', $controller_class
+            );
+
+            $app->setController( 
+                $this->createController( $controller_class, $action )
+            );
+
+            return $app;
+        } else {
+            throw new Exception( "Unable to find app '$app'" );
+            return false;
         }
     }
 
@@ -270,43 +320,19 @@ class Citrus {
             }
         }
     }
-    
-    private function loadRoutingConfiguration( $app = null ) {
-        if ( $app ) $routing_file = CTS_APPS_PATH . $app;
-        else $routing_file = CTS_PATH;
 
-        $routing_file .= '/config/routing.php';
+    private function getAppRoutes( $app = null ) {
+        // $apps           = $this->listApps();
+        $routes         = Array();
+        $routing_file   = CTS_APPS_PATH . '/' . $app . '/config/routing.php';
 
-        if ( file_exists( $routes_file ) ) {            
-            $routes = include $routes_file;
-            if ( isset( $routes['routes'] ) 
-                 && is_array( $routes['routes'] ) 
-                 && count( $routes ) 
-            ) {
-                foreach ( $routes['routes'] as $route ) {
-                    if ( isset( $route['url'] ) ) {
-                        $target = Array();
-                        if ( isset( $route['target'] ) ) 
-                            $target = $route['target'];
-
-                        $this->router->map( 
-                            $route['url'], $target, 
-                            isset( $route['conditions'] ) 
-                                ? $route['conditions'] 
-                                : Array() 
-                        );
-                    }
-                }
-            }
+        if ( file_exists( $routing_file ) ) {            
+            $src = include $routing_file;
+            if ( is_array( $src ) && count( $src ) )
+                $routes = array_merge( $routes, $src );
         }
-        // browsing apps files
-        $apps = App::listApps();
-        foreach ( $apps as $app ) $this->loadRoutes( $app );
 
-        // defaut route 
-        $this->router->map( '/:app/:controller/:action' );
-
-        return $this;
+        return $routes;
     }
 
     /**
@@ -316,11 +342,11 @@ class Citrus {
      */
     public function loadRouter() {
         $this->router = new Router( 
-            $this->host->root_path,
-            $_SERVER['REQUEST_URI']
+            $_SERVER['REQUEST_URI'],
+            $this->host->root_path
         );
-        $this->loadRoutingConfiguration()
-        $this->router->execute();
+        // $this->loadRoutingConfiguration();
+        // $this->router->execute();
     }
     
     /**
@@ -427,5 +453,53 @@ class Citrus {
     public function getGlobal( $name ) {
         if ( isset( $this->globals[$name] ) ) return $this->globals[$name];
         return false;
+    }
+
+    /**
+     * Gets list of applications existing in filesystem.
+     *
+     * @return array An array of apps names
+     */
+    public function listApps() {
+        $dir    = CTS_APPS_PATH . '/';
+        $apps   = array();
+
+        if ( is_dir( $dir ) && $dh = opendir( $dir ) ) {
+            while ( ( $file = readdir( $dh ) ) !== false ) {
+                if ( substr( $file, 0, 1) != '.' ) {
+                    if ( is_dir( $dir . $file ) ) {
+                        $apps[] = $file;
+                    }
+                }
+            }
+            closedir( $dh );
+        }
+        return $apps;
+    }
+
+    /**
+     * Creates the controller which will execute the action requested.
+     *
+     * @param array $name Controller name
+     * @param array $action Action to be performed
+     *
+     * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
+     */
+    public function createController( $name, $action ) {
+        if ( !$name ) {
+            throw new Exception( "Unable to create controller" );
+            return;
+        } else {
+            if ( class_exists( $name ) ) {
+                $r = new \ReflectionClass( $name ); 
+                $controller = $r->newInstanceArgs( Array(
+                    'action' => $action,
+                ) );
+                return $controller;
+            } else {
+                throw new Exception( "Unable to find controller '$name'" );
+                return false;
+            }
+        }
     }
 }
