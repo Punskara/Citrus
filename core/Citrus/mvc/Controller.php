@@ -23,7 +23,6 @@ use \core\Citrus\Citrus;
 use \core\Citrus\sys\Debug;
 use \core\Citrus\sys\Exception;
 use \core\Citrus\utils\File;
-use \core\Citrus\String;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -46,16 +45,6 @@ abstract class Controller {
      */
     public $view;
     
-    /**
-     * @var Boolean
-     */
-    public $is_protected;
-
-
-    /**
-     * @var Array
-     */
-    public $security_exceptions = Array();
 
     /**
      * Contructor
@@ -66,13 +55,12 @@ abstract class Controller {
         $this->action = $action;
     }
 
-    public function getPrefix() {
-        if ( preg_match( '@\\\\([\w]+)$@', get_called_class(), $matches ) ) {
-            $s = String::splitCamelCase( $matches[1] );
-            return $s[0];
-        } return "";
+    public function setView( $path ) {
+        $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
+        $this->view = new View( $path . '/' . $tpl_name );
+        return $this;
     }
-    
+
     /**
      * Executes the action given by request. 
      * 
@@ -88,13 +76,6 @@ abstract class Controller {
                 );
             $cos->debug->startNewTimer( "action " . $action );
         }
-
-        $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
-        $this->view = new View( $cos->app->tpl_dir . $tpl_name );
-
-        // automaticly disabling layout if XMLHTTPRequest
-        $this->view->layout = !$request->is_XHR;
-
 
         $this->$action( $request );
 
@@ -122,9 +103,9 @@ abstract class Controller {
      */
     static public function pageNotFound( $message = null ) {
         $cos = Citrus::getInstance();
-        $cos->response->code = '404';
+        /*$cos->response->code = '404';
         $cos->response->message = $message;
-        $cos->response->sendHeaders();
+        $cos->response->sendHeaders();*/
         ob_start();
         include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
         $tpl = ob_get_contents();
@@ -141,9 +122,9 @@ abstract class Controller {
      */
     static public function pageForbidden( $message = null ) {
         $cos = Citrus::getInstance();
-        $cos->response->code = '403';
+        /*$cos->response->code = '403';
         $cos->response->message = $message;
-        $cos->response->sendHeaders();
+        $cos->response->sendHeaders();*/
         ob_start();
         include CTS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
         $tpl = ob_get_contents();
@@ -160,17 +141,6 @@ abstract class Controller {
     public function actionExists() {
         return method_exists( $this, 'do_' . $this->action );
     }
-    
-    
-    /**
-     * Displays the action template.
-     *
-     * @return  string  The content of the template.
-     */
-    public function displayTemplate() {
-        return $this->view->display();
-    }
-    
 
     public function do_static( $request ) {
         $cos        = Citrus::getInstance();

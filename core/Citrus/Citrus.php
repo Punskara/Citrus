@@ -19,6 +19,7 @@
 namespace core\Citrus;
 
 use \core\Citrus\mvc\App;
+use \core\Citrus\mvc\View;
 use \core\Citrus\mvc\Controller;
 use \core\Citrus\mvc\NoControllerFoundException;
 use \core\Citrus\sys\Config;
@@ -171,20 +172,20 @@ class Citrus {
 
             $this->cache = new Cache();
             
-            # exception handling
+            // exception handling
             set_exception_handler( Array( 
                 '\core\Citrus\sys\Debug', 
                 'handleException' 
             ) );
 
-            # error handling
+            // error handling
             set_error_handler( 
                 Array( '\core\Citrus\sys\Debug', 'handleError') , 
                 E_ALL
                 // -1 & ~E_NOTICE & ~E_USER_NOTICE 
             );
 
-            # shutdown handling
+            // shutdown handling
             register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
 
             $this->request  = new Request();
@@ -194,7 +195,7 @@ class Citrus {
                 $this->startServices();
 
                 $this->app = $this->loadApp( $app );
-                $this->app->executeController();
+                $this->startApp();
 
             } catch ( NoRouteFoundException $e ) {
                 Controller::pageNotFound();
@@ -211,16 +212,39 @@ class Citrus {
     }
 
     /**
+     * Execute the apps controller
+     * and displays the output
+     *
+     * @return void
+     **/
+    public function startApp() {
+        $this->app->executeController( $this->request );
+
+        // automaticly disabling layout if XMLHTTPRequest
+
+        if ( $this->request->is_XHR ) {
+            $this->app->setView( $this->app->getController()->view );
+        } else {
+            $layout = new View( CTS_APPS_PATH . '/' . $this->app . CTS_VIEW_DIR . '/layout' );
+            $layout->assign( "content", $this->app->getController()->view->render() );
+            $this->app->setView( $layout );
+        }
+
+        // showing output
+        $this->app->output();
+    }
+
+    /**
      * Creates an instance of requested App.
      * @param $name Name of requested App
      * @throws Exception when requested app class is not found.
      * @return subclass of \core\Citrus\mvc\App
      */
 
-    public function loadApp( $app ) {
+    private function loadApp( $app ) {
         $router = new Router( 
             $_SERVER['REQUEST_URI'],
-            $this->host->root_path # . CTS_INIT_FILE . '/'
+            $this->host->root_path
         );
         $routes = $this->getAppRoutes( $app );
         $routes[] = Array(
@@ -236,35 +260,30 @@ class Citrus {
         
         $router->executeRoutes( $routes );
 
-        $rt         = $router->getRoute();
-        $controller = $rt->getParam( "controller" );
-        $action     = $rt->getParam( "action" );
-        $app_class  = str_replace( 
-            '/', '\\', 
-            CTS_APPS_DIR . '/' . $app . '/' . ucfirst( $app ) . 'App' 
-        );
+        if ( $router->hasRoute() ) {
+            $rt         = $router->getRoute();
+            $controller = $rt->getParam( "controller" );
+            $action     = $rt->getParam( "action" );
+            $app_class  = Config::appClassName( $app );
 
-        if ( class_exists( $app_class ) ) {
-            $r          = new \ReflectionClass( $app_class ); 
-            $app        = $r->newInstanceArgs( array( $app, CTS_APPS_PATH . '/', $router ) );
+            if ( class_exists( $app_class ) ) {
+                $r      = new \ReflectionClass( $app_class ); 
+                $app    = $r->newInstanceArgs( array( $app, $router ) );
+                $ctrl   = Config::controllerClassName( $app, $controller );
 
-            $controller_class = CTS_APPS_DIR . '/' . 
-                                $app . CTS_CTRL_DIR . '/' . 
-                                ucfirst( $controller ) . "Controller";
+                $app->setController( 
+                    $this->createController( 
+                        $ctrl, $action 
+                    )->setView( Config::appViewPath( $app ) )
+                );
 
-            $controller_class = str_replace( 
-                '/', '\\', $controller_class
-            );
-
-            $app->setController( 
-                $this->createController( $controller_class, $action )
-            );
-
-            return $app;
-        } else {
-            throw new Exception( "Unable to find app '$app'" );
-            return false;
-        }
+                return $app;
+            } else {
+                throw new Exception( "Unable to find app '$app'" );
+                return false;
+            }
+        } throw new NoRouteFoundException();
+        
     }
 
     public function bootCLI() {
@@ -298,7 +317,7 @@ class Citrus {
             foreach ( $hosts as $host => $args ) {
                 if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
                     $r = new \ReflectionClass( '\core\Citrus\Host' );
-                    $inst = $r->newInstanceArgs( $args ? $args : Array() );
+                    $inst = $r->newInstanceArgs( $args );
                     if ( $inst ) {
                         $this->host = $inst;
                         break;
@@ -381,6 +400,13 @@ class Citrus {
         return $this->addLogger( $id );
     }
 
+
+    /**
+     * Adds an error entry in log
+     *
+     * @param string $content Error description
+     * @return void
+     **/
     function logError( $content ) {
         $this->getLogger( 'error' )->logEvent( $content );
     }
@@ -439,7 +465,7 @@ class Citrus {
     }   
     
     public function getController() {
-        return $this->app->controller;
+        return $this->app->getController();
     }
 
     public function getClassName( $class_name ) {
@@ -503,3 +529,4 @@ class Citrus {
         }
     }
 }
+

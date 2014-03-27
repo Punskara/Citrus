@@ -62,8 +62,6 @@ class View {
      */
     public $static_path = CTS_PROJECT_URL;
 
-
-
     const TPL_EXT = ".tpl.php";
 
     /**
@@ -128,9 +126,9 @@ class View {
                 $is_absolute = substr( $s, 0, 1 ) == "/";
                 $is_remote = substr( $s, 0, 4 ) == "http";
 
-                if ( $is_absolute || $is_remote ) $href = $s;
-                else $href = $this->static_path . "css/$s";
-
+                #if ( $is_absolute || $is_remote ) $href = $s;
+                #else $href = $this->static_path . "css/$s";
+                $href = $s;
                 $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
 
                 $st = new Element( 'link', array(
@@ -146,25 +144,6 @@ class View {
                 $sheets[] = $st;
             }
         }
-        
-        if ( $cos->app && $cos->app->controller ) {
-            $src = 'css/' . $cos->app->name . '/modules/' . $cos->app->controller->name . '.css' ;
-            if (is_file(CTS_WWW_PATH . $src)) {
-                $rel_less = strpos( $s, '.less' ) !== false ? '/less' : '';
-                $st = new Element( 'link', array(
-                    'attributes' => array(
-                        'rel'   => 'stylesheet' . $rel_less,
-                        'media' => $media,
-                        'type'  => 'text/css',
-                        'href'  => CTS_PROJECT_URL . $src,
-                    ), 
-                    'inline'    => true,
-                    'closeTag'  => false
-                ) );
-                $sheets[] = $st;                
-            }
-        }
-        
         return $sheets;
     }
     /** 
@@ -212,9 +191,9 @@ class View {
             }
         }
         
-        if ( $cos->app && $cos->app->controller ) {
+        if ( $cos->app && $cos->app->getController() ) {
             $src =  'js/' . $cos->app->name . '/modules/' . 
-                    $cos->app->controller->name . '.js' ;
+                    $cos->app->getController()->name . '.js' ;
                     
             if ( is_file( CTS_WWW_PATH . $src ) ) {
                 $elt = new Element( 'script', array(
@@ -248,34 +227,12 @@ class View {
     }
     
     /**
-     * Displays the main layout of the template
+     * returns the template content
      *
-     * @throws \Exception if the main template file is not found.
+     * @throws \Exception if the template file is not found.
      */
     public function render() {
         $cos = Citrus::getInstance();
-        $content = "";
-        extract( $this->vars, EXTR_OVERWRITE );
-        if ( $this->layout && is_file( $this->layout_file ) ) {
-            ob_start();
-            include_once $this->layout_file;
-            $content = ob_get_contents();
-            ob_get_clean();
-        } else $content = $this->getContent();
-        return $content;
-    }
-
-    /**
-     *
-     */
-    public function getContent() {
-        $cos = Citrus::getInstance();
-        if ( !file_exists( $this->tpl_file ) )
-            $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
-                              '/templates/' . $this->tpl_file;
-        if ( !file_exists( $this->tpl_file ) )
-            $this->tpl_file = CTS_APPS_PATH . $cos->app->name . 
-                              '/templates/' . basename( $this->tpl_file );
         if ( !file_exists( $this->tpl_file ) ) {
             throw new Exception( "Template file not found: $this->tpl_file." );
             return;
@@ -310,7 +267,7 @@ class View {
         if ( $cos->debug ) $cos->debug->startNewTimer( "partial " . $partial );
 
         if ( is_array( $vars ) ) extract( $vars, EXTR_OVERWRITE );
-        $file = $cos->app->path . "/templates/$partial" . self::TPL_EXT;
+        $file = $cos->app->getTplDir() . $partial . self::TPL_EXT;
         if ( file_exists( $file ) ) include $file;
 
         if ( $cos->debug ) $cos->debug->stopLastTimer();

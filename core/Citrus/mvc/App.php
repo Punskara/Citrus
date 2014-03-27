@@ -5,7 +5,7 @@
  * (c) Rémi Cazalet <remi@caramia.fr>
  * Nicolas Mouret <nicolas@caramia.fr>
  *
- * For the full copyright and license information, please view the LICENSE
+ * For the full copyright and license information, please viewview the LICENSE
  * file that was distributed with this source code.
  */
 
@@ -45,7 +45,7 @@ use \core\Citrus\http\Request;
     /**
      * @var \core\Citrus\mvc\Controller
      */
-    public $controller;
+    protected $controller;
         
     /**
      * @var string
@@ -58,9 +58,9 @@ use \core\Citrus\http\Request;
     protected $tpl_dir;
 
     /**
-     * @var string
+     * @var \core\Citrus\mvc\View
      */
-    private $controllers_dir;
+    protected $view;
 
     public $router;
     
@@ -71,14 +71,15 @@ use \core\Citrus\http\Request;
      * Constructor.
      * 
      * @param string  $name  name of the app.
+     * @param \core\Citrus\routing\Router  $router app router
      * 
      * @throws \core\Citrus\sys\Exception if the name is not referenced.
      */
-    public function __construct( $name, $path, $router ) {
+    public function __construct( $name, $router ) {
         $this->name     = $name;
         $this->router   = $router;
         $this->request  = new Request();
-        $this->response = new Response();
+        // $this->response = new Response();
 
         if ( $router->hasRoute() ) {
             $this->request->addParams( $this->router->getRoute()->params );
@@ -93,53 +94,41 @@ use \core\Citrus\http\Request;
      * @param array $request A Request object
      *
      */
-    public function executeController() {
+    public function executeController( $request ) {
         if ( $this->shouldExecuteController() ) {
             $this->beforeExecuteAction();
+            $act = true;
             if ( $this->controller instanceof Controller ) {
                 if ( $this->controller->actionExists() ) {
                     $this->beforeExecuteAction();
-                    $act = $this->controller->executeAction( $this->request );
-                    if ( $act !== false ) $this->output();
-                } else $this->onActionNotFound();
+                    $act = $this->controller->executeAction( $request );
+                } else $act =$this->onActionNotFound();
             } elseif ( $this->controller instanceof \Closure ) {
-                $this->controller->__invoke();
-                // closure test
+                $act = $this->controller->__invoke( $request );
             }
+            return $act;
         }
+        return false;
     }
 
-    protected function output() {
-        Citrus::getInstance()->response->sendHeaders();
-        if ( $this->controller->view ) {
+    public function output() {
+        if ( $this->view ) {
             $this->setViewSettings();
-            echo $this->controller->view->render();
+            echo $this->view->render();
         }
     }
 
-    public function getControllerUrl() {
-        return url_to( 
-            $this->name . '/' . 
-            strtolower( $this->controller->getPrefix() ) . 
-            '/', 1 
-        );
+    public function shouldExecuteController() {
+        return true;
     }
-
-
 
     public function setController( $controller ) {
         $this->controller = $controller;
+        return $this->controller;
     }
 
-
-    public function setControllersDir( $dir ) {
-        if ( file_exists( $this->path . $dir ) ) 
-            $this->controllers_dir = $this->path . $dir;
-        else throw new Exception( "Directory `$this->path$dir` does not exist." );
-    }
-
-    public function getControllersDir() {
-        return $this->controllers_dir;
+    public function getController() {
+        return $this->controller;
     }
 
     public function setTplDir( $dir ) {
@@ -164,7 +153,11 @@ use \core\Citrus\http\Request;
         return $this->name;
     }
 
-    public function shouldExecuteController() {
-        return true;
+    public function setView( $view ) {
+        $this->view = $view;
+    }
+
+    public function getView() {
+        return $this->view;
     }
 }
