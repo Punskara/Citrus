@@ -206,9 +206,9 @@ class Citrus {
                 echo $this->response->content;
 
             } catch ( NoRouteFoundException $e ) {
-                Controller::pageNotFound();
+                Controller::pageNotFound( $this->request );
             } catch ( NoControllerFoundException $e ) {
-                Controller::pageNotFound();
+                Controller::pageNotFound( $this->request );
             } catch ( Exception $e ) {
                 Debug::handleException( $e, $this->debug );
                 return;

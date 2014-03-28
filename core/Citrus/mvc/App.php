@@ -151,23 +151,4 @@ use \core\Citrus\http\Request;
     public function getView() {
         return $this->view;
     }
-
-    /**
-     * Shows up the default "Page not found" template
-     * Is executed if the action doesn't exist.
-     *
-     * @param string  $message  A message to display in the 404 page.
-     */
-    public function pageNotFound( $message = null ) {
-        $cos = Citrus::getInstance();
-        /*$cos->response->code = '404';
-        $cos->response->message = $message;
-        $cos->response->sendHeaders();*/
-        ob_start();
-        include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
-    }
 }

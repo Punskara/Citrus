@@ -23,6 +23,7 @@ use \core\Citrus\Citrus;
 use \core\Citrus\sys\Debug;
 use \core\Citrus\sys\Exception;
 use \core\Citrus\utils\File;
+use \core\Citrus\http\Response;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
@@ -90,7 +91,7 @@ abstract class Controller {
 
     public function __invoke( $request ) {
         if ( !$this->actionExists() )
-            return $this->pageNotFound();
+            return self::pageNotFound( $request );
 
         $this->executeAction( $request );
     }
@@ -112,17 +113,12 @@ abstract class Controller {
      *
      * @param string  $message  A message to display in the 404 page.
      */
-    static public function pageNotFound( $message = null ) {
-        $cos = Citrus::getInstance();
-        /*$cos->response->code = '404';
-        $cos->response->message = $message;
-        $cos->response->sendHeaders();*/
-        ob_start();
-        include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
+    static public function pageNotFound( $request, $message = null ) {
+        $v = new View( CTS_PATH . '/core/Citrus/http/templates/pageNotFound' );
+        $content = $request->is_XHR ? "" : $v->render();
+        $rsp = new Response( 404, Array(), $content, $message );
+        $rsp->sendHeaders();
+        echo $rsp->content;
     }
     
     /**
@@ -132,16 +128,11 @@ abstract class Controller {
      * @param string  $message  A message to display in the 404 page.
      */
     static public function pageForbidden( $message = null ) {
-        $cos = Citrus::getInstance();
-        /*$cos->response->code = '403';
-        $cos->response->message = $message;
-        $cos->response->sendHeaders();*/
-        ob_start();
-        include CTS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
-        $tpl = ob_get_contents();
-        ob_end_clean();
-        echo $tpl;
-        exit;
+        $v = new View( CTS_PATH . '/core/Citrus/http/templates/pageForbidden' );
+        $content = $request->is_XHR ? "" : $v->render();
+        $rsp = new Response( 401, Array(), $content, $message );
+        $rsp->sendHeaders();
+        echo $rsp->content;
     }
     
     /**
