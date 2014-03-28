@@ -513,7 +513,6 @@ class Citrus {
      * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
      */
     public function createController( $app_name, $controller, $action = null ) {
-
         $pattern = "#([[:alpha:]]+)\/([[:alpha:]]+)#";
         if ( preg_match( $pattern, $controller, $matches ) ) {
             array_shift( $matches );
@@ -526,11 +525,11 @@ class Citrus {
                 $controller = $r->newInstanceArgs( Array(
                     'action' => $action,
                 ) );
+                $controller->setView( Config::appViewPath( $app_name ) );
+                return $controller;
             }
-            $controller->setView( Config::appViewPath( $app_name ) );
         }
-
-        return $controller;
+        throw new NoControllerFoundException();
     }
 }
 
