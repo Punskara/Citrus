@@ -233,7 +233,7 @@ class View {
      */
     public function render() {
         $cos = Citrus::getInstance();
-        if ( !file_exists( $this->tpl_file ) ) {
+        if ( !$this->templateExists() ) {
             throw new Exception( "Template file not found: $this->tpl_file." );
             return;
         }
@@ -271,5 +271,9 @@ class View {
         if ( file_exists( $file ) ) include $file;
 
         if ( $cos->debug ) $cos->debug->stopLastTimer();
+    }
+
+    public function templateExists() {
+        return file_exists( $this->tpl_file );
     }
 }

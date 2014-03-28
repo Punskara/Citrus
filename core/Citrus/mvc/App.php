@@ -79,11 +79,10 @@ use \core\Citrus\http\Request;
         $this->name     = $name;
         $this->router   = $router;
         $this->request  = new Request();
-        // $this->response = new Response();
 
-        if ( $router->hasRoute() ) {
+        if ( $this->router->hasMatchedRoute() ) {
             $this->request->addParams( $this->router->getRoute()->params );
-            $this->setController( $this->router->getRoute()->getParam( 'controller' ) );
+            $this->setController( $this->router->getRoute()->getParam( 'cos_controller' ) );
         }
     }
     
@@ -97,16 +96,7 @@ use \core\Citrus\http\Request;
     public function executeController( $request ) {
         if ( $this->shouldExecuteController() ) {
             $this->beforeExecuteAction();
-            $act = true;
-            if ( $this->controller instanceof Controller ) {
-                if ( $this->controller->actionExists() ) {
-                    $this->beforeExecuteAction();
-                    $act = $this->controller->executeAction( $request );
-                } else $act =$this->onActionNotFound();
-            } elseif ( $this->controller instanceof \Closure ) {
-                $act = $this->controller->__invoke( $request );
-            }
-            return $act;
+            return $this->controller->__invoke( $request );
         }
         return false;
     }
@@ -114,8 +104,9 @@ use \core\Citrus\http\Request;
     public function output() {
         if ( $this->view ) {
             $this->setViewSettings();
-            echo $this->view->render();
+            return $this->view->render();
         }
+        return "";
     }
 
     public function shouldExecuteController() {
@@ -159,5 +150,24 @@ use \core\Citrus\http\Request;
 
     public function getView() {
         return $this->view;
+    }
+
+    /**
+     * Shows up the default "Page not found" template
+     * Is executed if the action doesn't exist.
+     *
+     * @param string  $message  A message to display in the 404 page.
+     */
+    public function pageNotFound( $message = null ) {
+        $cos = Citrus::getInstance();
+        /*$cos->response->code = '404';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();*/
+        ob_start();
+        include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
 }

@@ -55,6 +55,10 @@ abstract class Controller {
         $this->action = $action;
     }
 
+    public function getView() {
+        return $this->view;
+    }
+
     public function setView( $path ) {
         $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
         $this->view = new View( $path . '/' . $tpl_name );
@@ -82,6 +86,13 @@ abstract class Controller {
         if ( $cos->debug ) $cos->debug->stopLastTimer();
 
         return true;
+    }
+
+    public function __invoke( $request ) {
+        if ( !$this->actionExists() )
+            return $this->pageNotFound();
+
+        $this->executeAction( $request );
     }
 
     /**
@@ -172,6 +183,12 @@ abstract class Controller {
         } else self::pageNotFound();
         $cos->response->setCacheHeaders( $file_path );
         if ( $cos->response->code == '200' ) echo $content;
+    }
+
+    public function renderView() {
+        if ( $this->view->templateExists() )
+            return $this->view->render();
+        return "";
     }
 }
     
