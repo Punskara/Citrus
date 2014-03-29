@@ -33,11 +33,6 @@ use \core\Citrus\http\Request;
     public $name;
 
     /**
-     * @var \core\Citrus\http\Response
-     */
-    public $response;
-
-    /**
      * @var \core\Citrus\http\Request
      */
     public $request;
@@ -62,6 +57,10 @@ use \core\Citrus\http\Request;
      */
     protected $view;
 
+
+    /**
+     * @var \core\Citrus\routing\Router
+     */
     public $router;
     
     /*abstract*/ protected function setViewSettings() {}
@@ -120,24 +119,6 @@ use \core\Citrus\http\Request;
 
     public function getController() {
         return $this->controller;
-    }
-
-    public function setTplDir( $dir ) {
-        if ( file_exists( $this->path . $dir ) ) 
-            $this->tpl_dir = $this->path . $dir;
-        else throw new Exception( "Directory `$this->path$dir` does not exist." );
-    }
-
-    public function getTplDir() {
-        return $this->tpl_dir;
-    }
-
-    public function setPath( $path ) {
-        $this->path = $path;
-    }
-
-    public function getPath() {
-        return $this->path;
     }
 
     public function __toString() {
