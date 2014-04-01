@@ -19,36 +19,48 @@ class Installer {
     }
 
     public function generateApp( $name ) {
-        if ( is_dir( CTS_APPS_PATH ) ) {
-            if ( !$this->appExists( $name ) ) {
-                $app_path = CTS_APPS_PATH . $name;
-                $mainDir = mkdir( $app_path, 0755 );
-                if ( $mainDir ) {
-                    $modules    = mkdir( $app_path . '/controllers', 0755 );
-                    $templates  = mkdir( $app_path . '/templates', 0755 );
-                    $config     = mkdir( $app_path . '/config', 0755 );
-                    if ( $modules && $templates && $config ) {
-                        $this->generateAppClassFile( $name );
-                        $this->generateAppRoutingFile( $name );
-                        return true;
-                    }
-                } 
-            } else {
-                throw new sys\Exception( "App already exists" );
-            }
+        echo CTS_APPS_PATH;
+        if ( !is_writable( CTS_PATH ) ) {
+            throw new sys\Exception( "Apps directory is not writeable!" );
+        }
+        if ( !is_dir( CTS_APPS_PATH ) ) {
+            mkdir( CTS_APPS_PATH, 0755 );
+        }
+        if ( !$this->appExists( $name ) ) {
+            $app_path = CTS_APPS_PATH . $name;
+            $mainDir = mkdir( $app_path, 0755 );
+            if ( $mainDir ) {
+                $modules    = mkdir( $app_path . '/controllers', 0755 );
+                $templates  = mkdir( $app_path . '/templates', 0755 );
+                $config     = mkdir( $app_path . '/config', 0755 );
+                if ( $modules && $templates && $config ) {
+                    $this->generateAppClassFile( $name );
+                    $this->generateAppRoutingFile( $name );
+                    return true;
+                }
+            } 
+        } else {
+            throw new sys\Exception( "App already exists" );
         }
         return false;
     }
     
     public function generateModule( $name, $app, $resourceType = null ) {
-        if ( is_dir( CTS_APPS_PATH ) ) {
-            $modulePath = CTS_APPS_PATH . $app . '/controllers/';
-            if ( is_dir( $modulePath ) || mkdir( $modulePath, 0755 ) ) {
-                $this->generateControllerFile( $name, $app );
-                return true;
-            } else {
-                throw new sys\Exception( "Module already exists" );
-            }
+        if ( !is_writable( CTS_APPS_PATH ) ) {
+            throw new sys\Exception( "Apps directory is not writeable!" );
+        }
+        if ( !is_dir( CTS_APPS_PATH . $app ) ) {
+            throw new sys\Exception( "Unable to find app directory!" );
+        }
+        if ( !is_writable( CTS_APPS_PATH . $app ) ) {
+            throw new sys\Exception( "App directory is not writeable!" );
+        }
+        $modulePath = CTS_APPS_PATH . $app . '/controllers/';
+        if ( is_dir( $modulePath ) || mkdir( $modulePath, 0755 ) ) {
+            $this->generateControllerFile( $name, $app );
+            return true;
+        } else {
+            throw new sys\Exception( "Module already exists" );
         }
         return false;
     }
@@ -121,6 +133,12 @@ class Installer {
      */
     public function generateControllerFile( $name, $app ) {
         $path = CTS_APPS_PATH . $app;
+        $name = ucfirst( strtolower( $name ) ) . 'Controller.php';
+        $full_path = $path . '/controllers/' . $name;
+
+        if ( file_exists( $full_path ) ) {
+            throw new Exception( "Module already exists!" );
+        }
         if ( is_dir( $path ) ) {
             $templateFile = $this->tpl_dir . 'controller.tpl';
             $tpl = fopen( $templateFile, 'r' );
@@ -130,8 +148,7 @@ class Installer {
             $content = str_replace( "{module_name}", $name, $content );
             $write = false;
             if ( $content ) {
-                $name = ucfirst( strtolower( $name ) ) . 'Controller.php';
-                $file = fopen( $path . '/controllers/' . $name, 'w' );
+                $file = fopen( $full_path, 'w' );
                 $write = fwrite( $file, $content );
                 fclose( $file );
             }
