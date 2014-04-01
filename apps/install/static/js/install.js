@@ -288,7 +288,7 @@ $(document).ready(function () {
                 data: { config : JSON.stringify(config) },
                 success: function () {
                     formTraitement( true );
-                    if (relocation) location.href = relocation + '?generated=1';
+                    if (relocation) location.pathname = './' + relocation + 'index?generated=1';
                     else {
                         infoload($('div#generated'));
                         boxmodif( true );

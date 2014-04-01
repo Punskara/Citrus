@@ -66,7 +66,7 @@
         </tbody>
     </table>
 </div>
-<form action="<?php url_to( 'install/main/generate' ) ?>" method="post" id="f_addAppMod">
+<form action="<?php url_to( 'generate' ) ?>" method="post" id="f_addAppMod">
     <label>
         <span class="label inline">Application par défaut</span>
         <select name="defaultApp"></select>
