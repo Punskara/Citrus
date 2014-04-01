@@ -27,6 +27,7 @@
 namespace core\Citrus;
 
 use \core\Citrus\mvc\App;
+use \core\Citrus\mvc\Controller;
 use \core\Citrus\sys\Cache;
 use \core\Citrus\sys\Debug;
 use \core\Citrus\sys\Exception;
@@ -189,7 +190,7 @@ class Citrus {
                 
                 $this->app->executeCtrlAction();
             } catch ( NoRouteFoundException $e ) {
-                self::pageNotFound();
+                Controller::pageNotFound();
             } catch ( Exception $e ) {
                 Debug::handleException( $e, $this->debug );
                 return;
