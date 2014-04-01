@@ -1,21 +1,13 @@
 <?php
 /*
-.---------------------------------------------------------------------------.
-|  Software: Citrus PHP Framework                                           |
-|   Version: 1.0                                                            |
-|   Contact: devs@citrus-project.net                                        |
-|      Info: http://citrus-project.net                                      |
-|   Support: http://citrus-project.net/documentation/                       |
-| ------------------------------------------------------------------------- |
-|   Authors: Rémi Cazalet                                                   |
-|          : Nicolas Mouret                                                 |
-|   Founder: Studio Caramia                                                 |
-|  Copyright (c) 2008-2012, Studio Caramia. All Rights Reserved.            |
-| ------------------------------------------------------------------------- |
-|   For the full copyright and license information, please view the LICENSE |
-|   file that was distributed with this source code.                        |
-'---------------------------------------------------------------------------'
-*/
+ * This file is part of Citrus. 
+ *
+ * (c) Rémi Cazalet <remi@caramia.fr>
+ * Nicolas Mouret <nicolas@caramia.fr>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
 
 /**
  * @package functions
@@ -23,15 +15,35 @@
  * @license http://opensource.org/licenses/mit-license.php The MIT License
  */
 
-function vexp( $var, $pre = false ) {
+function vexp( $var, $pre = true ) {
     $st = '';
     if ( $pre ) $st .= '<pre>';
     $st .= var_export( $var, true );
     if ( $pre ) $st .= '</pre>';
     echo $st;
+}
+
+function vexpm() {
+    $st = '';
+    $nb = func_num_args();
+    $args = func_get_args();
+    foreach ( $args as $var ) {
+        $st .= '<pre>';
+        $st .= var_export( $var, true );
+        $st .= '</pre>';
+    }
+    echo $st;
 } 
 
-function prr( $var, $pre = false ) {
+function diex( $var ) {
+    $st = '<pre>';
+    $st .= var_export( $var, true );
+    $st .= '</pre>';
+    die( $st );
+}
+
+
+function prr( $var, $pre = true ) {
     $st = '';
     if ( $pre ) $st .= '<pre>';
     $st .= print_r( $var, true );

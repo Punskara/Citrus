@@ -19,9 +19,7 @@
 namespace core\Citrus;
 
 use \core\Citrus\mvc\App;
-use \core\Citrus\mvc\View;
 use \core\Citrus\mvc\Controller;
-use \core\Citrus\mvc\NoControllerFoundException;
 use \core\Citrus\sys\Config;
 use \core\Citrus\sys\Cache;
 use \core\Citrus\sys\Debug;
@@ -111,7 +109,7 @@ class Citrus {
      * @access public
      * @var boolean
      */
-    private $done = false;
+    public $done = false;
 
     /**
      * @access public
@@ -158,16 +156,13 @@ class Citrus {
         }
     }
 
-    public function bootCLI() {
-        $this->registerAutoload();
-    }
-
+    
     /**
      * Boots the system and its services.
      * 
      * @throws \core\Citrus\sys\Exception if no host or no valid host is found
      */
-    public function boot( $app, $cfg ) {
+    public function boot() {
         session_start();
         // $this->registerAutoload();
 
@@ -175,40 +170,38 @@ class Citrus {
 
             $this->cache = new Cache();
             
-            // exception handling
+            # exception handling
             set_exception_handler( Array( 
                 '\core\Citrus\sys\Debug', 
                 'handleException' 
             ) );
 
-            // error handling
+            # error handling
             set_error_handler( 
                 Array( '\core\Citrus\sys\Debug', 'handleError') , 
-                E_ALL
-                // -1 & ~E_NOTICE & ~E_USER_NOTICE 
+                -1 & ~E_NOTICE & ~E_USER_NOTICE 
             );
 
-            // shutdown handling
+            # shutdown handling
             register_shutdown_function( Array( '\core\Citrus\Citrus', 'shutDown' ) );
 
-            $this->request  = new Request();
+            $this->request = new Request();
             $this->response = new Response();
             try {
                 $this->loadConfiguration();
                 $this->startServices();
+                $this->loadRouter();
+                $this->request->addParams( $this->router->params );
 
-                $this->app = $this->loadApp( $app );
-                $this->startApp();
-
-                $this->response->content = $this->app->output();
-                $this->response->sendHeaders();
-
-                echo $this->response->content;
+                $app        = $this->router->app;
+                $controller = $this->router->controller;
+                $action     = $this->router->action;
+                $this->app  = App::load( $app ); 
+                $this->app->createController( $controller, $action );
+                $this->app->executeCtrlAction();
 
             } catch ( NoRouteFoundException $e ) {
-                Controller::pageNotFound( $this->request );
-            } catch ( NoControllerFoundException $e ) {
-                Controller::pageNotFound( $this->request );
+                Controller::pageNotFound();
             } catch ( Exception $e ) {
                 Debug::handleException( $e, $this->debug );
                 return;
@@ -219,76 +212,8 @@ class Citrus {
         }
     }
 
-    /**
-     * Creates an instance of requested App.
-     * @param $name Name of requested App
-     * @throws Exception when requested app class is not found.
-     * @return subclass of \core\Citrus\mvc\App
-     */
-
-    private function loadApp( $app ) {
-        $router = new Router( 
-            $_SERVER['REQUEST_URI'],
-            $this->host->root_path
-        );
-        $routes = $this->getAppRoutes( $app );
-        $routes[] = Array(
-            'url' => '/:cos_app/:cos_controller/:cos_action'
-        );
-        foreach ( $routes as $r ) {
-            $router->map( 
-                $r['url'], 
-                array_key_exists( 'target', $r )     ? $r['target']     : Array(),
-                array_key_exists( 'conditions', $r ) ? $r['conditions'] : Array()
-            );
-        }
-        
-        $router->executeRoutes( $routes );
-
-        $app_class = Config::appClassName( $app );
-
-        if ( class_exists( $app_class ) ) {
-            $r      = new \ReflectionClass( $app_class ); 
-            $app    = $r->newInstanceArgs( array( $app, $router ) );
-
-            $controller = $router->getParam( "cos_controller" );
-
-            if ( !( $controller instanceof \Closure ) ) {
-                $controller = $this->createController( 
-                    $app->name, $controller, $router->getParam( "cos_action" ) 
-                );
-            }
-
-            if ( is_callable( $controller ) ) {
-                $app->setController( $controller );
-            }
-            return $app;
-        }
-        throw new Exception( "Unable to find app '$app'" );
-        // return false;
-    }
-
-    /**
-     * Execute the apps controller
-     * and displays the output
-     *
-     * @return void
-     **/
-    public function startApp() {
-        $this->app->router->removeParams( Array( "cos_app", "cos_controller", "cos_action" ) );
-        $this->request->addParams( $this->app->router->getParams() );
-        $this->app->executeController( $this->request );
-
-        // this works but it's ugly, to be recoded
-
-        if ( $this->request->is_XHR ) {
-            $this->app->setView( $this->app->getController()->view );
-        } else {
-            $layout = new View( CTS_APPS_PATH . '/' . $this->app . CTS_VIEW_DIR . '/layout' );
-            // diex( $this->app->getController()->view );
-            $layout->assign( "content", $this->app->getController()->renderView() );
-            $this->app->setView( $layout );
-        }
+    public function bootCLI() {
+        $this->registerAutoload();
     }
 
     /**
@@ -318,7 +243,7 @@ class Citrus {
             foreach ( $hosts as $host => $args ) {
                 if ( strpos( $_SERVER['HTTP_HOST'], $args['domain'] ) !== false ) {
                     $r = new \ReflectionClass( '\core\Citrus\Host' );
-                    $inst = $r->newInstanceArgs( $args );
+                    $inst = $r->newInstanceArgs( $args ? $args : Array() );
                     if ( $inst ) {
                         $this->host = $inst;
                         break;
@@ -332,6 +257,7 @@ class Citrus {
         
             if ( get_class( $this->host ) == 'core\\Citrus\\Host' ) {
                 if ( $this->debug ) {
+                    ini_set( 'display_errors', 0 );
                     error_reporting( E_ALL );
                 }
                 define( 'CTS_PROJECT_URL', $this->host->root_path );
@@ -340,40 +266,26 @@ class Citrus {
             }
         }
     }
-
-    private function getAppRoutes( $app = null ) {
-        // $apps           = $this->listApps();
-        $routes         = Array();
-        $routing_file   = CTS_APPS_PATH . '/' . $app . '/config/routing.php';
-
-        if ( file_exists( $routing_file ) ) {            
-            $src = include $routing_file;
-            if ( is_array( $src ) && count( $src ) )
-                $routes = array_merge( $routes, $src );
-        }
-
-        return $routes;
-    }
-
+    
+    
     /**
      * Loads the routing system.
      *
      * @throws \core\Citrus\sys\Exception if no routing file is found.
      */
     public function loadRouter() {
-        $this->router = new Router( 
-            $_SERVER['REQUEST_URI'],
-            $this->host->root_path
-        );
-        // $this->loadRoutingConfiguration();
-        // $this->router->execute();
+        $this->router = new Router( $this->host->root_path );
+        $this->router
+            ->loadRoutes()
+            ->defaultRoutes()
+            ->execute();
     }
     
     /**
      * Starts all enabled services.
      * 
      */
-    private function startServices() {
+    public function startServices() {
         $services = $this->host->services;
 
         if ( $services['debug']['active'] ) {
@@ -401,13 +313,6 @@ class Citrus {
         return $this->addLogger( $id );
     }
 
-
-    /**
-     * Adds an error entry in log
-     *
-     * @param string $content Error description
-     * @return void
-     **/
     function logError( $content ) {
         $this->getLogger( 'error' )->logEvent( $content );
     }
@@ -458,15 +363,15 @@ class Citrus {
         } else {
             $msg = 'Shutting down…';
         }
-        if ( $cos->debug && !$cos->request->is_XHR ) {
+        if ( $cos->debug ) {
             $cos->getLogger( 'debug' )->logEvent( $msg );
-            echo $cos->debug->debugBar();
+            // if ( !$cos->request->is_XHR && $cos->app != 'frontend' ) echo $cos->debug->debugBar();
         }
         unset( $cos );
     }   
     
     public function getController() {
-        return $this->app->getController();
+        return $this->app->controller;
     }
 
     public function getClassName( $class_name ) {
@@ -481,55 +386,4 @@ class Citrus {
         if ( isset( $this->globals[$name] ) ) return $this->globals[$name];
         return false;
     }
-
-    /**
-     * Gets list of applications existing in filesystem.
-     *
-     * @return array An array of apps names
-     */
-    public function listApps() {
-        $dir    = CTS_APPS_PATH . '/';
-        $apps   = array();
-
-        if ( is_dir( $dir ) && $dh = opendir( $dir ) ) {
-            while ( ( $file = readdir( $dh ) ) !== false ) {
-                if ( substr( $file, 0, 1) != '.' ) {
-                    if ( is_dir( $dir . $file ) ) {
-                        $apps[] = $file;
-                    }
-                }
-            }
-            closedir( $dh );
-        }
-        return $apps;
-    }
-
-    /**
-     * Creates the controller which will execute the action requested.
-     *
-     * @param array $name Controller name
-     * @param array $action Action to be performed
-     *
-     * @return \core\Citrus\mvc\Controller|boolean Whether if the controller file exists or not.
-     */
-    public function createController( $app_name, $controller, $action = null ) {
-        $pattern = "#([[:alpha:]]+)\/([[:alpha:]]+)#";
-        if ( preg_match( $pattern, $controller, $matches ) ) {
-            array_shift( $matches );
-            list( $controller, $action ) = $matches;
-        }
-        if ( $app_name && $action ) {
-            $class = Config::controllerClassName( $app_name, $controller );
-            if ( class_exists( $class ) ) {
-                $r = new \ReflectionClass( $class ); 
-                $controller = $r->newInstanceArgs( Array(
-                    'action' => $action,
-                ) );
-                $controller->setView( Config::appViewPath( $app_name ) );
-                return $controller;
-            }
-        }
-        throw new NoControllerFoundException();
-    }
 }
-

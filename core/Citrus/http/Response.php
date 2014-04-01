@@ -48,17 +48,6 @@ class Response {
 
     public $headers = Array();
 
-    public $content;
-
-    public function __construct( $code = 200, $headers = Array(), $content = "", $message = "" ) {
-        $this->code = $code;
-        foreach ( $headers as $k => $v ) {
-            $this->addHeader( $k, $v );
-        }
-        $this->content = $content;
-        $this->message = $message;
-    }
-
     /**
      * Sends http headers
      * 
@@ -69,14 +58,14 @@ class Response {
             return false;
         }
 
-        /*$charset = empty( $this->charset ) 
+        $charset = empty( $this->charset ) 
                     ? '' 
                     : '; charset=' . $this->charset;
 
         $this->addHeader( 
             'Content-Type', 
             $this->content_type . $charset
-        );*/
+        );
         if ( count( $this->headers ) ) 
             foreach ( $this->headers as $k => $v )
                 header( $k . ': ' . $v, true );

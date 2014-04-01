@@ -35,24 +35,33 @@ class Router {
     public $app;
     public $controller;
     public $action;
-    // public $params;
+    public $params;
+
+    public $ext = '';
 
     public $routes = array();
     public $route;
 
-    public function __construct( $request_uri, $base_url = "" ) {
-        $base_url = substr( $base_url, 1 );
-
-        if (strpos( $request_uri, $base_url ) !== false ) {
-            $request_uri = str_replace( $base_url, '', $request_uri );
+    public function __construct( $base_url ) {
+        
+        $request    = $_SERVER['REQUEST_URI'];
+        $base_url   = substr( $base_url, 1 );
+        
+        if (strpos( $request, $base_url ) !== false ) {
+            $request = str_replace( $base_url, '', $request );
         }
         
-        $pos = strpos( $request_uri, '?' );
-        if ( $pos ) $request_uri = substr( $request_uri, 0, $pos );
+        $pos = strpos( $request, '?' );
+        if ( $pos ) $request = substr( $request, 0, $pos );
      
-        $this->request_uri = $request_uri;
+        $this->request_uri = $request;
         $this->routes = array();
         
+    }
+
+    public function defaultRoutes() {
+        $this->map( '/:app/:controller/:action' . $this->ext );
+        return $this;
     }
 
     public function map( $rule, $target = array(), $conditions = array() ) {
@@ -61,15 +70,6 @@ class Router {
         );
         return $this;
     }
-/*
-    public function quickMap( $rule, $controller, $conditions = array() ) {
-        $rt = new Route( 
-            $rule, $this->request_uri, Array( "controller" => $controller ), $conditions 
-        );
-        // $rt->controller = $controller;
-        $this->routes[$rule] = $rt;
-        return $this;
-    }*/
     
     public function execute() {
         if ( count( $this->routes ) ) {
@@ -84,46 +84,98 @@ class Router {
         return $this;
     }
 
-    public function executeRoutes( $routes ) {
-        if ( count( $routes ) ) {
-            foreach( $routes as $r ) {
-                $route = new Route( 
-                    $r["url"], 
-                    $this->request_uri, 
-                    isset( $r["target"] ) ? $r["target"] : Array(), 
-                    isset( $r["conditions"] ) ? $r['conditions'] : Array()
-                );
-                if ( $route->is_matched ) {
-                    $this->setRoute( $route );
-                    return $route;
-                }
-            }
-            // throw new NoRouteFoundException();
-        }
-        return false;
-    }
-
     public function getRouteURL() {
         return $this->route->url;
     }
-
-    public function getController() {
-        return $this->controller;
-    }
-
-    public function setController( $controller ) {
-        $this->controller = $controller;
-    }
     
     private function setRoute( $route ) {
+        $this->route_found = true;
         $this->route = $route;
-    }   
+        $params = $route->params;
 
-    public function getRoute() {
-        return $this->route;
+        if ( isset( $params['app'] ) ) {
+            $this->app = $params['app']; 
+            // $this->loadAppRoutes();
+            unset( $params['app'] );
+        }
+        if ( isset( $params['controller'] ) ) {
+            $this->controller = $params['controller']; 
+            unset( $params['controller'] );
+        }
+
+        if ( isset( $params['action'] ) ) {
+            $this->action = $params['action']; 
+            unset( $params['action'] );
+        }
+
+        $this->params = array_merge( $params, $_GET );
     }
+      
+    public function loadRoutes() {
+        $routesFile = CTS_PATH . '/config/routing.php';
+        
+        if ( !file_exists( $routesFile ) ) {
+            throw new Exception( "No routing file found." );
+            return;
+        }
+        $routing = include $routesFile;
+        if ( isset( $routing['routes'] ) ) {
+            $routes = $routing['routes'];
+            if ( count( $routes ) ) foreach ( $routes as $route ) {
+                if ( isset( $route['url'] ) 
+                     && isset( $route['target'] ) 
+                ) {
+                    $this->map( 
+                        $route['url'], 
+                        $route['target'], 
+                        isset( $route['conditions'] ) 
+                            ? $route['conditions'] 
+                            : Array() 
+                    );
+                }
+            }
+        }
+        // browsing apps files
+        $apps = App::listApps();
+        foreach ( $apps as $app ) $this->loadAppRoutes( $app );
+        return $this;
+    }
+    
 
-    public function hasRoute() {
-        return $this->route instanceof Route;
+    /**
+     * Checks the existence of routing file in app config file.
+     * Loads content if true.
+     */
+
+    public function loadAppRoutes( $app = null ) {
+        $virtual = true;
+        if ( is_null( $app ) ) {
+            $app = $this->app;
+            $virtual = false;
+        } 
+        $routes_file = CTS_APPS_PATH . $app . '/config/routing.php';
+
+        if ( file_exists( $routes_file ) ) {            
+            $routes = include $routes_file;
+            if ( isset( $routes['routes'] ) 
+                 && is_array( $routes['routes'] ) 
+                 && count( $routes ) 
+            ) {
+                foreach ( $routes['routes'] as $route ) {
+                    if ( isset( $route['url'] ) ) {
+                        $target = Array();
+                        if ( isset( $route['target'] ) ) 
+                            $target = $route['target'];
+
+                        $this->map( 
+                            $route['url'], $target, 
+                            isset( $route['conditions'] ) 
+                                ? $route['conditions'] 
+                                : Array() 
+                        );
+                    }
+                }
+            }
+        }
     }
 }

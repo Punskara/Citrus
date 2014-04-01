@@ -25,6 +25,7 @@ use \core\Citrus\http;
 class Debug {
     
     public $queries = array();
+    public $queryString = '';
     public $timers = array();
     public $timer;
     public $request;
@@ -41,7 +42,7 @@ class Debug {
     
     public function debugBar() {
         $this->timer->stop();
-        $query_string = htmlentities( $this->request->query_string );
+        $queryString = htmlentities( $this->request->queryString );
         $s = "<div id=\"CitrusDebugBar\">\n";
             $s .= '<a href="#" id="showDebugBar" class="fa fa-bug">&nbsp;</a>' . "\n";
             $s .= "<div class=\"content\">\n";
@@ -53,7 +54,7 @@ class Debug {
         
             $s .= "\t<div id=\"citrusDebugQString\" class=\"citrusDebugPane\">\n";
                 $s .= "\t\t<ul>\n";
-                $s .= "\t\t\t<li>Query string : $query_string</li>\n";
+                $s .= "\t\t\t<li>Query string : $queryString</li>\n";
                 $s .= "\t\t\t<li>Method : {$this->request->method}</li>\n";
                 $s .= "\t\t</ul>\n";
             $s .= "</div>\n";

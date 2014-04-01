@@ -178,7 +178,7 @@ class Model {
             $schema = Schema::getInstance( $targetClass );
             $q = new HydratableQuery( $targetClass );
             $q->columns = array( '*' );
-            $q->table = $schema->$schema->table_name;
+            $q->table = $schema->table_name;            
             if ( isset( $schema->orderColumn ) ) {
                 $order = $schema->orderColumn;
                 if ( isset( $schema->orderSort ) ) {

@@ -23,13 +23,13 @@ use \core\Citrus\Citrus;
 use \core\Citrus\sys\Debug;
 use \core\Citrus\sys\Exception;
 use \core\Citrus\utils\File;
-use \core\Citrus\http\Response;
+use \core\Citrus\String;
 
 /**
  * The C in MVC. Communicate with Citrus, the Model and the View to
  * execute the right action.
  */
-abstract class Controller {
+class Controller {
     
     /**
      * @var string
@@ -46,6 +46,16 @@ abstract class Controller {
      */
     public $view;
     
+    /**
+     * @var Boolean
+     */
+    public $is_protected;
+
+
+    /**
+     * @var Array
+     */
+    public $security_exceptions = Array();
 
     /**
      * Contructor
@@ -56,16 +66,13 @@ abstract class Controller {
         $this->action = $action;
     }
 
-    public function getView() {
-        return $this->view;
+    public function getPrefix() {
+        if ( preg_match( '@\\\\([\w]+)$@', get_class( $this ), $matches ) ) {
+            $s = String::splitCamelCase( $matches[1] );
+            return $s[0];
+        } return "";
     }
-
-    public function setView( $path ) {
-        $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
-        $this->view = new View( $path . '/' . $tpl_name );
-        return $this;
-    }
-
+    
     /**
      * Executes the action given by request. 
      * 
@@ -82,6 +89,13 @@ abstract class Controller {
             $cos->debug->startNewTimer( "action " . $action );
         }
 
+        $tpl_name   = strtolower( $this->getPrefix() ) . '/' . $this->action;
+        $this->view = new View( $cos->app->tpl_dir . $tpl_name );
+
+        // automaticly disabling layout if XMLHTTPRequest
+        $this->view->layout = !$request->is_XHR;
+
+
         $this->$action( $request );
 
         if ( $cos->debug ) $cos->debug->stopLastTimer();
@@ -89,11 +103,13 @@ abstract class Controller {
         return true;
     }
 
-    public function __invoke( $request ) {
-        if ( !$this->actionExists() )
-            return self::pageNotFound( $request );
-
-        $this->executeAction( $request );
+    /** 
+      * @return true  if ( ctrlIsProtected && !inException || !ctrlIsProtected  && inException )
+      * @return false if ( ctrlIsProtected && inException || !ctrlIsProtected  && !inException )
+    */
+    public function isActionProtected() {
+        $inException = in_array( $this->action, $this->security_exceptions );
+        return $this->is_protected ? $inException ? false : true : $inException ? true : false;
     }
 
     /**
@@ -113,12 +129,17 @@ abstract class Controller {
      *
      * @param string  $message  A message to display in the 404 page.
      */
-    static public function pageNotFound( $request, $message = null ) {
-        $v = new View( CTS_PATH . '/core/Citrus/http/templates/pageNotFound' );
-        $content = $request->is_XHR ? "" : $v->render();
-        $rsp = new Response( 404, Array(), $content, $message );
-        $rsp->sendHeaders();
-        echo $rsp->content;
+    static public function pageNotFound( $message = null ) {
+        $cos = Citrus::getInstance();
+        $cos->response->code = '404';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CTS_PATH . '/core/Citrus/http/templates/pageNotFound.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
     
     /**
@@ -128,11 +149,16 @@ abstract class Controller {
      * @param string  $message  A message to display in the 404 page.
      */
     static public function pageForbidden( $message = null ) {
-        $v = new View( CTS_PATH . '/core/Citrus/http/templates/pageForbidden' );
-        $content = $request->is_XHR ? "" : $v->render();
-        $rsp = new Response( 401, Array(), $content, $message );
-        $rsp->sendHeaders();
-        echo $rsp->content;
+        $cos = Citrus::getInstance();
+        $cos->response->code = '403';
+        $cos->response->message = $message;
+        $cos->response->sendHeaders();
+        ob_start();
+        include CTS_PATH . '/core/Citrus/http/templates/pageForbidden.tpl' ;
+        $tpl = ob_get_contents();
+        ob_end_clean();
+        echo $tpl;
+        exit;
     }
     
     /**
@@ -143,6 +169,17 @@ abstract class Controller {
     public function actionExists() {
         return method_exists( $this, 'do_' . $this->action );
     }
+    
+    
+    /**
+     * Displays the action template.
+     *
+     * @return  string  The content of the template.
+     */
+    public function displayTemplate() {
+        return $this->view->display();
+    }
+    
 
     public function do_static( $request ) {
         $cos        = Citrus::getInstance();
@@ -151,7 +188,7 @@ abstract class Controller {
         $file_ext   = $request->param( 'ext' ); 
         $file_type  = $request->param( 'type' ); 
         $file_name  = $request->param( 'file' ); 
-        $file_path  = $cos->app->getPath() . "/static/$file_type/$file_name$file_ext";
+        $file_path  = $cos->app->path . "/static/$file_type/$file_name$file_ext";
         $content    = "";
         $file_ext   = substr( $file_ext, 1 );
 
@@ -174,12 +211,6 @@ abstract class Controller {
         } else self::pageNotFound();
         $cos->response->setCacheHeaders( $file_path );
         if ( $cos->response->code == '200' ) echo $content;
-    }
-
-    public function renderView() {
-        if ( $this->view->templateExists() )
-            return $this->view->render();
-        return "";
     }
 }
     

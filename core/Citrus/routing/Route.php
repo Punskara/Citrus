@@ -32,9 +32,8 @@ class Route {
     public $params;
     public $url;
     private $conditions;
-    public $controller;
     
-    public function __construct( $url, $request_uri, $target = Array(), $conditions = Array() ) {
+    public function __construct( $url, $request_uri, $target, $conditions ) {
         $this->url = $url;
         $this->params = array();
         $this->conditions = $conditions;
@@ -45,7 +44,7 @@ class Route {
      
         $url_regex = preg_replace_callback( 
             '@:[\w]+@', 
-            array( $this, 'regexURL' ), 
+            array( $this, 'regex_url' ), 
             $url 
         );
         $url_regex .= '/?';
@@ -55,8 +54,7 @@ class Route {
             foreach( $p_names as $index => $value ) {
                 $this->params[substr( $value, 1 )] = urldecode( $p_values[$index] );
             }
-
-            if ( count( $target ) ) foreach( $target as $key => $value ) {
+            foreach( $target as $key => $value ) {
                 $this->params[$key] = $value;
             }
             $this->is_matched = true;
@@ -66,18 +64,13 @@ class Route {
         unset( $p_values );        
     }
 
-    private function regexURL( $matches ) {
+    function regex_url($matches) {
         $key = str_replace( ':', '', $matches[0] );
         if ( array_key_exists( $key, $this->conditions ) ) {
             return '(' . $this->conditions[$key] . ')';
-        } else {
+        } 
+        else {
             return '([a-zA-Z0-9_\+\-%]+)';
         }
-    }
-
-    public function getParam( $name ) {
-        if ( array_key_exists( $name, $this->params ) ) {
-            return $this->params[$name];
-        }
-    }
+  }
 }
